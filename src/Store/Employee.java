@@ -1,13 +1,20 @@
 package Store;
 
-public abstract class Employee extends Person {
+public class Employee extends Person {
    int bankAccount;
    int branch;
    int employeeNumber; 
    String password;
    EmployeeTitle title;
-}
 
+   public Employee(String fullName, String phoneNumber, int id, int bankAccount, int branch, String password, EmployeeTitle title) {
+      super(fullName, phoneNumber, id);
+      this.bankAccount = bankAccount;
+      this.branch = branch;
+      this.password = password;
+      this.title = title;
+   }
+}
 
 /*
  CREATE TABLE Employees (
