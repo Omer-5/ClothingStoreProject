@@ -14,6 +14,17 @@ public class Employee extends Person {
       this.password = password;
       this.title = title;
    }
+
+   @Override
+   public String toString() {
+      return "Employee{" +
+              "bankAccount=" + bankAccount +
+              ", branch=" + branch +
+              ", employeeNumber=" + employeeNumber +
+              ", password='" + password + '\'' +
+              ", title=" + title +
+              '}';
+   }
 }
 
 /*
