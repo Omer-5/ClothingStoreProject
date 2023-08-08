@@ -1,4 +1,4 @@
-package Store;
+package Store.Database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class AzureSqlConnection {
     // Azure SQL Database connection details
-    PropertiesReader reader = new PropertiesReader("src/store/Secrets.properties");
+    PropertiesReader reader = new PropertiesReader("src/Store/Database/Secrets.properties");
     private final String SERVER_NAME = reader.getProperty("SERVER_NAME");
     private final String DATABASE_NAME = reader.getProperty("DATABASE_NAME");
     private final String USERNAME = reader.getProperty("USERNAME");

@@ -1,4 +1,4 @@
-package Store;
+package Store.Inventories;
 
 public class BranchInventory {
     InventoryItem items[];

@@ -1,4 +1,6 @@
-package Store;
+package Store.Employees;
+
+import Store.Person;
 
 public class Employee extends Person {
    int bankAccount;
