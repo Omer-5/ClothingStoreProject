@@ -28,7 +28,21 @@ public class GeneralDAO <T>{
         return null;
     }
 
-    public ResultSet getObject(String tableName, String params, String condition)
+    private void executeUpdate(String query) 
+    {
+       try{
+            Statement statement = connection.createStatement();
+            int rowsUpdated = statement.executeUpdate(query);
+            connection.commit();
+            //TODO: Throw Exception if rowsUpdated is 0 (nothing happend) 
+        }
+        catch (SQLException e){
+            System.out.println(e);
+            //TODO: Handle
+        }
+    }
+
+    protected ResultSet getObject(String tableName, String params, String condition)
     {
         String conditionString = "";
         if (condition != "") conditionString = "WHERE " + condition;
@@ -38,11 +52,16 @@ public class GeneralDAO <T>{
         return res;
     }
 
-    public ResultSet insertObject(String tableName, String params, String values)
+    protected void insertObject(String tableName, String queryParams)
     {
-        
-        ResultSet res = null;
-        
-        return res;
+        String query = String.format("INSERT INTO %s %s", tableName, queryParams);
+        System.out.println(query);
+        executeUpdate(query);
+    }
+
+    protected void updateObject(String tableName, String queryParams)
+    { 
+        String query = String.format("UPDATE %s %s", tableName, queryParams);
+        executeUpdate(query);
     }
 }
