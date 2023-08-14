@@ -18,7 +18,7 @@ public class AzureSqlConnection {
 
     private AzureSqlConnection(){};
 
-    public static void Connect() {
+    public static Connection getConnection() {
         try{
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(CONNECTION_URL, USERNAME, PASSWORD);
@@ -29,6 +29,7 @@ public class AzureSqlConnection {
         {
             System.out.println("");
         }
+        return connection;
     }
 
     public static void closeConnection(){
@@ -42,37 +43,7 @@ public class AzureSqlConnection {
         }
     }
 
-    private static ResultSet executeQuery(String query)
-    {
-       try{
-            Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery(query);
-            return res;
-        }
-        catch (SQLException e){
-    //TODO: Handle
-        }
-        return null;
-    }
 
-    public static ResultSet getObject(String tableName, String params, String condition)
-    {
-        Connect();
-        String conditionString = "";
-        if (condition != "") conditionString = "WHERE " + condition;
-        String query = String.format("SELECT %s FROM %s %s", params, tableName, conditionString);
-        ResultSet res = executeQuery(query);
-        
-        return res;
-    }
-
-    public ResultSet insertObject(String tableName, String params, String condition)
-    {
-        
-        ResultSet res = null;
-        
-        return res;
-    }
 
     // public static void main(String[] args) {
     //     try (Connection connection = DriverManager.getConnection(CONNECTION_URL, USERNAME, PASSWORD)) {
