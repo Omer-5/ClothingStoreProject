@@ -1,8 +1,10 @@
 package Store.Database;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 // import Secrets;
+import java.sql.Statement;
 
 public class AzureSqlConnection {
     // Azure SQL Database connection details
@@ -16,7 +18,7 @@ public class AzureSqlConnection {
 
     private AzureSqlConnection(){};
 
-    public static Connection getConnection() {
+    public static void Connect() {
         try{
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(CONNECTION_URL, USERNAME, PASSWORD);
@@ -27,7 +29,6 @@ public class AzureSqlConnection {
         {
             System.out.println("");
         }
-        return connection;
     }
 
     public static void closeConnection(){
@@ -39,6 +40,38 @@ public class AzureSqlConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static ResultSet executeQuery(String query)
+    {
+       try{
+            Statement statement = connection.createStatement();
+            ResultSet res = statement.executeQuery(query);
+            return res;
+        }
+        catch (SQLException e){
+    //TODO: Handle
+        }
+        return null;
+    }
+
+    public static ResultSet getObject(String tableName, String params, String condition)
+    {
+        Connect();
+        String conditionString = "";
+        if (condition != "") conditionString = "WHERE " + condition;
+        String query = String.format("SELECT %s FROM %s %s", params, tableName, conditionString);
+        ResultSet res = executeQuery(query);
+        
+        return res;
+    }
+
+    public ResultSet insertObject(String tableName, String params, String condition)
+    {
+        
+        ResultSet res = null;
+        
+        return res;
     }
 
     // public static void main(String[] args) {
