@@ -1,6 +1,8 @@
 package Store.Database;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.sql.SQLException;
 
 public class EmployeeDAO {
@@ -8,7 +10,7 @@ public class EmployeeDAO {
     public void test()
     {
         // Connection connection = AzureSqlConnection.getConnection();
-        ResultSet  res = AzureSqlConnection.getObject("Employees", "*", "FullName = 'Yossi'");
+        ResultSet  res = GeneralDAO.getObject("Employees", "*", "FullName = 'Yossi'");
         try{
             while(res.next())
             {
