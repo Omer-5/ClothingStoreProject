@@ -10,7 +10,7 @@ public class Main {
 
         System.out.println("Hello world!");
         EmployeeDAO emp = new EmployeeDAO();
-        emp.test3();
+        emp.test4();
         // Connection connection = AzureSqlConnection.getConnection();
         // AzureSqlConnection.closeConnection();
     }

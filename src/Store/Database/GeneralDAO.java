@@ -64,4 +64,10 @@ public class GeneralDAO <T>{
         String query = String.format("UPDATE %s %s", tableName, queryParams);
         executeUpdate(query);
     }
+
+    protected void deleteObject(String tableName, String queryParams)
+    { 
+        String query = String.format("DELETE FROM %s WHERE %s", tableName, queryParams);
+        executeUpdate(query);
+    }
 }

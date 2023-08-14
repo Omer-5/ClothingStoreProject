@@ -18,8 +18,12 @@ public class EmployeeDAO extends GeneralDAO<Employee>{
 
     public void updateEmployee(Employee emp)
     {
-        System.out.println(queryForUpdate(emp));
         updateObject("Employees", queryForUpdate(emp));
+    }
+
+    public void deleteEmployee(int id)
+    {
+        deleteObject("Employees", "ID=" + id);
     }
 
     public void test()
@@ -52,19 +56,12 @@ public class EmployeeDAO extends GeneralDAO<Employee>{
         updateEmployee(emp);
     }
 
-    private String queryForUpdate(Employee emp)
+    public void test4() 
     {
-        String query = String.format("SET FullName=N'%s', PhoneNumber='%s', BankAccount=%d, Branch=N'%s', Password='%s', EmployeeTitle=%d WHERE ID=%d",
-                            emp.getFullName(),
-                            emp.getPhoneNumber(),
-                            emp.getBankAccount(),
-                            emp.getBranch(),
-                            emp.getPassword(),
-                            emp.getTitle().ordinal(),
-                            emp.getId());
-        
-        return query;
+        int id = 318595246;
+        deleteEmployee(318595246);
     }
+    
     private String queryForInsert(Employee emp)
     {
         String query = String.format("Values (N'%s', '%s', %d, %d, N'%s', '%s', %d)",
@@ -76,6 +73,20 @@ public class EmployeeDAO extends GeneralDAO<Employee>{
                             emp.getPassword(),
                             emp.getTitle().ordinal());
 
+        return query;
+    }
+
+    private String queryForUpdate(Employee emp)
+    {
+        String query = String.format("SET FullName=N'%s', PhoneNumber='%s', BankAccount=%d, Branch=N'%s', Password='%s', EmployeeTitle=%d WHERE ID=%d",
+                            emp.getFullName(),
+                            emp.getPhoneNumber(),
+                            emp.getBankAccount(),
+                            emp.getBranch(),
+                            emp.getPassword(),
+                            emp.getTitle().ordinal(),
+                            emp.getId());
+        
         return query;
     }
 }
