@@ -8,14 +8,14 @@ import java.sql.Statement;
 
 public class GeneralDAO <T>{
     private ArrayList<T> resArrayList;
-    private static Connection connection;
+    private Connection connection;
 
     public GeneralDAO()
     {
         connection = AzureSqlConnection.getConnection(); 
     }
 
-    private static ResultSet executeQuery(String query)
+    private ResultSet executeQuery(String query)
     {
        try{
             Statement statement = connection.createStatement();
@@ -28,7 +28,7 @@ public class GeneralDAO <T>{
         return null;
     }
 
-    public static ResultSet getObject(String tableName, String params, String condition)
+    public ResultSet getObject(String tableName, String params, String condition)
     {
         String conditionString = "";
         if (condition != "") conditionString = "WHERE " + condition;
