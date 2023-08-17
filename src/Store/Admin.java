@@ -2,16 +2,17 @@ package Store;
 
 public class Admin {
     // 
-    String name;
+    String username;
     String password;
 
     public Admin ()
     {
-        password = "dfsdfsdf";
+        this.username = "admin";
+        this.password = "admin";
     }
 
-    public boolean login(String password)
+    public boolean login(String username, String password)
     {
-        return this.password == password;
+        return (this.password.equals(password) && this.username.equals(username));
     }
 }
