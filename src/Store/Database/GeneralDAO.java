@@ -2,7 +2,6 @@ package Store.Database;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import Store.Employees.Employee;
 
 import java.sql.SQLException;
 import java.sql.Statement;
