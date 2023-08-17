@@ -17,6 +17,15 @@ public class Employee extends Person {
       this.title = title;
    }
 
+   public Employee(String fullName, String phoneNumber, int id, int bankAccount, String branch, int employeeNumber, String password, EmployeeTitle title) {
+      super(fullName, phoneNumber, id);
+      this.bankAccount = bankAccount;
+      this.branch = branch;
+      this.employeeNumber = employeeNumber;
+      this.password = password;
+      this.title = title;
+   }
+
    public int getBankAccount() {
       return bankAccount;
    }
