@@ -55,12 +55,12 @@ public class EmployeeDAO extends GeneralDAO{
             {
                 String fullName = res.getString("FullName");
                 String phoneNumber = res.getString("PhoneNumber");
-                int id = Integer.parseInt(res.getString("Id"));
-                int bankAccount = Integer.parseInt(res.getString("BankAccount"));
+                int id = res.getInt("Id");
+                int bankAccount = res.getInt("BankAccount");
                 String branch = res.getString("Branch");
-                int employeeNumber = Integer.parseInt(res.getString("EmployeeNumber")); 
+                int employeeNumber = res.getInt("EmployeeNumber"); 
                 String password = res.getString("Password");
-                EmployeeTitle title = EmployeeTitle.values()[Integer.parseInt(res.getString("EmployeeTitle"))];
+                EmployeeTitle title = EmployeeTitle.values()[res.getInt("EmployeeTitle")];
                 Employee temp = new Employee(fullName, phoneNumber, id, bankAccount, branch, employeeNumber, password, title);
                 resArray.add(temp);
             }
