@@ -3,8 +3,12 @@ package Store.Database;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
+import Store.Login;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
+import Store.Exceptions.EmployeeException;
 
 import java.sql.SQLException;
 
@@ -29,7 +33,11 @@ public class EmployeeDAO extends GeneralDAO{
     {
         ResultSet  res = getObject("Employees", "*", "ID = "+ id);
         
-        return resToCollection(res).get(0);
+        ArrayList<Employee> collection = resToCollection(res);
+        if(collection.isEmpty())
+            return null;
+
+        return collection.get(0);
     }
 
     public ArrayList<Employee> getEmployeesByBranch(String branch)
@@ -45,22 +53,42 @@ public class EmployeeDAO extends GeneralDAO{
         try {
             while(res.next())
             {
-                String fullName = res.getString("fullName");
-                String phoneNumber = res.getString("phoneNumber");
-                int id = Integer.parseInt(res.getString("id"));
+                String fullName = res.getString("FullName");
+                String phoneNumber = res.getString("PhoneNumber");
+                int id = Integer.parseInt(res.getString("Id"));
                 int bankAccount = Integer.parseInt(res.getString("BankAccount"));
-                String branch = res.getString("branch");
-                int employeeNumber = Integer.parseInt(res.getString("employeeNumber")); 
-                String password = res.getString("password");
-                EmployeeTitle title = EmployeeTitle.values()[Integer.parseInt(res.getString("title"))];
+                String branch = res.getString("Branch");
+                int employeeNumber = Integer.parseInt(res.getString("EmployeeNumber")); 
+                String password = res.getString("Password");
+                EmployeeTitle title = EmployeeTitle.values()[Integer.parseInt(res.getString("EmployeeTitle"))];
                 Employee temp = new Employee(fullName, phoneNumber, id, bankAccount, branch, employeeNumber, password, title);
                 resArray.add(temp);
             }
         } catch (SQLException e) {
             // TODO: handle exception
+            System.out.println(e);
         }
         return resArray;
     }
+
+    public EmployeeException.MsgId Login(String username, String password)
+    {
+        Admin admin = new Admin();
+
+        if( admin.login(username, password) )
+            return EmployeeException.MsgId.ADMIN;
+        else
+        {
+            Employee emp = getEmployeeByID(Integer.parseInt(username));
+            if(emp == null)
+                return EmployeeException.MsgId.NO_USER;
+            else if(!emp.getPassword().equals(password)) 
+                return EmployeeException.MsgId.WRONG_PASSWORD;
+            else
+                return EmployeeException.MsgId.SUCCESS;
+        }
+    }
+
 
     public void test()
     {

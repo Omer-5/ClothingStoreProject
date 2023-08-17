@@ -1,6 +1,10 @@
 package Store;
 
 import javax.swing.*;
+
+import Store.Database.EmployeeDAO;
+import Store.Exceptions.EmployeeException;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +34,7 @@ public class Login extends JFrame {
         constraints.gridwidth = 2;
         panel.add(imageLabel, constraints);
 
-        JLabel employeeIdLabel = new JLabel("מס' עובד / שם מלא:");
+        JLabel employeeIdLabel = new JLabel("תעודת זהות:");
         employeeIdLabel.setFont(font);
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -70,14 +74,27 @@ public class Login extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String employeeId = employeeIdField.getText();
-                char[] password = passwordField.getPassword();
-                // Add your login logic here
-                // For demonstration, you can display a message
+                String id = employeeIdField.getText();
+
+                char[] passwordChars = passwordField.getPassword();
+                String password = new String(passwordChars);
+
+                EmployeeException.MsgId msg;
+
+                //TODO: Add Server Login Request Here (Socket etc..)
+                if(id.equals("") || password.equals(""))
+                    msg = EmployeeException.MsgId.MISSING_INFO;
+                else
+                {
+                    EmployeeDAO dao = new EmployeeDAO();
+                    msg = dao.Login(id, password);
+                }
+
                 JOptionPane.showMessageDialog(Login.this,
-                        "Login button clicked.\nEmployee ID: " + employeeId,
-                        "Login Result",
+                        EmployeeException.Msg[msg.ordinal()],
+                        "הודעה חדשה",
                         JOptionPane.INFORMATION_MESSAGE);
+                
             }
         });
 
