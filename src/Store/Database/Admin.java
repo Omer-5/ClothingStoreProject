@@ -1,4 +1,4 @@
-package Store;
+package Store.Database;
 
 public class Admin {
     // 
