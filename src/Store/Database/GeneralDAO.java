@@ -2,12 +2,12 @@ package Store.Database;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import Store.Employees.Employee;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class GeneralDAO <T>{
-    private ArrayList<T> resArrayList;
+public class GeneralDAO {
     private Connection connection;
 
     public GeneralDAO()

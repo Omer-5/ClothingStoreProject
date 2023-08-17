@@ -2,14 +2,13 @@ package Store.Database;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 
 import java.sql.SQLException;
 
-public class EmployeeDAO extends GeneralDAO<Employee>{
+public class EmployeeDAO extends GeneralDAO{
 
     public void createNewEmployee(Employee emp) 
     {
@@ -24,6 +23,43 @@ public class EmployeeDAO extends GeneralDAO<Employee>{
     public void deleteEmployee(int id)
     {
         deleteObject("Employees", "ID=" + id);
+    }
+
+    public Employee getEmployeeByID(int id)
+    {
+        ResultSet  res = getObject("Employees", "*", "ID = "+ id);
+        
+        return resToCollection(res).get(0);
+    }
+
+    public ArrayList<Employee> getEmployeesByBranch(String branch)
+    {
+        ResultSet  res = getObject("Employees", "*", "branch = N'"+ branch+"'");
+        return resToCollection(res);
+    }
+
+    private ArrayList<Employee> resToCollection(ResultSet res)
+    {
+        ArrayList<Employee> resArray = new ArrayList<>();
+
+        try {
+            while(res.next())
+            {
+                String fullName = res.getString("fullName");
+                String phoneNumber = res.getString("phoneNumber");
+                int id = Integer.parseInt(res.getString("id"));
+                int bankAccount = Integer.parseInt(res.getString("BankAccount"));
+                String branch = res.getString("branch");
+                int employeeNumber = Integer.parseInt(res.getString("employeeNumber")); 
+                String password = res.getString("password");
+                EmployeeTitle title = EmployeeTitle.values()[Integer.parseInt(res.getString("title"))];
+                Employee temp = new Employee(fullName, phoneNumber, id, bankAccount, branch, employeeNumber, password, title);
+                resArray.add(temp);
+            }
+        } catch (SQLException e) {
+            // TODO: handle exception
+        }
+        return resArray;
     }
 
     public void test()
@@ -86,7 +122,6 @@ public class EmployeeDAO extends GeneralDAO<Employee>{
                             emp.getPassword(),
                             emp.getTitle().ordinal(),
                             emp.getId());
-        
         return query;
     }
 }
