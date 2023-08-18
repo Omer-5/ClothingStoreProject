@@ -9,6 +9,7 @@ import Store.Login;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Exceptions.EmployeeException;
+import Store.Utilities;
 
 import java.sql.SQLException;
 
@@ -73,10 +74,8 @@ public class EmployeeDAO extends GeneralDAO{
 
     public EmployeeException.MsgId Login(String username, String password)
     {
-        Admin admin = new Admin();
-
-        if( admin.login(username, password) )
-            return EmployeeException.MsgId.ADMIN;
+        if( !Utilities.isNumeric(username) )
+            return EmployeeException.MsgId.ONLY_DIGITS;
         else
         {
             Employee emp = getEmployeeByID(Integer.parseInt(username));

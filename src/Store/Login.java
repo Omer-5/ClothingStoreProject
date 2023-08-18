@@ -3,11 +3,14 @@ package Store;
 import javax.swing.*;
 
 import Store.Database.EmployeeDAO;
+import Store.Database.Admin;
 import Store.Exceptions.EmployeeException;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Login extends JFrame {
     private JTextField employeeIdField;
@@ -15,7 +18,7 @@ public class Login extends JFrame {
 
     public Login() {
         setTitle("מערכת התחברות לעובדים");
-        setSize(300, 420);
+        setSize(300, 440);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -26,7 +29,6 @@ public class Login extends JFrame {
         constraints.fill = GridBagConstraints.CENTER;
         constraints.insets = new Insets(5, 10, 5, 10);
 
-        // Add image label
         ImageIcon imageIcon = new ImageIcon("src\\Store\\Images\\StoreImage.png"); // Replace with your image path
         JLabel imageLabel = new JLabel(imageIcon);
         constraints.gridx = 0;
@@ -71,6 +73,24 @@ public class Login extends JFrame {
         constraints.gridwidth = 2;
         panel.add(loginButton, constraints);
 
+        JLabel manageLink = new JLabel("כניסה לממשק ניהול");
+        manageLink.setFont(font);
+        manageLink.setForeground(Color.BLUE.darker());
+        manageLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        constraints.gridwidth = 2;
+        panel.add(manageLink, constraints);
+
+        // Password Field Actions - Pressing 'Enter'
+        passwordField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginButton.doClick();
+            }
+        });
+
+        // Login Button Actions - Validate Credentials and Redirecting to Main Store Form
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -90,11 +110,57 @@ public class Login extends JFrame {
                     msg = dao.Login(id, password);
                 }
 
+                JLabel label = new JLabel(EmployeeException.Msg[msg.ordinal()], JLabel.CENTER);
+                label.setFont(font);
                 JOptionPane.showMessageDialog(Login.this,
-                        EmployeeException.Msg[msg.ordinal()],
+                        label,
                         "הודעה חדשה",
                         JOptionPane.INFORMATION_MESSAGE);
                 
+            }
+        });
+
+        // Manage Hyperlink Actions - Validate Credentials and Redirecting to Admin Form
+        manageLink.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JPasswordField managePasswordField = new JPasswordField(12);
+                JLabel managePasswordLabel = new JLabel("הזן סיסמת ניהול:");
+                Font font = new Font("Arial", Font.PLAIN, 14);
+
+                managePasswordField.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+                managePasswordLabel.setFont(font);
+                
+                JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                panel.add(managePasswordField);
+                panel.add(managePasswordLabel);
+                
+                managePasswordField.requestFocusInWindow();
+
+                Object[] message = {panel};
+
+                int option = JOptionPane.showConfirmDialog(null, message, "ממשק ניהול", JOptionPane.OK_CANCEL_OPTION);
+
+                if (option == JOptionPane.OK_OPTION) {
+                    char[] passwordChars = managePasswordField.getPassword();
+                    String password = new String(passwordChars);
+                    EmployeeException.MsgId msg;
+                    Admin admin = new Admin();
+
+                    if(admin.checkCred(password))
+                        msg = EmployeeException.MsgId.ADMIN;
+                    else
+                        msg = EmployeeException.MsgId.WRONG_PASSWORD;
+
+
+                    //TODO: Redirecting To Admin Form if Password Currect 
+                    JLabel label = new JLabel(EmployeeException.Msg[msg.ordinal()], JLabel.CENTER);
+                    label.setFont(font);
+                    JOptionPane.showMessageDialog(Login.this,
+                            label,
+                            "הודעה חדשה",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    }
             }
         });
 
