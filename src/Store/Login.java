@@ -130,7 +130,7 @@ public class Login extends JFrame {
 
                 managePasswordField.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
                 managePasswordLabel.setFont(font);
-                
+
                 JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 panel.add(managePasswordField);
                 panel.add(managePasswordLabel);
