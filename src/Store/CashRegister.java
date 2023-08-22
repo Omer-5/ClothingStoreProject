@@ -53,6 +53,7 @@ public class CashRegister extends JPanel {
         setName(""); // NOI18N
         setPreferredSize(new java.awt.Dimension(1044, 670));
 
+        searchPanel.setBackground(new java.awt.Color(250, 250, 250));
         searchPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         searchPanel_IdLabel.setFont(new java.awt.Font("Calibri", 1, 16)); // NOI18N
@@ -93,6 +94,7 @@ public class CashRegister extends JPanel {
                 .addGap(26, 26, 26))
         );
 
+        mainPanel.setBackground(new java.awt.Color(250, 250, 250));
         mainPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         mainPanel_CartTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -153,10 +155,10 @@ public class CashRegister extends JPanel {
             mainPanel_SupplyTable.getColumnModel().getColumn(1).setResizable(false);
         }
 
-        MainPanel_OrderLabel.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
+        MainPanel_OrderLabel.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         MainPanel_OrderLabel.setText("סיכום הזמנה");
 
-        mainPanel_SupplyLabel.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
+        mainPanel_SupplyLabel.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         mainPanel_SupplyLabel.setText("מלאי מוצרים בסניף");
 
         pricePanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -355,7 +357,7 @@ public class CashRegister extends JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        mainPanel_CartLabel.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
+        mainPanel_CartLabel.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         mainPanel_CartLabel.setText("סל קניות");
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -375,11 +377,11 @@ public class CashRegister extends JPanel {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(148, 148, 148)
                 .addComponent(MainPanel_OrderLabel)
-                .addGap(284, 284, 284)
-                .addComponent(mainPanel_CartLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(mainPanel_CartLabel)
+                .addGap(171, 171, 171)
                 .addComponent(mainPanel_SupplyLabel)
-                .addGap(57, 57, 57))
+                .addGap(53, 53, 53))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
