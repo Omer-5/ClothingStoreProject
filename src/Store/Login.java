@@ -17,6 +17,7 @@ public class Login extends JFrame {
     private JPasswordField passwordField;
 
     public Login() {
+
         setTitle("מערכת התחברות לעובדים");
         setSize(300, 440);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -104,18 +105,25 @@ public class Login extends JFrame {
                 //TODO: Add Server Login Request Here (Socket etc..)
                 if(id.equals("") || password.equals(""))
                     msg = EmployeeException.MsgId.MISSING_INFO;
-                else
-                {
+                else {
                     EmployeeDAO dao = new EmployeeDAO();
                     msg = dao.Login(id, password);
                 }
 
-                JLabel label = new JLabel(EmployeeException.Msg[msg.ordinal()], JLabel.CENTER);
-                label.setFont(font);
-                JOptionPane.showMessageDialog(Login.this,
+                if(msg == EmployeeException.MsgId.SUCCESS) {
+                    setVisible(false);
+                    StoreApp mainAppForm = new StoreApp();
+                    mainAppForm.setVisible(true);
+                }
+                else {
+                    JLabel label = new JLabel(EmployeeException.Msg[msg.ordinal()], JLabel.CENTER);
+                    label.setFont(font);
+                    JOptionPane.showMessageDialog(Login.this,
                         label,
                         "הודעה חדשה",
                         JOptionPane.INFORMATION_MESSAGE);
+                }
+                
                 
             }
         });
