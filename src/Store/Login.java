@@ -18,7 +18,7 @@ public class Login extends JFrame {
 
     public Login() {
 
-        setTitle("מערכת התחברות לעובדים");
+        setTitle("ניהול חנות בגדים - התחברות");
         setSize(300, 440);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -101,18 +101,18 @@ public class Login extends JFrame {
                 String password = new String(passwordChars);
 
                 EmployeeException.MsgId msg;
+                EmployeeDAO dao = new EmployeeDAO();
 
                 //TODO: Add Server Login Request Here (Socket etc..)
                 if(id.equals("") || password.equals(""))
                     msg = EmployeeException.MsgId.MISSING_INFO;
                 else {
-                    EmployeeDAO dao = new EmployeeDAO();
                     msg = dao.Login(id, password);
                 }
 
                 if(msg == EmployeeException.MsgId.SUCCESS) {
                     setVisible(false);
-                    StoreApp mainAppForm = new StoreApp();
+                    StoreApp mainAppForm = new StoreApp(dao.getEmployeeByID(Integer.parseInt(id)));
                     mainAppForm.setVisible(true);
                 }
                 else {
