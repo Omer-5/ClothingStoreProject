@@ -4,6 +4,6 @@ public class InventoryItem {
     int branchID;
     int productID;
     String name;
-    int amount;
+    int stock;
     double price;
 }
