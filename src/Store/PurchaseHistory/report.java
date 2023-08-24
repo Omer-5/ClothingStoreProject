@@ -7,6 +7,7 @@ public class report {
 
     // JOIN tables - purchaseHistory and Inventory -> branch + extra filtering
 
+    
     // getReportByCategory
     // getReportByBranch
     // getReportByProductID
