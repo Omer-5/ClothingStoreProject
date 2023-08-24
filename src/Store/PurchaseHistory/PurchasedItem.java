@@ -2,11 +2,11 @@ package Store.PurchaseHistory;
 
 import Store.Inventories.InventoryItem;
 
-public class PurchaseHistory {
+public class PurchasedItem {
     private int purchaseID;
     private InventoryItem item;
 
-    public PurchaseHistory(int purchaseID, InventoryItem item) {
+    public PurchasedItem(int purchaseID, InventoryItem item) {
         this.purchaseID = purchaseID;
         this.item = item;
     }
