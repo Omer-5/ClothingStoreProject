@@ -1,7 +1,7 @@
 package Store.Inventories;
 
 public class InventoryItem {
-    int branchID;
+    String branch;
     int productID;
     String name;
     int quantity;
@@ -10,8 +10,8 @@ public class InventoryItem {
 
 /*
 CREATE TABLE Inventory (
-    branchID int NOT NULL,
-    productID int NOT NULL,
+    branch nvarchar(255) NOT NULL,
+    productID int IDENTITY(1,1) NOT NULL,
 	name nvarchar(255) NOT NULL,
     quantity int NOT NULL,
     price float NOT NULL,
