@@ -69,4 +69,9 @@ public class GeneralDAO {
         String query = String.format("DELETE FROM %s WHERE %s", tableName, queryParams);
         executeUpdate(query);
     }
+    //NEW ORAM ADDED For InventoryDAO
+    protected Connection getConnection() {
+        return connection;
+    }
+
 }
