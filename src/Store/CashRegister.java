@@ -1,6 +1,15 @@
 package Store;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+
+import Store.Customers.Customer;
+import Store.Database.CustomerDAO;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +25,7 @@ public class CashRegister extends JPanel {
         searchPanel = new javax.swing.JPanel();
         searchPanel_IdLabel = new javax.swing.JLabel();
         searchPanel_IdTextField = new javax.swing.JTextField();
-        searchPanel_StartButon = new javax.swing.JButton();
+        searchPanel_StartButton = new javax.swing.JButton();
         mainPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         mainPanel_CartTable = new javax.swing.JTable();
@@ -63,10 +72,15 @@ public class CashRegister extends JPanel {
         searchPanel_IdTextField.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         searchPanel_IdTextField.setMargin(new java.awt.Insets(6, 6, 2, 6));
 
-        searchPanel_StartButon.setBackground(new java.awt.Color(0, 147, 250));
-        searchPanel_StartButon.setFont(new java.awt.Font("Calibri", 0, 16)); // NOI18N
-        searchPanel_StartButon.setText("התחל בקנייה");
-        searchPanel_StartButon.setMargin(new java.awt.Insets(5, 14, 3, 14));
+        searchPanel_StartButton.setBackground(new java.awt.Color(0, 147, 250));
+        searchPanel_StartButton.setFont(new java.awt.Font("Calibri", 0, 16)); // NOI18N
+        searchPanel_StartButton.setText("התחל בקנייה");
+        searchPanel_StartButton.setMargin(new java.awt.Insets(5, 14, 3, 14));
+        searchPanel_StartButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchPanel_StartButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout searchPanelLayout = new javax.swing.GroupLayout(searchPanel);
         searchPanel.setLayout(searchPanelLayout);
@@ -77,7 +91,7 @@ public class CashRegister extends JPanel {
                 .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(searchPanel_IdLabel)
                     .addGroup(searchPanelLayout.createSequentialGroup()
-                        .addComponent(searchPanel_StartButon)
+                        .addComponent(searchPanel_StartButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchPanel_IdTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(32, 32, 32))
@@ -89,7 +103,7 @@ public class CashRegister extends JPanel {
                 .addComponent(searchPanel_IdLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(searchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(searchPanel_StartButon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(searchPanel_StartButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(searchPanel_IdTextField))
                 .addGap(26, 26, 26))
         );
@@ -127,32 +141,25 @@ public class CashRegister extends JPanel {
         }
 
         mainPanel_SupplyTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
+            new Object [][] { {500, 15, 200, "חולצת פולו"}},
             new String [] {
-                "מחיר", "שם המוצר"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
+                "הוסף", "כמות במלאי", "מחיר ליח'", "שם"
+            }) {
+                boolean[] canEdit = new boolean [] {
+                    true, false, false, false
+                };
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
+                public boolean isCellEditable(int rowIndex, int columnIndex) {
+                    return canEdit [columnIndex];
+                }
+            });
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
         jScrollPane3.setViewportView(mainPanel_SupplyTable);
         if (mainPanel_SupplyTable.getColumnModel().getColumnCount() > 0) {
             mainPanel_SupplyTable.getColumnModel().getColumn(0).setResizable(false);
             mainPanel_SupplyTable.getColumnModel().getColumn(1).setResizable(false);
+            mainPanel_SupplyTable.getColumnModel().getColumn(2).setResizable(false);
+            mainPanel_SupplyTable.getColumnModel().getColumn(3).setResizable(false);
         }
 
         MainPanel_OrderLabel.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
@@ -179,11 +186,11 @@ public class CashRegister extends JPanel {
         pricePanelLayout.setHorizontalGroup(
             pricePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pricePanelLayout.createSequentialGroup()
-                .addGap(47, 47, 47)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addComponent(pricePanel_ILSLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pricePanel_PriceNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(pricePanel_PriceLabel)
                 .addGap(16, 16, 16))
         );
@@ -289,7 +296,7 @@ public class CashRegister extends JPanel {
         orderPanelLayout.setHorizontalGroup(
             orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(orderPanelLayout.createSequentialGroup()
-                .addContainerGap(30, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, orderPanelLayout.createSequentialGroup()
                         .addComponent(orderPanel_PersonalInfoLabel)
@@ -365,42 +372,48 @@ public class CashRegister extends JPanel {
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(49, 49, 49)
-                .addComponent(orderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(44, 44, 44)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(148, 148, 148)
-                .addComponent(MainPanel_OrderLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(mainPanel_CartLabel)
-                .addGap(171, 171, 171)
-                .addComponent(mainPanel_SupplyLabel)
-                .addGap(53, 53, 53))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(121, 121, 121)
+                        .addComponent(MainPanel_OrderLabel)
+                        .addGap(69, 69, 69))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(orderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(pricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(23, Short.MAX_VALUE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(100, 100, 100)
+                        .addComponent(mainPanel_CartLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(mainPanel_SupplyLabel)
+                        .addGap(65, 65, 65))))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addContainerGap(9, Short.MAX_VALUE)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(MainPanel_OrderLabel, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(mainPanel_CartLabel)
-                        .addComponent(mainPanel_SupplyLabel)))
+                        .addComponent(MainPanel_OrderLabel)
+                        .addComponent(mainPanel_SupplyLabel))
+                    .addComponent(mainPanel_CartLabel, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(orderPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane3))
-                .addContainerGap(28, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3)
+                    .addComponent(orderPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -417,12 +430,15 @@ public class CashRegister extends JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
+                .addContainerGap(21, Short.MAX_VALUE)
                 .addComponent(searchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29))
         );
+
+        CenterTablesCells();
+        addRowWithButton(999,"נעלי Adidas שחורות", 300, 10);
     }// </editor-fold>                        
 
 
@@ -460,8 +476,126 @@ public class CashRegister extends JPanel {
     private javax.swing.JPanel searchPanel;
     private javax.swing.JLabel searchPanel_IdLabel;
     private javax.swing.JTextField searchPanel_IdTextField;
-    private javax.swing.JButton searchPanel_StartButon;
+    private javax.swing.JButton searchPanel_StartButton;
 
+
+    // searchPanel_StartButton Methods
+    private void searchPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {   
+        
+        if( Utilities.isNumeric(searchPanel_IdTextField.getText())) {
+            int customerId = Integer.parseInt(searchPanel_IdTextField.getText());
+            CustomerDAO dao = new CustomerDAO(); //TODO: DAO Needs to be on the Server-Side!
+
+            Customer customer = dao.getCustomerByID(customerId);
+            orderPanel_FullNameDataLabel.setText(customer.getFullName());
+            orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
+            orderPanel_CustomerTypeDataLabel.setText(customer.getType());
+            orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
+        }                                               
+          
+    }   
+
+    // mainPanel_SupplyTable & mainPanel_CartTable Methods
+    private void CenterTablesCells() {
+        
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        for (int columnIndex = 0; columnIndex < mainPanel_SupplyTable.getColumnCount(); columnIndex++) {
+            mainPanel_SupplyTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
+
+        for (int columnIndex = 0; columnIndex < mainPanel_CartTable.getColumnCount(); columnIndex++) {
+            mainPanel_CartTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
+
+        mainPanel_SupplyTable.getColumn("הוסף").setCellRenderer(new ButtonRenderer());
+        mainPanel_SupplyTable.getColumn("הוסף").setCellEditor(new ButtonEditor(new JCheckBox()));
+    }
+
+    public void addRowWithButton(int productId, String name, int price, int stock) {
+        Object[] rowData = { productId, stock, price, name};
+
+        ((DefaultTableModel)mainPanel_SupplyTable.getModel()).addRow(rowData);
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setForeground(table.getSelectionForeground());
+                setBackground(table.getSelectionForeground());
+            } else {
+                setForeground(table.getForeground());
+                setBackground(table.getForeground());
+            }
+
+            setHorizontalAlignment(SwingConstants.CENTER);
+
+            // Load and set the image icon
+            ImageIcon icon = new ImageIcon(getClass().getResource("images/icon-plus.png"));
+            Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+            setIcon(new ImageIcon(scaledImage));
+            return this;
+        }
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private int productId;
+        private boolean isPushed;
+      
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    fireEditingStopped();
+                }
+            });
+        }
+      
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            if (isSelected) {
+                button.setForeground(table.getSelectionForeground());
+                button.setBackground(table.getSelectionForeground());
+            } else {
+                button.setForeground(table.getForeground());
+                button.setBackground(table.getForeground());
+            }
+
+            ImageIcon icon = new ImageIcon(getClass().getResource("images/icon-plus.png"));
+            Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+            button.setIcon(new ImageIcon(scaledImage));
+            
+            productId = (value == null || value == "") ? -1 : Integer.parseInt(value.toString());
+            isPushed = true;
+
+            return button;
+        }
+      
+        public Object getCellEditorValue() {
+            if (isPushed) {
+                JOptionPane.showMessageDialog(button, "המוצר " + productId + " נוסף לסל הקניות!");
+            }
+            
+            isPushed = false;
+            return productId;
+        }
+      
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+      
+        protected void fireEditingStopped() {
+            super.fireEditingStopped();
+        }
+    } 
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
