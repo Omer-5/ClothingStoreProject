@@ -10,13 +10,18 @@ import javax.swing.table.TableColumnModel;
 import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
 
+import Store.Inventories.InventoryItem;
+import Store.Database.InventoryDAO;
+import Store.Employees.Employee;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CashRegister extends JPanel {
 
-    public CashRegister() {
+    Employee emp; 
+    public CashRegister(Employee emp) {
         initComponents();
     }
 
@@ -441,7 +446,6 @@ public class CashRegister extends JPanel {
         addRowWithButton(999,"נעלי Adidas שחורות", 300, 10);
     }// </editor-fold>                        
 
-
     // Variables declaration - do not modify                     
     private javax.swing.JLabel MainPanel_OrderLabel;
     private javax.swing.JPanel finalPricePanel;
@@ -478,21 +482,24 @@ public class CashRegister extends JPanel {
     private javax.swing.JTextField searchPanel_IdTextField;
     private javax.swing.JButton searchPanel_StartButton;
 
-
     // searchPanel_StartButton Methods
     private void searchPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {   
         
         if( Utilities.isNumeric(searchPanel_IdTextField.getText())) {
             int customerId = Integer.parseInt(searchPanel_IdTextField.getText());
-            CustomerDAO dao = new CustomerDAO(); //TODO: DAO Needs to be on the Server-Side!
+            CustomerDAO customerDao = new CustomerDAO(); //TODO: DAO Needs to be on the Server-Side!            
+            Customer customer = customerDao.getCustomerByID(customerId);
 
-            Customer customer = dao.getCustomerByID(customerId);
+            InventoryDAO inventoryDAO = new InventoryDAO();
+            ArrayList<InventoryItem> inventory = inventoryDAO.getInventoryItemsByBranch()
+
             orderPanel_FullNameDataLabel.setText(customer.getFullName());
             orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
             orderPanel_CustomerTypeDataLabel.setText(customer.getType());
             orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
         }                                               
-          
+        else
+            Utilities.MessageBox("תעודת הזהות חייבת להכיל רק מספרים"); //TODO: Add Exception here
     }   
 
     // mainPanel_SupplyTable & mainPanel_CartTable Methods
