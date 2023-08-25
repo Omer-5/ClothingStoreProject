@@ -33,6 +33,27 @@ public class InventoryDAO extends GeneralDAO {
             throw new RuntimeException(e);
         }
     }
+    private ArrayList<InventoryItem> resToInventoryCollection(ResultSet res) {
+        ArrayList<InventoryItem> resArray = new ArrayList<>();
+
+        try {
+            while(res.next()) {
+                String branch = res.getString("branch");
+                int productID = res.getInt("productID");
+                String name = res.getString("name");
+                String category = res.getString("category");
+                int quantity = res.getInt("quantity");
+                double price = res.getDouble("price");
+
+                InventoryItem temp = new InventoryItem(branch, productID, name, category, quantity, price);
+                resArray.add(temp);
+            }
+        } catch (SQLException e) {
+            // TODO: handle exception
+            System.out.println(e);
+        }
+        return resArray;
+    }
 
     private InventoryItem getObject(String tableName, String condition) throws SQLException {
         // Construct the SQL query
