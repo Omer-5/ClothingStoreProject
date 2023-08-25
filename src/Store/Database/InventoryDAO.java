@@ -37,6 +37,27 @@ public class InventoryDAO extends GeneralDAO {
 
         return collection.get(0);
     }
+    private ArrayList<InventoryItem> resToInventoryCollection(ResultSet res) {
+        ArrayList<InventoryItem> resArray = new ArrayList<>();
+
+        try {
+            while(res.next()) {
+                String branch = res.getString("branch");
+                int productID = res.getInt("productID");
+                String name = res.getString("name");
+                String category = res.getString("category");
+                int quantity = res.getInt("quantity");
+                double price = res.getDouble("price");
+
+                InventoryItem temp = new InventoryItem(branch, productID, name, category, quantity, price);
+                resArray.add(temp);
+            }
+        } catch (SQLException e) {
+            // TODO: handle exception
+            System.out.println(e);
+        }
+        return resArray;
+    }
 
     private String queryForInsert(InventoryItem item) {
         String query = String.format("VALUES (N'%s', %d, N'%s', N'%s', %d, %.2f)",
