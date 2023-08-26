@@ -11,8 +11,11 @@ import java.awt.event.ActionListener;
 public class StoreApp extends JFrame {
     private JPanel navigationPanel;
     private JPanel contentPanel;
+    private Employee emp;
 
     public StoreApp(Employee emp) {
+        this.emp = emp;
+
         setTitle("ניהול חנות בגדים - מסך ראשי [מחובר עם: " + emp.getFullName() + "] | [סניף: " + emp.getBranch() + "]");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1280, 720);
@@ -57,7 +60,7 @@ public class StoreApp extends JFrame {
         // Center align the frame on the screen
         setLocationRelativeTo(null);
 
-        CashRegister cashRegister = new CashRegister(); // Create the CashRegister panel
+        CashRegister cashRegister = new CashRegister(emp); // Create the CashRegister panel
         cashRegister.setPreferredSize(contentPanel.getSize());
         contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
     }
@@ -118,7 +121,7 @@ public class StoreApp extends JFrame {
             contentPanel.repaint();
 
             if (panelName.equals("קופה")) {
-                CashRegister cashRegister = new CashRegister(); // Create the CashRegister panel
+                CashRegister cashRegister = new CashRegister(emp); // Create the CashRegister panel
                 cashRegister.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
             } else {

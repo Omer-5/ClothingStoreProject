@@ -60,9 +60,8 @@ public class InventoryDAO extends GeneralDAO {
     }
 
     private String queryForInsert(InventoryItem item) {
-        String query = String.format("VALUES (N'%s', %d, N'%s', N'%s', %d, %.2f)",
+        String query = String.format("VALUES (N'%s', N'%s', N'%s', %d, %.2f)",
                 item.getBranch(),
-                item.getProductID(),
                 item.getName(),
                 item.getCategory(),
                 item.getQuantity(),
@@ -86,7 +85,7 @@ public class InventoryDAO extends GeneralDAO {
 
 
     // Additional helper method to convert ResultSet to InventoryItem objects
-    public ArrayList<InventoryItem> getInventoryItemsByBranch(String branch) throws SQLException {
+    public ArrayList<InventoryItem> getInventoryItemsByBranch(String branch) {
         ResultSet  res = getObject("Inventory", "*", "Branch = N'"+ branch+"'");
         return resToCollection(res);
     }

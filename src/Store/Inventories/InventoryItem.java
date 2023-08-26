@@ -17,6 +17,14 @@ public class InventoryItem {
         this.price = price;
     }
 
+    public InventoryItem(String branch, String name, String category, int quantity, double price) {
+        this.branch = branch;
+        this.name = name;
+        this.category = category;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
     public String getBranch() {
         return branch;
     }
