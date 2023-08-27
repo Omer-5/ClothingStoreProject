@@ -18,14 +18,18 @@ import Store.Employees.EmployeeTitle;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
 public class CashRegister extends JPanel {
     Employee emp; 
+    Customer customer;
     ArrayList<InventoryItem> inventory;
     Map<Integer, InventoryItem> inventoryMap;
+    double totalPrice = 0;
 
     // Variables declaration - do not modify                     
     private javax.swing.JLabel MainPanel_OrderLabel;
@@ -246,11 +250,11 @@ public class CashRegister extends JPanel {
         pricePanelLayout.setHorizontalGroup(
             pricePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pricePanelLayout.createSequentialGroup()
-                .addContainerGap(73, Short.MAX_VALUE)
+                .addContainerGap(51, Short.MAX_VALUE)
                 .addComponent(pricePanel_ILSLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pricePanel_PriceNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
+                .addComponent(pricePanel_PriceNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
                 .addComponent(pricePanel_PriceLabel)
                 .addGap(16, 16, 16))
         );
@@ -316,7 +320,7 @@ public class CashRegister extends JPanel {
 
         finalPricePanel_PriceAfterDiscountLabel.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
         finalPricePanel_PriceAfterDiscountLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        finalPricePanel_PriceAfterDiscountLabel.setText("מחיר סופי לאחר הנחה");
+        finalPricePanel_PriceAfterDiscountLabel.setText("מחיר סופי");
 
         finalPricePanel_PriceAfterDiscountDataLabel.setFont(new java.awt.Font("Calibri", 1, 20)); // NOI18N
         finalPricePanel_PriceAfterDiscountDataLabel.setForeground(new java.awt.Color(0, 102, 0));
@@ -334,10 +338,10 @@ public class CashRegister extends JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(finalPricePanel_ILSLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(finalPricePanel_PriceAfterDiscountDataLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(finalPricePanel_PriceAfterDiscountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(108, 108, 108))
+                .addComponent(finalPricePanel_PriceAfterDiscountDataLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(finalPricePanel_PriceAfterDiscountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(110, 110, 110))
         );
         finalPricePanelLayout.setVerticalGroup(
             finalPricePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -358,31 +362,7 @@ public class CashRegister extends JPanel {
                 .addContainerGap()
                 .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(orderPanelLayout.createSequentialGroup()
-                        .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(orderPanel_FooterSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(orderPanelLayout.createSequentialGroup()
-                                    .addGap(14, 14, 14)
-                                    .addComponent(orderPanel_DiscountPercentageDataLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(orderPanel_DiscountPercentageLabel))
-                                .addComponent(orderPanel_HeaderSeparator, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(orderPanelLayout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(orderPanel_FullNameDataLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(orderPanel_PhoneDataLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(orderPanel_CustomerTypeDataLabel, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(26, 26, 26)
-                                .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(orderPanel_PhoneLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(orderPanel_FullNameLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(orderPanel_CustomerTypeLabel, javax.swing.GroupLayout.Alignment.TRAILING))))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(orderPanelLayout.createSequentialGroup()
-                        .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(orderPanel_SubmitOrderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(finalPricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(orderPanel_SubmitOrderButton, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 8, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, orderPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -392,7 +372,33 @@ public class CashRegister extends JPanel {
                                 .addGap(109, 109, 109))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, orderPanelLayout.createSequentialGroup()
                                 .addComponent(orderPanel_DiscountLabel)
-                                .addGap(138, 138, 138))))))
+                                .addGap(138, 138, 138))))
+                    .addGroup(orderPanelLayout.createSequentialGroup()
+                        .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(orderPanelLayout.createSequentialGroup()
+                                .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(orderPanel_FooterSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(orderPanelLayout.createSequentialGroup()
+                                            .addGap(14, 14, 14)
+                                            .addComponent(orderPanel_DiscountPercentageDataLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(orderPanel_DiscountPercentageLabel))
+                                        .addComponent(orderPanel_HeaderSeparator, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(orderPanelLayout.createSequentialGroup()
+                                        .addGap(21, 21, 21)
+                                        .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(orderPanel_FullNameDataLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(orderPanel_PhoneDataLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(orderPanel_CustomerTypeDataLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                                        .addGap(26, 26, 26)
+                                        .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(orderPanel_PhoneLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(orderPanel_FullNameLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(orderPanel_CustomerTypeLabel, javax.swing.GroupLayout.Alignment.TRAILING))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(finalPricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         orderPanelLayout.setVerticalGroup(
             orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -504,20 +510,19 @@ public class CashRegister extends JPanel {
                 .addGap(29, 29, 29))
         );
     }// </editor-fold>                        
-                                                    
     
     // searchPanel_StartButton Methods
     private void searchPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {   
-        
+  
         if( Utilities.isNumeric(searchPanel_IdTextField.getText())) {
             ClearTablesCells();
             int customerId = Integer.parseInt(searchPanel_IdTextField.getText());
             CustomerDAO customerDao = new CustomerDAO(); //TODO: DAO Needs to be on the Server-Side!            
-            Customer customer = customerDao.getCustomerByID(customerId);
+            customer = customerDao.getCustomerByID(customerId);
 
             InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: DAO Needs to be on the Server-Side! 
             inventory = inventoryDAO.getInventoryItemsByBranch(emp.getBranch());
- 
+
             for(int i=0; i < inventory.size(); i++) {
                 InventoryItem temp = inventory.get(i);
                 addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
@@ -529,10 +534,15 @@ public class CashRegister extends JPanel {
             orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
             orderPanel_CustomerTypeDataLabel.setText(customer.getType());
             orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
+
+            pricePanel_PriceNumber.setText("0.00");
+            finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
+
             CenterTablesCells();
         }                                               
         else
             Utilities.MessageBox("תעודת הזהות חייבת להכיל רק מספרים"); //TODO: Add Exception here
+
     }   
 
     // mainPanel_SupplyTable & mainPanel_CartTable Methods
@@ -573,15 +583,13 @@ public class CashRegister extends JPanel {
         Object[] rowData = { productId, price, name};
 
         ((DefaultTableModel)mainPanel_CartTable.getModel()).addRow(rowData);
+        addPriceToTotal(price);
     }
-    public void removeRowFromCartTableByProductID(String name) {
-        for (int i = 0; i < mainPanel_CartTable.getRowCount(); i++) {
-            if (((String)mainPanel_CartTable.getValueAt(i, 2)).equals(name)) {
-                DefaultTableModel dmCartTable = (DefaultTableModel)mainPanel_CartTable.getModel();
-                dmCartTable.removeRow(i);
-                break;
-            }//end of if block
-        }
+    public void removeSelectedRowFromCartTable() {
+        DefaultTableModel dmCartTable = (DefaultTableModel)mainPanel_CartTable.getModel();
+        int row = mainPanel_CartTable.getSelectedRow();
+        subtractPriceFromTotal((Double)dmCartTable.getValueAt(row, 1));
+        dmCartTable.removeRow(row);
     }
     class ButtonRenderer extends JButton implements TableCellRenderer {
         private String iconLocation;
@@ -654,14 +662,11 @@ public class CashRegister extends JPanel {
                 if(buttonAction.equals("add")) {
                     InventoryItem temp = inventoryMap.get(productId);
                     addRowWithButtonToCartTable(temp.getProductID(), temp.getName(), temp.getPrice());
-                    //JOptionPane.showMessageDialog(button, "המוצר " + productId + " נוסף לסל הקניות!");
-                    
+                    //JOptionPane.showMessageDialog(button, "המוצר " + productId + " נוסף לסל הקניות!");          
                 }  
                 else if(buttonAction.equals("remove")) {
-                    InventoryItem temp = inventoryMap.get(productId);
-                    System.out.println(productId);
-                    removeRowFromCartTableByProductID(temp.getName());
-                    Utilities.MessageBox("המוצר " + temp.getName() + " הוסר מסל הקניות!");
+                    removeSelectedRowFromCartTable();
+                    //Utilities.MessageBox("המוצר " + temp.getName() + " הוסר מסל הקניות!");
                     //JOptionPane.showMessageDialog(button, "המוצר " + productId + " הוסר מסל הקניות!");
                 }    
             }
@@ -676,9 +681,26 @@ public class CashRegister extends JPanel {
         }
       
         protected void fireEditingStopped() {
-            super.fireEditingStopped();
+            try {
+                super.fireEditingStopped();
+            }
+            catch( Exception e ) {
+
+            }
         }
     } 
+    private void addPriceToTotal(double price) {  
+        totalPrice += price;
+
+        pricePanel_PriceNumber.setText(Double.toString(totalPrice));
+        finalPricePanel_PriceAfterDiscountDataLabel.setText(Double.toString(customer.applyDiscount(totalPrice)));
+    }
+    private void subtractPriceFromTotal(double price) {   
+        totalPrice -= price;
+
+        pricePanel_PriceNumber.setText(Double.toString(totalPrice));
+        finalPricePanel_PriceAfterDiscountDataLabel.setText(Double.toString(customer.applyDiscount(totalPrice)));
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
