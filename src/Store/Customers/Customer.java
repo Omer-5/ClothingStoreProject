@@ -1,8 +1,11 @@
 package Store.Customers;
 
 import Store.Person;
+import java.io.Serializable;
+import java.io.*;
 
-public abstract class Customer extends Person {
+public abstract class Customer extends Person implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String discountPercentage;
 
     public Customer(String fullName, String phoneNumber, int id) {
@@ -24,6 +27,22 @@ public abstract class Customer extends Person {
         if (this instanceof CustomerRegular) return "Regular";
 
         return "VIP";
+    }
+    public void serializeToFile(String filename) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+            out.writeObject(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Customer deserializeFromFile(String filename) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
+            return (Customer) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

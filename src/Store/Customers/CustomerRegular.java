@@ -1,6 +1,7 @@
 package Store.Customers;
-
-public class CustomerRegular extends Customer {
+import java.io.Serializable;
+public class CustomerRegular extends Customer implements Serializable{
+    private static final long serialVersionUID = 3L;
     public CustomerRegular(String fullName, String phoneNumber, int id) {
         super(fullName, phoneNumber, id);
         this.setDiscountPercentage("10");
