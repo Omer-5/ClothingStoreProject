@@ -3,11 +3,7 @@ package Store.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.sql.Statement;
-import java.sql.Connection;
 
-import Store.Employees.Employee;
-import Store.Employees.EmployeeTitle;
 import Store.Inventories.InventoryItem;
 
 public class InventoryDAO extends GeneralDAO {

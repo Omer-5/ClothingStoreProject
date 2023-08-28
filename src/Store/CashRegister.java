@@ -11,7 +11,11 @@ import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
 
 import Store.Inventories.InventoryItem;
+import Store.PurchaseHistory.Order;
+import Store.PurchaseHistory.PurchasedItem;
 import Store.Database.InventoryDAO;
+import Store.Database.PurchaseHistoryDAO;
+import Store.Database.PurchaseHistoryDAO;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 
@@ -20,16 +24,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class CashRegister extends JPanel {
     Employee emp; 
     Customer customer;
     ArrayList<InventoryItem> inventory;
     Map<Integer, InventoryItem> inventoryMap;
+    Map<String, InventoryItem> inventoryMapByName;
     double totalPrice = 0;
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     // Variables declaration - do not modify                     
     private javax.swing.JLabel MainPanel_OrderLabel;
@@ -71,6 +83,7 @@ public class CashRegister extends JPanel {
         this.emp = emp;
         //this.inventoryMap = new HashMap<Integer, inventoryItem>();
         this.inventoryMap = new HashMap<Integer, InventoryItem>();
+        this.inventoryMapByName = new HashMap<String, InventoryItem>();
         initComponents();
     }
 
@@ -315,6 +328,11 @@ public class CashRegister extends JPanel {
         orderPanel_SubmitOrderButton.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         orderPanel_SubmitOrderButton.setText("בצע הזמנה");
         orderPanel_SubmitOrderButton.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        orderPanel_SubmitOrderButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                orderPanel_SubmitOrderButtonActionPerformed(evt);
+            }
+        });
 
         finalPricePanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -339,9 +357,9 @@ public class CashRegister extends JPanel {
                 .addComponent(finalPricePanel_ILSLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(finalPricePanel_PriceAfterDiscountDataLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(finalPricePanel_PriceAfterDiscountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(110, 110, 110))
+                .addGap(122, 122, 122))
         );
         finalPricePanelLayout.setVerticalGroup(
             finalPricePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -397,7 +415,7 @@ public class CashRegister extends JPanel {
                                             .addComponent(orderPanel_FullNameLabel, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(orderPanel_CustomerTypeLabel, javax.swing.GroupLayout.Alignment.TRAILING))))
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(finalPricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                            .addComponent(finalPricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 234, Short.MAX_VALUE))
                         .addContainerGap())))
         );
         orderPanelLayout.setVerticalGroup(
@@ -417,7 +435,6 @@ public class CashRegister extends JPanel {
                         .addComponent(orderPanel_CustomerTypeLabel))
                     .addGroup(orderPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(orderPanelLayout.createSequentialGroup()
-                            .addGap(32, 32, 32)
                             .addComponent(orderPanel_PhoneDataLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(orderPanel_CustomerTypeDataLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -510,7 +527,7 @@ public class CashRegister extends JPanel {
                 .addGap(29, 29, 29))
         );
     }// </editor-fold>                        
-    
+
     // searchPanel_StartButton Methods
     private void searchPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {   
   
@@ -520,30 +537,58 @@ public class CashRegister extends JPanel {
             CustomerDAO customerDao = new CustomerDAO(); //TODO: DAO Needs to be on the Server-Side!            
             customer = customerDao.getCustomerByID(customerId);
 
-            InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: DAO Needs to be on the Server-Side! 
-            inventory = inventoryDAO.getInventoryItemsByBranch(emp.getBranch());
+            if( customer != null ) {
+                InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: DAO Needs to be on the Server-Side! 
+                inventory = inventoryDAO.getInventoryItemsByBranch(emp.getBranch());
 
-            for(int i=0; i < inventory.size(); i++) {
-                InventoryItem temp = inventory.get(i);
-                addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
+                for(int i=0; i < inventory.size(); i++) {
+                    InventoryItem temp = inventory.get(i);
+                    addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
 
-                inventoryMap.put(temp.getProductID(), temp);
+                    inventoryMap.put(temp.getProductID(), temp);
+                    inventoryMapByName.put(temp.getName(), temp);
+                }
+
+                orderPanel_FullNameDataLabel.setText(customer.getFullName());
+                orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
+                orderPanel_CustomerTypeDataLabel.setText(customer.getType());
+                orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
+
+                pricePanel_PriceNumber.setText("0.00");
+                finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
+
+                CenterTablesCells();
             }
-
-            orderPanel_FullNameDataLabel.setText(customer.getFullName());
-            orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
-            orderPanel_CustomerTypeDataLabel.setText(customer.getType());
-            orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
-
-            pricePanel_PriceNumber.setText("0.00");
-            finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
-
-            CenterTablesCells();
+            else { //TODO: Maybe adding new form for new customers
+                
+            } 
         }                                               
         else
             Utilities.MessageBox("תעודת הזהות חייבת להכיל רק מספרים"); //TODO: Add Exception here
 
     }   
+
+    private void orderPanel_SubmitOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                             
+        ArrayList<InventoryItem> items = new ArrayList<InventoryItem>();
+        Object[] rowData = new Object [mainPanel_CartTable.getRowCount()];
+        for (int i = 0; i < mainPanel_CartTable.getRowCount(); i++) {  // Loop through the rows
+            InventoryItem item = inventoryMapByName.get(mainPanel_CartTable.getValueAt(i, 2));
+            items.add(item);
+        }
+
+        LocalDateTime date = LocalDateTime.now();
+
+        Order order = new Order(customer.getId(), date, emp.getBranch(), items);
+
+        PurchaseHistoryDAO purchaseDAO = new PurchaseHistoryDAO();
+        purchaseDAO.createNewPurchase(order);
+
+        ClearTablesCells();
+        pricePanel_PriceNumber.setText("0.00");
+        finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
+
+        Utilities.MessageBox("ההזמנה הוזמנה בהצלחה!");
+    }  
 
     // mainPanel_SupplyTable & mainPanel_CartTable Methods
     private void ClearTablesCells() {
