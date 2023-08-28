@@ -1,11 +1,10 @@
 package Store.Customers;
 
 import Store.Person;
-import java.io.Serializable;
-import java.io.*;
 
+import java.io.*;
 public abstract class Customer extends Person implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     private String discountPercentage;
 
     public Customer(String fullName, String phoneNumber, int id) {
@@ -28,21 +27,32 @@ public abstract class Customer extends Person implements Serializable {
 
         return "VIP";
     }
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+    }
+
+    // Serialization
     public void serializeToFile(String filename) {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
-            out.writeObject(this);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            oos.writeObject(this);
+            System.out.println("Serialization successful!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // Deserialization
     public static Customer deserializeFromFile(String filename) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
-            return (Customer) in.readObject();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            return (Customer) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 }
 
