@@ -104,7 +104,6 @@ public class StoreApp extends JFrame {
             setIconTextGap(10); // Add gap between icon and text
             setIcon(new ImageIcon(scaledImage));
         }
-        
     }
 
     private class NavigationButtonListener implements ActionListener {
@@ -124,7 +123,11 @@ public class StoreApp extends JFrame {
                 CashRegister cashRegister = new CashRegister(emp); // Create the CashRegister panel
                 cashRegister.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
-            } else {
+            } else if (panelName.equals("ניהול לקוחות")) { 
+                CustomersManagement customersManagement = new CustomersManagement(); // Create the CashRegister panel
+                customersManagement.setPreferredSize(contentPanel.getSize());
+                contentPanel.add(customersManagement); // Add the CashRegister panel to the content panel's center
+            }else {
                 JLabel label = new JLabel(panelName + " Content", SwingConstants.CENTER);
                 label.setFont(new Font("Arial", Font.PLAIN, 24)); // Set font size
                 contentPanel.add(label, BorderLayout.CENTER); // Add a label for other panels

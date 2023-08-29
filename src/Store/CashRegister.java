@@ -7,6 +7,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import Store.AppForms.CustomerAddOrUpdate;
 import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
 
@@ -22,6 +23,8 @@ import Store.Employees.EmployeeTitle;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -138,6 +141,11 @@ public class CashRegister extends JPanel {
         searchPanel_IdTextField.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         searchPanel_IdTextField.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         searchPanel_IdTextField.setMargin(new java.awt.Insets(6, 6, 2, 6));
+        searchPanel_IdTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchPanel_IdTextFieldActionPerformed(evt);
+            }
+        });
 
         searchPanel_StartButton.setBackground(new java.awt.Color(0, 147, 250));
         searchPanel_StartButton.setFont(new java.awt.Font("Calibri", 0, 16)); // NOI18N
@@ -528,6 +536,11 @@ public class CashRegister extends JPanel {
         );
     }// </editor-fold>                        
 
+    // searchPanel_IdTextField Methods
+    private void searchPanel_IdTextFieldActionPerformed(java.awt.event.ActionEvent evt) {
+        searchPanel_StartButton.doClick();
+    }
+
     // searchPanel_StartButton Methods
     private void searchPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {   
   
@@ -559,8 +572,28 @@ public class CashRegister extends JPanel {
 
                 CenterTablesCells();
             }
-            else { //TODO: Maybe adding new form for new customers
+            else { 
+                int id = Integer.parseInt(searchPanel_IdTextField.getText());
+                CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(id);
+                    
+                JDialog dialog = new JDialog();
+                dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                dialog.setModal(true); // Block interaction with other windows
+
+                dialog.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                       searchPanel_StartButton.doClick();
+                    }
+                });
                 
+                customerAddOrUpdate.setDialog(dialog);
+
+                dialog.add(customerAddOrUpdate);
+                
+                dialog.pack();
+                dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true);
             } 
         }                                               
         else

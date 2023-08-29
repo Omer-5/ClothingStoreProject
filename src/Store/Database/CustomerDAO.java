@@ -12,14 +12,14 @@ import Store.Customers.CustomerVIP;
 // TODO: untested!
 public class CustomerDAO extends GeneralDAO {
 
-    public void createNewCustomer(Customer customer) {
+    public void createNewCustomer(Customer customer, String customerType) {
         // Implementation of the insertObject method should be in GeneralDAO
-        insertObject("Customers", queryForInsert(customer));
+        insertObject("Customers", queryForInsert(customer, customerType));
     }
 
-    public void updateCustomer(Customer customer) {
+    public void updateCustomer(Customer customer, String customerType) {
         // Implementation of the updateObject method should be in GeneralDAO
-        updateObject("Customers", queryForUpdate(customer));
+        updateObject("Customers", queryForUpdate(customer, customerType));
     }
 
     public void deleteCustomer(int id) {
@@ -39,6 +39,12 @@ public class CustomerDAO extends GeneralDAO {
     public ArrayList<Customer> getCustomersByType(String type) {
         // Implementation of the getObject method should be in GeneralDAO
         ResultSet res = getObject("Customers", "*", "Type = '" + type + "'");
+        return resToCollection(res);
+    }
+
+    public ArrayList<Customer> getCustomers() {
+        // Implementation of the getObject method should be in GeneralDAO
+        ResultSet res = getObject("Customers", "*", "");
         return resToCollection(res);
     }
 
@@ -79,21 +85,21 @@ public class CustomerDAO extends GeneralDAO {
                 return null;
         }
     }
-    private String queryForInsert(Customer customer) {
+    private String queryForInsert(Customer customer, String customerType) {
         String query = String.format("VALUES (N'%s', '%s', %d, '%s')",
                 customer.getFullName(),
                 customer.getPhoneNumber(),
                 customer.getId(),
-                customer.getType());
+                customerType);
 
         return query;
     }
 
-    private String queryForUpdate(Customer customer) {
+    private String queryForUpdate(Customer customer, String customerType) {
         String query = String.format("SET FullName=N'%s', PhoneNumber='%s', Type='%s' WHERE ID=%d",
                 customer.getFullName(),
                 customer.getPhoneNumber(),
-                customer.getType(),
+                customerType,
                 customer.getId());
 
         return query;
