@@ -1,11 +1,6 @@
-package Store;
-
-import java.sql.Connection;
+package Store.AppForms;
 
 import javax.swing.SwingUtilities;
-
-import Store.Database.AzureSqlConnection;
-import Store.Database.EmployeeDAO;
 
 public class Main {
     

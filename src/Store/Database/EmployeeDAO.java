@@ -5,11 +5,11 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import Store.Login;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Exceptions.EmployeeException;
 import Store.Utilities;
+import Store.AppForms.Login;
 
 import java.sql.SQLException;
 

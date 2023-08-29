@@ -1,4 +1,5 @@
-package Store;
+package Store.AppForms;
+import Store.CashRegister;
 import Store.Employees.*;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class StoreApp extends JFrame {
         navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.Y_AXIS));
         navigationPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
 
-        ImageIcon imageIcon = new ImageIcon("src\\Store\\Images\\StoreImage.png"); 
+        ImageIcon imageIcon = new ImageIcon("src/Store/Images/StoreImage.png"); 
         Image image = imageIcon.getImage(); // transform it 
         Image newimg = image.getScaledInstance(150, 150,  java.awt.Image.SCALE_SMOOTH);   
         imageIcon = new ImageIcon(newimg); 
@@ -39,12 +40,11 @@ public class StoreApp extends JFrame {
         navigationPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
         JLabel userInfo = new JLabel();
-
-        createNavigationButton("images/icon-cash-register.png", "קופה");
-        createNavigationButton("images/icon-chat.png", "צ'אט");
-        createNavigationButton("images/icon-customers.png", "ניהול לקוחות");
-        createNavigationButton("images/icon-inventory.png", "ניהול מלאי סניף");
-        createNavigationButton("images/icon-reports.png", "דוחות וסטטיסטיקות"); //TODO: Permissions for MANAGER
+        createNavigationButton("src/Store/images/icon-cash-register.png", "קופה");
+        createNavigationButton("src/Store/images/icon-chat.png", "צ'אט");
+        createNavigationButton("src/Store/images/icon-customers.png", "ניהול לקוחות");
+        createNavigationButton("src/Store/images/icon-inventory.png", "ניהול מלאי סניף");
+        createNavigationButton("src/Store/images/icon-reports.png", "דוחות וסטטיסטיקות"); //TODO: Permissions for MANAGER
         
 
         // Set right-to-left component orientation
@@ -99,7 +99,7 @@ public class StoreApp extends JFrame {
             setHorizontalAlignment(SwingConstants.CENTER);
 
             // Load and set the image icon
-            ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
+            ImageIcon icon = new ImageIcon(iconPath);
             Image scaledImage = icon.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
             setIconTextGap(10); // Add gap between icon and text
             setIcon(new ImageIcon(scaledImage));

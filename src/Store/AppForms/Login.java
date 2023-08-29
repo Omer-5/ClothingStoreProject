@@ -1,4 +1,4 @@
-package Store;
+package Store.AppForms;
 
 import javax.swing.*;
 
