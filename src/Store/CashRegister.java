@@ -583,7 +583,8 @@ public class CashRegister extends JPanel {
                 dialog.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                       searchPanel_StartButton.doClick();
+                        if(customerAddOrUpdate.IsExitedSuccessfully())
+                            searchPanel_StartButton.doClick();
                     }
                 });
                 

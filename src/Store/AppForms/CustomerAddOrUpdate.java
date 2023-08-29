@@ -29,6 +29,7 @@ public class CustomerAddOrUpdate extends JPanel {
 
     private JDialog dialog;
     private String actionType;
+    private boolean exitSuccessfully = false;
 
     // Constractor for New Customer Form
     public CustomerAddOrUpdate(int id) {
@@ -209,12 +210,18 @@ public class CustomerAddOrUpdate extends JPanel {
             Utilities.MessageBox("השינויים נשמרו בהצלחה!");
         }
 
+        exitSuccessfully = true;
         dialog.dispose();
     }                                                      
+
+    public boolean IsExitedSuccessfully() {
+        return exitSuccessfully;
+    }
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
     }
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("CustomerAddOrUpdate"); // Create a JFrame
