@@ -22,6 +22,11 @@ public class Server {
                         System.out.println(new Date() + " --> Client connected from "+ currentSocketData.getClientAddress());
 
                         // Connected - Main Logic
+                        try {
+                            currentSocketData.getOutputStream().writeUTF("Welcome");
+                        }catch (Exception e){
+                            System.out.println("error");
+                        }
                         
                     }
                 }).start();
