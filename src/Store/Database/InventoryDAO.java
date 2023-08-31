@@ -67,9 +67,8 @@ public class InventoryDAO extends GeneralDAO {
     }
 
     private String queryForUpdate(InventoryItem item) {
-        String query = String.format("SET Branch=N'%s', ProductID=%d, Name=N'%s', Category=N'%s', Quantity=%d, Price=%.2f WHERE ProductID=%d",
+        String query = String.format("SET Branch=N'%s', Name=N'%s', Category=N'%s', Quantity=%d, Price=%.2f WHERE ProductID=%d",
                 item.getBranch(),
-                item.getProductID(),
                 item.getName(),
                 item.getCategory(),
                 item.getQuantity(),

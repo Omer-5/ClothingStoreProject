@@ -127,6 +127,10 @@ public class StoreApp extends JFrame {
                 CustomersManagement customersManagement = new CustomersManagement(); // Create the CashRegister panel
                 customersManagement.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(customersManagement); // Add the CashRegister panel to the content panel's center
+            } else if (panelName.equals("ניהול מלאי סניף")) { 
+                InventoryManagement inventoryManagement = new InventoryManagement(emp.getBranch()); // Create the CashRegister panel
+                inventoryManagement.setPreferredSize(contentPanel.getSize());
+                contentPanel.add(inventoryManagement); // Add the CashRegister panel to the content panel's center
             }else {
                 JLabel label = new JLabel(panelName + " Content", SwingConstants.CENTER);
                 label.setFont(new Font("Arial", Font.PLAIN, 24)); // Set font size
