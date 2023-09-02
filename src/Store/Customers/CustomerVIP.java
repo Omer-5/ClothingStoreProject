@@ -1,7 +1,6 @@
 package Store.Customers;
 import java.io.*;
 public class CustomerVIP extends Customer implements Serializable {
-    private static final long serialVersionUID = 5L;
     public CustomerVIP(String fullName, String phoneNumber, int id) {
         super(fullName, phoneNumber, id); 
         this.setDiscountPercentage("15");
@@ -12,24 +11,43 @@ public class CustomerVIP extends Customer implements Serializable {
     public double applyDiscount(double originalPrice) {
         return originalPrice * 0.85;
     }
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        // add any additional processing if needed
+    public void serializeToFile(String filename, String DBCommand) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            String serializedData = "CustomerVIP-" + DBCommand + "-" + getFullName() + "-" + getPhoneNumber() + "-" + getId() + "-" + getDiscountPercentage();
+            oos.writeUTF(serializedData);
+            System.out.println("Serialization successful! Serialized data: " + serializedData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        // add any additional processing if needed
+    public static CustomerVIP deserializeFromFile(String filename) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            String serializedData = ois.readUTF();
+            String[] parts = serializedData.split("-");
+            if (!parts[0].equals("CustomerVIP")) {
+                throw new IOException("Data does not represent a CustomerVIP object");
+            }
+            System.out.println("Deserialization successful! Extracted data: FullName: " + parts[2] + ", PhoneNumber: " + parts[3] + ", ID: " + parts[4] + ", DiscountPercentage: " + parts[5]);
+            CustomerVIP customer = new CustomerVIP(parts[2], parts[3], Integer.parseInt(parts[4]));
+            customer.setDiscountPercentage(parts[5]);
+            return customer;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    //TEST serialization and deserialization
-    /*
     public static void main(String[] args) {
-        int idtest = 6;
-        Customer customer = new CustomerVIP("Alice Johnson", "112233", idtest);
-        customer.serializeToFile("customerVIP.obj");
-        Customer deserializedCustomer = Customer.deserializeFromFile("customerVIP.obj");
-        System.out.println(deserializedCustomer);
+        CustomerVIP customer = new CustomerVIP("Robert Smith", "12345678", 6);
+        String filename = "customerVIP.ser";
+
+        // Serialize
+        customer.serializeToFile(filename, "Insert");
+
+        // Deserialize
+        CustomerVIP deserializedCustomer = CustomerVIP.deserializeFromFile(filename);
+        System.out.println("Deserialized customer: " + deserializedCustomer.getFullName() + ", Discount: " + deserializedCustomer.getDiscountPercentage());
     }
-    */
+
 }
