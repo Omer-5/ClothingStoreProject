@@ -28,6 +28,17 @@ public class Order {
         this.purchasedItems = purchasedItems;
     }
 
+    public Order(int purchaseID, int customerID, LocalDateTime date, String branch) {
+        this.purchaseID = purchaseID;
+        this.customerID = customerID;
+        this.date = date;
+        this.branch = branch;
+    }
+
+    public int getPurchaseID() {
+        return this.purchaseID;
+    }
+
     public int getCustomerID() {
         return this.customerID;
     }

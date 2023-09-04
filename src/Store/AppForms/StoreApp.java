@@ -1,5 +1,4 @@
 package Store.AppForms;
-import Store.CashRegister;
 import Store.Employees.*;
 
 import javax.swing.*;
@@ -131,6 +130,10 @@ public class StoreApp extends JFrame {
                 InventoryManagement inventoryManagement = new InventoryManagement(emp.getBranch()); // Create the CashRegister panel
                 inventoryManagement.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(inventoryManagement); // Add the CashRegister panel to the content panel's center
+            } else if (panelName.equals("דוחות וסטטיסטיקות")) { 
+                BranchReport branchReport = new BranchReport(emp.getBranch()); // Create the CashRegister panel
+                branchReport.setPreferredSize(contentPanel.getSize());
+                contentPanel.add(branchReport); // Add the CashRegister panel to the content panel's center
             }else {
                 JLabel label = new JLabel(panelName + " Content", SwingConstants.CENTER);
                 label.setFont(new Font("Arial", Font.PLAIN, 24)); // Set font size
