@@ -7,6 +7,7 @@ import java.io.*;
 public abstract class Customer extends Person implements Serializable {
     private static final long serialVersionUID = 2L;
     private String discountPercentage;
+    public static String fieldSeparator = "**";
 
     public Customer(String fullName, String phoneNumber, int id) {
         super(fullName, phoneNumber, id);
@@ -19,6 +20,7 @@ public abstract class Customer extends Person implements Serializable {
     public void setDiscountPercentage(String percentage) {
         this.discountPercentage = percentage;
     }
+
     public String getFullName() {
         return fullName;
     }
@@ -31,6 +33,11 @@ public abstract class Customer extends Person implements Serializable {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return getFullName() + fieldSeparator + getPhoneNumber() + fieldSeparator + getId();
+    }
+
     public abstract double applyDiscount(double originalPrice);
 
     public String getType() {
@@ -38,16 +45,17 @@ public abstract class Customer extends Person implements Serializable {
         if (this instanceof CustomerRegular) return "Regular";
         return "VIP";
     }
+
     private String generateSerializationString() {
         switch (getType()) {
             case "New":
-                return this.getClass().getSimpleName() + "-" + this.toString();
+                return this.getClass().getSimpleName() + fieldSeparator + this.toString();
             case "Regular":
-                return this.getClass().getSimpleName() + "-" + this.toString();
+                return this.getClass().getSimpleName() + fieldSeparator + this.toString();
             case "VIP":
-                return this.getClass().getSimpleName() + "-" + this.toString();
+                return this.getClass().getSimpleName() + fieldSeparator + this.toString();
             default:
-                return "Unknown-" + this.toString();
+                return "Unknown" + fieldSeparator + this.toString();
         }
     }
 
@@ -65,17 +73,24 @@ public abstract class Customer extends Person implements Serializable {
     public static Customer deserializeFromFile(String filename) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
             String serializedString = (String) ois.readObject();
-            String[] parts = serializedString.split("-");
+            String[] parts = serializedString.split(fieldSeparator);
             String className = parts[0];
             String data = parts[1];
 
             switch (className) {
                 case "CustomerNew":
-                    // logic to create a CustomerNew object from data and return
+                    // Assuming that the data format is "fullName**phoneNumber**id"
+                    String[] partsNew = data.split(fieldSeparator);
+                    return new CustomerNew(partsNew[0], partsNew[1], Integer.parseInt(partsNew[2]));
+
                 case "CustomerRegular":
-                    // logic to create a CustomerRegular object from data and return
+                    String[] partsRegular = data.split(fieldSeparator);
+                    return new CustomerRegular(partsRegular[0], partsRegular[1], Integer.parseInt(partsRegular[2]));
+
                 case "CustomerVIP":
-                    // logic to create a CustomerVIP object from data and return
+                    String[] partsVIP = data.split(fieldSeparator);
+                    return new CustomerVIP(partsVIP[0], partsVIP[1], Integer.parseInt(partsVIP[2]));
+
                 default:
                     throw new IllegalArgumentException("Unknown class type: " + className);
             }
@@ -84,6 +99,4 @@ public abstract class Customer extends Person implements Serializable {
             return null;
         }
     }
-
-
 }
