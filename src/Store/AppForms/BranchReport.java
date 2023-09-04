@@ -96,6 +96,7 @@ public class BranchReport extends JPanel {
 
         mainPanel.setBackground(new java.awt.Color(250, 250, 250));
         mainPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        mainPanel.setPreferredSize(new java.awt.Dimension(997, 650));
 
         mainPanel_prodcutTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -327,7 +328,7 @@ public class BranchReport extends JPanel {
                     .addComponent(jScrollPane3))
                 .addGap(18, 18, 18)
                 .addComponent(filterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -338,7 +339,7 @@ public class BranchReport extends JPanel {
                     .addComponent(jScrollPane3))
                 .addGap(18, 18, 18)
                 .addComponent(revenuePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -348,16 +349,16 @@ public class BranchReport extends JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
-    }
+    }// </editor-fold>//GEN-END:initComponents
 
     private void filterPanel_categoryComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
         if(!isLoaded)
