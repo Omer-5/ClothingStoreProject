@@ -3,7 +3,9 @@ package Store.Customers;
 import Store.Person;
 
 import java.io.*;
+
 public abstract class Customer extends Person implements Serializable {
+    private static final long serialVersionUID = 2L;
     private String discountPercentage;
 
     public Customer(String fullName, String phoneNumber, int id) {
@@ -17,74 +19,71 @@ public abstract class Customer extends Person implements Serializable {
     public void setDiscountPercentage(String percentage) {
         this.discountPercentage = percentage;
     }
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public abstract double applyDiscount(double originalPrice);
 
     public String getType() {
         if (this instanceof CustomerNew) return "New";
         if (this instanceof CustomerRegular) return "Regular";
-
         return "VIP";
+    }
+    private String generateSerializationString() {
+        switch (getType()) {
+            case "New":
+                return this.getClass().getSimpleName() + "-" + this.toString();
+            case "Regular":
+                return this.getClass().getSimpleName() + "-" + this.toString();
+            case "VIP":
+                return this.getClass().getSimpleName() + "-" + this.toString();
+            default:
+                return "Unknown-" + this.toString();
+        }
     }
 
     // Serialization
-    public void serializeToFile(String filename, String DBCommand) {
+    public void serializeToFile(String filename) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
-            String serializedData = "Customer-" + DBCommand + "-" + getFullName() + "-" + getPhoneNumber() + "-" + getId() + "-" + discountPercentage;
-            oos.writeUTF(serializedData);
-            System.out.println("Serialization successful! Serialized data: " + serializedData);
+            oos.writeObject(generateSerializationString());
+            System.out.println("Serialization successful!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // Deserialization
     public static Customer deserializeFromFile(String filename) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
-            String serializedData = ois.readUTF();
-            String[] parts = serializedData.split("-");
-            if (!parts[0].equals("Customer")) {
-                throw new IOException("Data does not represent a Customer object");
+            String serializedString = (String) ois.readObject();
+            String[] parts = serializedString.split("-");
+            String className = parts[0];
+            String data = parts[1];
+
+            switch (className) {
+                case "CustomerNew":
+                    // logic to create a CustomerNew object from data and return
+                case "CustomerRegular":
+                    // logic to create a CustomerRegular object from data and return
+                case "CustomerVIP":
+                    // logic to create a CustomerVIP object from data and return
+                default:
+                    throw new IllegalArgumentException("Unknown class type: " + className);
             }
-            System.out.println("Deserialization successful! Extracted data: FullName: " + parts[2] + ", PhoneNumber: " + parts[3] + ", ID: " + parts[4] + ", DiscountPercentage: " + parts[5]);
-            // We are returning a basic Customer object here. In a real-world scenario, you'd probably create a specific customer type (New/Regular/VIP) based on some criteria.
-            Customer customer = new Customer(parts[2], parts[3], Integer.parseInt(parts[4])) {
-                @Override
-                public double applyDiscount(double originalPrice) {
-                    return originalPrice; // This should be replaced by the appropriate logic for each customer type.
-                }
-            };
-            customer.setDiscountPercentage(parts[5]);
-            return customer;
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static void main(String[] args) {
-        Customer customer = new Customer("Jane Smith", "67890", 2) {
-            @Override
-            public double applyDiscount(double originalPrice) {
-                return originalPrice * 0.9;
-            }
-        };
-        String filename = "customer.ser";
 
-        // Serialize
-        customer.serializeToFile(filename, "Update");
-
-        // Deserialize
-        Customer deserializedCustomer = Customer.deserializeFromFile(filename);
-        System.out.println("Deserialized customer: " + deserializedCustomer.getFullName() + ", Discount: " + deserializedCustomer.getDiscountPercentage());
-    }
 }
-
-/*
- CREATE TABLE Customers (
-    FullName nvarchar(255) NOT NULL,
-	PhoneNumber nvarchar(255) NOT NULL,
-    ID int NOT NULL,
-    Type nvarchar(255) NOT NULL,
-    PRIMARY KEY (ID)
-);
- */
