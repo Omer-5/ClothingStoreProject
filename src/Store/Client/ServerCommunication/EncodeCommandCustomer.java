@@ -30,12 +30,12 @@ public class EncodeCommandCustomer {
     // public ArrayList<Customer> getCustomers() {
     // }
     
-        // // For Testing
-        // public static void main(String[] args) {
-        //     int idtest = 4;
-        //     Customer customer = new CustomerNew("John Doe", "12345", idtest);
-        //     String command = EncodeCommandCustomer.createNewCustomer(customer, customer.getType());
-        //     // System.out.println(command);
-        //     DecodeExecuteCommand.decode_and_execute(command);     
-        // }
+        // For Testing
+    public static void main(String[] args) {
+        int idtest = 4;
+        Customer customer = new CustomerNew("John Doe", "12345", idtest);
+        String command = EncodeCommandCustomer.createNewCustomer(customer, customer.getType());
+        // System.out.println(command);
+        DecodeExecuteCommand.decode_and_execute(command);     
+    }
 }
