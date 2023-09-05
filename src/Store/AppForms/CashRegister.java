@@ -1,4 +1,4 @@
-package Store;
+package Store.AppForms;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -7,7 +7,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import Store.AppForms.CustomerAddOrUpdate;
+import Store.Utilities;
 import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
 
@@ -646,11 +646,11 @@ public class CashRegister extends JPanel {
             mainPanel_CartTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
         }
 
-        mainPanel_SupplyTable.getColumn("הוסף").setCellRenderer(new ButtonRenderer("images/icon-plus.png"));
-        mainPanel_SupplyTable.getColumn("הוסף").setCellEditor(new ButtonEditor(new JCheckBox(), "images/icon-plus.png", "add"));
+        mainPanel_SupplyTable.getColumn("הוסף").setCellRenderer(new ButtonRenderer("src/Store/images/icon-plus.png"));
+        mainPanel_SupplyTable.getColumn("הוסף").setCellEditor(new ButtonEditor(new JCheckBox(), "src/Store/images/icon-plus.png", "add"));
 
-        mainPanel_CartTable.getColumn("הסר מוצר").setCellRenderer(new ButtonRenderer("images/icon-remove.png"));
-        mainPanel_CartTable.getColumn("הסר מוצר").setCellEditor(new ButtonEditor(new JCheckBox(), "images/icon-remove.png", "remove"));
+        mainPanel_CartTable.getColumn("הסר מוצר").setCellRenderer(new ButtonRenderer("src/Store/images/icon-remove.png"));
+        mainPanel_CartTable.getColumn("הסר מוצר").setCellEditor(new ButtonEditor(new JCheckBox(), "src/Store/images/icon-remove.png", "remove"));
     }
 
     public void addRowWithButtonToSupplyTable(int productId, String name, double price, int quantity) {
@@ -689,7 +689,7 @@ public class CashRegister extends JPanel {
             setHorizontalAlignment(SwingConstants.CENTER);
 
             // Load and set the image icon
-            ImageIcon icon = new ImageIcon(getClass().getResource(iconLocation));
+            ImageIcon icon = new ImageIcon(iconLocation);
             Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
             setIcon(new ImageIcon(scaledImage));
             return this;
@@ -726,7 +726,7 @@ public class CashRegister extends JPanel {
                 button.setBackground(table.getForeground());
             }
 
-            ImageIcon icon = new ImageIcon(getClass().getResource(iconLocation));
+            ImageIcon icon = new ImageIcon(iconLocation);
             Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
             button.setIcon(new ImageIcon(scaledImage));
             

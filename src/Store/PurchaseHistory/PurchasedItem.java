@@ -4,11 +4,11 @@ import Store.Inventories.InventoryItem;
 
 public class PurchasedItem {
     private int purchaseID;
-    private InventoryItem item;
+    private int productID;
 
-    public PurchasedItem(int purchaseID, InventoryItem item) {
+    public PurchasedItem(int purchaseID, int productID) {
         this.purchaseID = purchaseID;
-        this.item = item;
+        this.productID = productID;
     }
 
     public int getPurchaseID() {
@@ -19,12 +19,12 @@ public class PurchasedItem {
         this.purchaseID = purchaseID;
     }
 
-    public InventoryItem getItem() {
-        return item;
+    public int getProductID() {
+        return productID;
     }
 
-    public void setItem(InventoryItem item) {
-        this.item = item;
+    public void setProductID(int productID) {
+        this.productID = productID;
     }
 }
 
