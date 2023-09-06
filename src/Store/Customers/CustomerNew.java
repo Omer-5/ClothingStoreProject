@@ -1,8 +1,6 @@
 package Store.Customers;
 
-import java.io.*;
-
-public class CustomerNew extends Customer implements Serializable {
+public class CustomerNew extends Customer {
     private static final long serialVersionUID = 2L;
 
     public CustomerNew(String fullName, String phoneNumber, int id) {
@@ -16,16 +14,11 @@ public class CustomerNew extends Customer implements Serializable {
         return originalPrice * 0.95;
     }
 
-    @Override
-    public String toString() {
-        return "CustomerNew" + fieldSeparator + getFullName() + fieldSeparator + getPhoneNumber() + fieldSeparator + getId();
-    }
-
-    public static void main(String[] args) {
-        int idtest = 4;
-        Customer customer = new CustomerNew("John Doe", "12345", idtest);
-        customer.serializeToFile("customerNew.obj");
-        Customer deserializedCustomer = Customer.deserializeFromFile("customerNew.obj");
-        System.out.println(deserializedCustomer);
-    }
+    // public static void main(String[] args) {
+    //     int idtest = 4;
+    //     // Customer customer = new CustomerNew("John Doe", "12345", idtest);
+    //     // customer.serializeToFile("customerNew.obj");
+    //     // Customer deserializedCustomer = Customer.deserializeFromFile("customerNew.obj");
+    //     // System.out.println(deserializedCustomer);
+    // }
 }
