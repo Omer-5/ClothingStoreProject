@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Chat {
+public class ChatOld {
     private JFrame frame;
     private JTextArea chatHistory;
     private JTextField messageField;
     private JButton sendButton;
 
-    public Chat() {
+    public ChatOld() {
         frame = new JFrame("Chat with Employee");
         frame.setSize(400, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,7 +64,7 @@ public class Chat {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new Chat();
+                new ChatOld();
             }
         });
     }
