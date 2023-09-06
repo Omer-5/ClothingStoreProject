@@ -556,10 +556,11 @@ public class CashRegister extends JPanel {
 
                 for(int i=0; i < inventory.size(); i++) {
                     InventoryItem temp = inventory.get(i);
-                    addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
-
-                    inventoryMap.put(temp.getProductID(), temp);
-                    inventoryMapByName.put(temp.getName(), temp);
+                    if(temp.getQuantity() > 0) {
+                        addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
+                        inventoryMap.put(temp.getProductID(), temp);
+                        inventoryMapByName.put(temp.getName(), temp);
+                    }   
                 }
 
                 orderPanel_FullNameDataLabel.setText(customer.getFullName());
@@ -602,22 +603,62 @@ public class CashRegister extends JPanel {
 
     }   
 
-    private void orderPanel_SubmitOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                             
+    private void orderPanel_SubmitOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        if(mainPanel_CartTable.getRowCount() == 0) { //TODO: Exception
+            Utilities.MessageBox("כדי לבצע קנייה עליך להוסיף מוצרים לסל קניות");
+            return;
+        }                                                             
         ArrayList<InventoryItem> items = new ArrayList<InventoryItem>();
+        Map<String, InventoryItem> itemsToUpdate = new HashMap<String, InventoryItem>();
+
         Object[] rowData = new Object [mainPanel_CartTable.getRowCount()];
+
         for (int i = 0; i < mainPanel_CartTable.getRowCount(); i++) {  // Loop through the rows
-            InventoryItem item = inventoryMapByName.get(mainPanel_CartTable.getValueAt(i, 2));
-            items.add(item);
+            String productName = mainPanel_CartTable.getValueAt(i, 2).toString();
+
+            if(itemsToUpdate.containsKey(productName)) {
+                InventoryItem item = itemsToUpdate.get(productName);
+                InventoryItem originalItem = inventoryMapByName.get(productName);
+
+                item.setQuantity(item.getQuantity() + 1);
+                itemsToUpdate.put(item.getName(), item);
+                items.add(item);
+
+                if(originalItem.getQuantity() < item.getQuantity()) { //TODO: Exception
+                    Utilities.MessageBox("כמות המוצר '" + item.getName() + "' שבחרת גדולה מהכמות במלאי");
+                    return;
+                }
+
+            } else {
+                InventoryItem originalItem = inventoryMapByName.get(productName);
+                InventoryItem newItem = new InventoryItem(originalItem.getBranch(), originalItem.getProductID(), originalItem.getName(), originalItem.getCategory(), originalItem.getQuantity(), originalItem.getPrice());
+                newItem.setQuantity(1);
+                itemsToUpdate.put(newItem.getName(), newItem);
+                items.add(newItem);
+            } 
         }
 
         LocalDateTime date = LocalDateTime.now();
 
         Order order = new Order(customer.getId(), date, emp.getBranch(), items);
 
-        PurchaseHistoryDAO purchaseDAO = new PurchaseHistoryDAO();
+        PurchaseHistoryDAO purchaseDAO = new PurchaseHistoryDAO(); //TODO: Add Server-Client Here
         purchaseDAO.createNewPurchase(order);
 
+        InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: Add Server-Client Here
+        for (Map.Entry<String, InventoryItem> entry : itemsToUpdate.entrySet()) {
+            InventoryItem item = entry.getValue();
+            InventoryItem originalItem = inventoryMapByName.get(item.getName());
+            item.setQuantity(originalItem.getQuantity() - item.getQuantity());
+            inventoryDAO.updateItem(item);
+        }
+
         ClearTablesCells();
+
+        orderPanel_CustomerTypeDataLabel.setText("----------------------");
+        orderPanel_PhoneDataLabel.setText("----------------------");
+        orderPanel_CustomerTypeDataLabel.setText("----------------------");
+        orderPanel_DiscountPercentageDataLabel.setText("-------------------");
         pricePanel_PriceNumber.setText("0.00");
         finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
 
