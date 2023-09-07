@@ -8,12 +8,12 @@ import java.sql.Statement;
 
 public class AzureSqlConnection {
     // Azure SQL Database connection details
-    private static PropertiesReader reader = new PropertiesReader("src/Store/Database/Secrets.properties");
+    private static PropertiesReader reader = new PropertiesReader("src/Store/Database/Secrets.properties"); //TODO: Change path after restructure
     private static String SERVER_NAME = reader.getProperty("SERVER_NAME");
     private static String DATABASE_NAME = reader.getProperty("DATABASE_NAME");
     private static String USERNAME = reader.getProperty("USERNAME");
     private static String PASSWORD = reader.getProperty("PASSWORD");
-    private static String CONNECTION_URL = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s@sql-hit-omer;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30",SERVER_NAME,DATABASE_NAME,USERNAME, PASSWORD);
+    private static String CONNECTION_URL = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s@sql-hit-daniel;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30",SERVER_NAME,DATABASE_NAME,USERNAME, PASSWORD);
     private static Connection connection;
 
     private AzureSqlConnection(){};
@@ -24,6 +24,7 @@ public class AzureSqlConnection {
                 connection = DriverManager.getConnection(CONNECTION_URL, USERNAME, PASSWORD);
                 System.out.println("Connected to Azure SQL Database successfully!");
             }
+            System.out.println(connection);
         }
         catch (SQLException e)
         {
