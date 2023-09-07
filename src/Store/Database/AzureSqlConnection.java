@@ -13,7 +13,7 @@ public class AzureSqlConnection {
     private static String DATABASE_NAME = reader.getProperty("DATABASE_NAME");
     private static String USERNAME = reader.getProperty("USERNAME");
     private static String PASSWORD = reader.getProperty("PASSWORD");
-    private static String CONNECTION_URL = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s@sql-hit-omer;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30",SERVER_NAME,DATABASE_NAME,USERNAME, PASSWORD);
+    private static String CONNECTION_URL = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s@sql-hit-daniel;password=%s;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30",SERVER_NAME,DATABASE_NAME,USERNAME, PASSWORD);
     private static Connection connection;
 
     private AzureSqlConnection(){};

@@ -134,11 +134,16 @@ public class StoreApp extends JFrame {
                 BranchReport branchReport = new BranchReport(emp.getBranch()); // Create the CashRegister panel
                 branchReport.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(branchReport); // Add the CashRegister panel to the content panel's center
-            }else {
+            }else if (panelName.equals("צ'אט")) { 
+                Chats chatPanel = new Chats(emp); // Create the CashRegister panel
+                chatPanel.setPreferredSize(contentPanel.getSize());
+                contentPanel.add(chatPanel); // Add the CashRegister panel to the content panel's center
+            }
+            /*else {
                 JLabel label = new JLabel(panelName + " Content", SwingConstants.CENTER);
                 label.setFont(new Font("Arial", Font.PLAIN, 24)); // Set font size
                 contentPanel.add(label, BorderLayout.CENTER); // Add a label for other panels
-            }
+            }*/
 
             // Refresh the content panel
             contentPanel.revalidate();
