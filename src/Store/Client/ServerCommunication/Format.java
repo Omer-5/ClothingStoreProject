@@ -15,12 +15,16 @@ public class Format {
     public static String objectSeparator = "~~~";
     public static String fieldSeparator = "!!!";
 
-    public static String encode(ClassType type, String methodName, String param1, String param2){
-        return encode(type, methodName, param1) + param2 + paramsSeparator;
+    public static String encode(ClassType type, String methodName){
+        return type + typeSeparator + methodName + methodSeparator;
     }
 
     public static String encode(ClassType type, String methodName, String param){
-        return type + typeSeparator + methodName + methodSeparator + param + paramsSeparator;
+        return encode(type, methodName)+ param + paramsSeparator;
+    }
+
+    public static String encode(ClassType type, String methodName, String param1, String param2){
+        return encode(type, methodName, param1) + param2 + paramsSeparator;
     }
 
     public static ClassType getType(String str)
