@@ -27,7 +27,7 @@ public class AzureSqlConnection {
         }
         catch (SQLException e)
         {
-            System.out.println("");
+            System.out.println(e);
         }
         return connection;
     }
