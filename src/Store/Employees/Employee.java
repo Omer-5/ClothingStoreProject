@@ -6,7 +6,6 @@ import Store.Person;
 
 
 public class Employee extends Person {
-   public static final String fieldSeparator = "**";
    int bankAccount;
    String branch;
    int employeeNumber; 
@@ -29,11 +28,6 @@ public class Employee extends Person {
       this.password = password;
       this.title = title;
    }
-
-   public Employee() {
-      super();
-   }
-
 
    public int getBankAccount() {
       return bankAccount;
@@ -65,57 +59,28 @@ public class Employee extends Person {
 
    @Override
    public String toString() {
-      return super.toString() + fieldSeparator +
-              bankAccount + fieldSeparator +
-              branch + fieldSeparator +
-              employeeNumber + fieldSeparator +
-              password + fieldSeparator +
+      return super.toString() + Format.fieldSeparator +
+              bankAccount + Format.fieldSeparator +
+              branch + Format.fieldSeparator +
+              employeeNumber + Format.fieldSeparator +
+              password + Format.fieldSeparator +
               title.toString();
    }
-
-   private String generateSerializationString() {
-      return this.getClass().getSimpleName() + fieldSeparator + this.toString();
-   }
-
-   @Override
-   public String serializeToString() {
-      String baseSerialization = super.serializeToString();
-      return baseSerialization + fieldSeparator + bankAccount + fieldSeparator + branch
-              + fieldSeparator + employeeNumber + fieldSeparator + password
-              + fieldSeparator + title.toString();
-   }
+   // TODO: check if working
    public static Employee deserializeFromString(String serializedString) {
-      String[] fields = serializedString.split(fieldSeparator);
-      // Extracting common fields (inherited from Person)
-      String className = fields[0];
-      String fullName = fields[1];
-      String phoneNumber = fields[2];
-      int id = Integer.parseInt(fields[3]);
+      String[] fields = serializedString.split(Format.fieldSeparator);
+      String fullName = fields[0];
+      String phoneNumber = fields[1];
+      int id = Integer.parseInt(fields[2]);
+      int bankAccount = Integer.parseInt(fields[3]);
+      String branch = fields[4];
+      int employeeNumber = Integer.parseInt(fields[5]);
+      String password = fields[6];
+      EmployeeTitle title = EmployeeTitle.valueOf(fields[7]);
 
-      // Extracting Employee-specific fields
-      int bankAccount = Integer.parseInt(fields[4]);
-      String branch = fields[5];
-      int employeeNumber = Integer.parseInt(fields[6]);
-      String password = fields[7];
-      EmployeeTitle title = EmployeeTitle.valueOf(fields[8]);
-
-      if (!Objects.equals(className, "Employee")) {
-         throw new IllegalArgumentException("Expected Employee class but found: " + className);
-      }
-
-      Employee emp = new Employee();
-      emp.setFullName(fullName);
-      emp.setPhoneNumber(phoneNumber);
-      emp.setId(id);
-      emp.bankAccount = bankAccount;
-      emp.branch = branch;
-      emp.employeeNumber = employeeNumber;
-      emp.password = password;
-      emp.title = title;
-      return emp;
+      return new Employee(fullName, phoneNumber, id, bankAccount, branch, employeeNumber, password, title);
    }
 }
-
 
 /*
  CREATE TABLE Employees (
