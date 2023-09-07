@@ -20,24 +20,12 @@ public abstract class Customer extends Person implements Serializable {
     public void setDiscountPercentage(String percentage) {
         this.discountPercentage = percentage;
     }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public int getId() {
-        return id;
-    }
-
+/* is relevant?
     @Override
     public String toString() {
         return getFullName() + Format.fieldSeparator + getPhoneNumber() + Format.fieldSeparator + getId();
     }
-
+*/
     public abstract double applyDiscount(double originalPrice);
 
     public String getType() {
