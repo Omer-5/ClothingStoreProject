@@ -1,5 +1,7 @@
 package Store.Employees;
 import java.io.*;
+
+import Store.Client.ServerCommunication.Format;
 import Store.Person;
 
 
@@ -76,39 +78,33 @@ public class Employee extends Person {
    }
 
    // Serialization
-   public void serializeToFile(String filename) {
-      try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
-         oos.writeObject(generateSerializationString());
-         System.out.println("Serialization successful!");
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
+   public String serializeToString() {
+      return this.getClass().getSimpleName() + Format.fieldSeparator + this.toString();
    }
 
    // Deserialization
-   public static Employee deserializeFromFile(String filename) {
+   public static Employee deserializeFromString(String filename) {
       try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
          String serializedString = (String) ois.readObject();
-         String[] parts = serializedString.split(fieldSeparator);
+         String[] parts = serializedString.split(Format.fieldSeparator);
          String className = parts[0];
          String data = parts[1];
-         String[] fields = data.split(fieldSeparator);
+         String[] fields = data.split(Format.fieldSeparator);
 
-         switch (className) {
-            case "Employee":
-               Employee emp = new Employee();
-               // Assuming the Person class has setters for the fields
-               emp.setFullName(fields[0]);
-               emp.setPhoneNumber(fields[1]);
-               emp.setId(Integer.parseInt(fields[2]));
-               emp.bankAccount = Integer.parseInt(fields[3]);
-               emp.branch = fields[4];
-               emp.employeeNumber = Integer.parseInt(fields[5]);
-               emp.password = fields[6];
-               emp.title = EmployeeTitle.valueOf(fields[7]);
-               return emp;
-            default:
-               throw new IllegalArgumentException("Unknown class type: " + className);
+         if ("Employee".equals(className)) {
+            Employee emp = new Employee();
+            // Assuming the Person class has setters for the fields
+            emp.setFullName(fields[0]);
+            emp.setPhoneNumber(fields[1]);
+            emp.setId(Integer.parseInt(fields[2]));
+            emp.bankAccount = Integer.parseInt(fields[3]);
+            emp.branch = fields[4];
+            emp.employeeNumber = Integer.parseInt(fields[5]);
+            emp.password = fields[6];
+            emp.title = EmployeeTitle.valueOf(fields[7]);
+            return emp;
+         } else {
+            throw new IllegalArgumentException("Unknown class type: " + className);
          }
       } catch (IOException | ClassNotFoundException e) {
          e.printStackTrace();
@@ -116,18 +112,45 @@ public class Employee extends Person {
       }
    }
 
+
    public static void main(String[] args) {
-      Employee emp = new Employee("John Doe", "123456789", 1, 12345678, "XYZ Branch", 1001, "password123", EmployeeTitle.MANAGER);
+      // Create an Employee object
+      Employee emp = new Employee("John Doe", "123456789", 1001, 12345678, "Main", 1, "password123", EmployeeTitle.MANAGER);
 
-      // Serialize to file
-      emp.serializeToFile("employee.obj");
+      // Serialize the object to a string
+      String serializedData = emp.serializeToString();
 
-      // Deserialize from file
-      Employee deserializedEmp = Employee.deserializeFromFile("employee.obj");
+      // Save the serialized string to a file named "employee.txt"
+      String filename = "employee.txt";
+      try (FileWriter writer = new FileWriter(filename)) {
+         writer.write(serializedData);
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
 
-      // Print deserialized data
-      System.out.println(deserializedEmp);
+      // Read the serialized string from the file
+      String readData = "";
+      try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+         readData = reader.readLine();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+
+      // Deserialize the object from the read string
+      Employee deserializedEmp = Employee.deserializeFromString(readData);
+
+      // Print out the deserialized object's data to verify
+      System.out.println("Deserialized Employee Data:");
+      System.out.println("Full Name: " + deserializedEmp.getFullName());
+      System.out.println("Phone Number: " + deserializedEmp.getPhoneNumber());
+      System.out.println("ID: " + deserializedEmp.getId());
+      System.out.println("Bank Account: " + deserializedEmp.bankAccount);
+      System.out.println("Branch: " + deserializedEmp.branch);
+      System.out.println("Employee Number: " + deserializedEmp.employeeNumber);
+      System.out.println("Password: " + deserializedEmp.password);
+      System.out.println("Title: " + deserializedEmp.title);
    }
+
 
 
 }
