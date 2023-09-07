@@ -3,6 +3,8 @@ package Store.AppForms;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -12,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
 import Store.Utilities;
+import Store.Client.ServerCommunication.Format;
 import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
 
@@ -20,7 +23,7 @@ public class CustomersManagement extends JPanel {
     private javax.swing.JPanel jPanel1;              
     private javax.swing.JTable customersTable;
     private javax.swing.JScrollPane jScrollPane3;
-    private ArrayList<Customer> customers;
+    private List<Customer> customers;
     private Map<Integer, Customer> customersMap;
 
     public CustomersManagement() {
