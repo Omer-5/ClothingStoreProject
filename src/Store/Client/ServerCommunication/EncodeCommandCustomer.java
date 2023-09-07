@@ -1,41 +1,37 @@
 package Store.Client.ServerCommunication;
 
-import java.util.ArrayList;
-
 import Store.Customers.Customer;
-import Store.Customers.CustomerNew;
-import Store.Customers.CustomerRegular;
-import Store.Customers.CustomerVIP;
 
 public class EncodeCommandCustomer {
     public static String createNewCustomer(Customer customer, String customerType) {
-        //TODO: change `generateSerializationString` name
-        String res = Format.encode(ClassType.CUSTOMER, "createNewCustomer", customer.generateSerializationString(), customerType);
-        // System.out.println(res);
-        return res;
+        return Format.encode(ClassType.CUSTOMER, "createNewCustomer", customer.serializeToString(), customerType);
     }
 
-    public void updateCustomer(Customer customer, String customerType) {
+    public static String updateCustomer(Customer customer, String customerType) {
+        return Format.encode(ClassType.CUSTOMER, "deleteCustomer", customer.serializeToString(), customerType);
     }
 
-    public void deleteCustomer(int id) {
+    public static String deleteCustomer(int id) {
+        return Format.encode(ClassType.CUSTOMER, "deleteCustomer", Integer.toString(id));
     }
 
-    // public Customer getCustomerByID(int id) {
-    // }
+    public static String getCustomerByID(int id) {
+        return Format.encode(ClassType.CUSTOMER, "getCustomerByID", Integer.toString(id));
+    }
 
-    // public ArrayList<Customer> getCustomersByType(String type) {
-    // }
+    public static String getCustomersByType(String type) {
+        return Format.encode(ClassType.CUSTOMER, "deleteCustomer", type);
+    }
 
-    // public ArrayList<Customer> getCustomers() {
-    // }
+    public static String getCustomers() {
+        return Format.encode(ClassType.CUSTOMER, "getCustomers");
+    }
     
-        // For Testing
-    public static void main(String[] args) {
-        int idtest = 4;
-        Customer customer = new CustomerNew("John Doe", "12345", idtest);
-        String command = EncodeCommandCustomer.createNewCustomer(customer, customer.getType());
-        // System.out.println(command);
-        DecodeExecuteCommand.decode_and_execute(command);     
-    }
+    // public static void main(String[] args) {
+    //     int idtest = 5;
+    //     Customer customer = new CustomerVIP("Omer Daniel", "12345", idtest);
+    //     String command = EncodeCommandCustomer.createNewCustomer(customer, customer.getType());
+    //     System.out.println(command);
+    //     // ArrayList<Customer> temp = (ArrayList<CustomerRegular>)DecodeExecuteCommand.decode_and_execute(command);     
+    // }
 }
