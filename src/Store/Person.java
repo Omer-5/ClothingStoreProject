@@ -11,6 +11,10 @@ public class Person implements Serializable {
         this.id = id;
     }
 
+    public Person() {
+
+    }
+
     public String getFullName() {
         return fullName;
     }
