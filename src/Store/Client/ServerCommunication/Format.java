@@ -28,12 +28,26 @@ public class Format {
         String typeStr = str.split(typeSeparator)[0];
         ClassType result = null;
         switch (typeStr) {
+            case "CHAT":
+                result = ClassType.CHAT;
+                break;
             case "CUSTOMER":
                 result = ClassType.CUSTOMER;
                 break;
-        
-            }
-            return result;
+            case "EMPLOYEE":
+                result = ClassType.EMPLOYEE;
+                break;
+            case "EXCEPTION":
+                result = ClassType.EXCEPTION;
+                break;
+            case "INVENTORY":
+                result = ClassType.INVENTORY;
+                break;
+            case "PURCHASE_HISTORY":
+                result = ClassType.PURCHASE_HISTORY;
+                break;
+        }
+        return result;
     }
 
     public static String getMethod(String str)
@@ -72,6 +86,29 @@ public class Format {
         System.out.println(arr);
         for(Customer customer: arr){
             result.append(customer.serializeToString());
+            result.append(objectSeparator);
+        }
+        System.out.println(result);
+        return result.toString();
+   } 
+
+    public static List<Employee> decodeEmployees(String str)
+   {
+       String[] objects = str.split(objectSeparator);
+       List<Employee> arr = new ArrayList<>();
+    
+       for(String objectString: objects){
+           arr.add(Employee.deserializeFromString(objectString));
+       }
+       return arr;
+   } 
+
+   public static String encodeEmployees(List<Employee> arr)
+   {
+        StringBuilder result = new StringBuilder();
+        System.out.println(arr);
+        for(Employee Employee: arr){
+            result.append(Employee.serializeToString());
             result.append(objectSeparator);
         }
         System.out.println(result);
