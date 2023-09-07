@@ -66,7 +66,14 @@ public class Employee extends Person {
               password + Format.fieldSeparator +
               title.toString();
    }
-   // TODO: check if working
+
+   public String serializeToString()
+   {
+      return this.toString();
+   }
+
+
+   // TODO: check if working!
    public static Employee deserializeFromString(String serializedString) {
       String[] fields = serializedString.split(Format.fieldSeparator);
       String fullName = fields[0];
