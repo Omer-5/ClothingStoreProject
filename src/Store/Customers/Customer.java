@@ -3,9 +3,7 @@ package Store.Customers;
 import Store.Person;
 import Store.Client.ServerCommunication.Format;
 
-import java.io.*;
-
-public abstract class Customer extends Person implements Serializable {
+public abstract class Customer extends Person {
     private static final long serialVersionUID = 2L;
     private String discountPercentage;
 
@@ -20,12 +18,7 @@ public abstract class Customer extends Person implements Serializable {
     public void setDiscountPercentage(String percentage) {
         this.discountPercentage = percentage;
     }
-/* is relevant?
-    @Override
-    public String toString() {
-        return getFullName() + Format.fieldSeparator + getPhoneNumber() + Format.fieldSeparator + getId();
-    }
-*/
+
     public abstract double applyDiscount(double originalPrice);
 
     public String getType() {
@@ -72,3 +65,13 @@ public abstract class Customer extends Person implements Serializable {
 
     }
 }
+
+/*
+ CREATE TABLE Customers (
+    FullName nvarchar(255) NOT NULL,
+	PhoneNumber nvarchar(255) NOT NULL,
+    ID int NOT NULL,
+    Type nvarchar(255) NOT NULL,
+    PRIMARY KEY (ID)
+);
+ */
