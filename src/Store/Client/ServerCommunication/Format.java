@@ -69,19 +69,19 @@ public class Format {
         return temp.split(paramsSeparator)[0];
     }
 
-   public static List<Customer> decodeCustomers(String str)
-   {
-       String[] objects = str.split(objectSeparator);
-       List<Customer> arr = new ArrayList<>();
-    
-       for(String objectString: objects){
-           arr.add(Customer.deserializeFromString(objectString));
-       }
-       return arr;
-   } 
+    public static List<Customer> decodeCustomers(String str)
+    {
+        String[] objects = str.split(objectSeparator);
+        List<Customer> arr = new ArrayList<>();
 
-   public static String encodeCustomers(List<Customer> arr)
-   {
+        for(String objectString: objects){
+            arr.add(Customer.deserializeFromString(objectString));
+        }
+        return arr;
+    } 
+
+    public static String encodeCustomers(List<Customer> arr)
+    {
         StringBuilder result = new StringBuilder();
         System.out.println(arr);
         for(Customer customer: arr){
@@ -90,10 +90,10 @@ public class Format {
         }
         System.out.println(result);
         return result.toString();
-   } 
+    } 
 
     public static List<Employee> decodeEmployees(String str)
-   {
+    {
        String[] objects = str.split(objectSeparator);
        List<Employee> arr = new ArrayList<>();
     
@@ -101,10 +101,10 @@ public class Format {
            arr.add(Employee.deserializeFromString(objectString));
        }
        return arr;
-   } 
+    } 
 
    public static String encodeEmployees(List<Employee> arr)
-   {
+    {
         StringBuilder result = new StringBuilder();
         System.out.println(arr);
         for(Employee Employee: arr){
@@ -113,5 +113,5 @@ public class Format {
         }
         System.out.println(result);
         return result.toString();
-   } 
+    } 
 }
