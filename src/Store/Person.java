@@ -1,6 +1,9 @@
 package Store;
+import Store.Client.ServerCommunication.Format;
+
 import java.io.*;
-public class Person implements Serializable {
+public abstract class Person implements Serializable {
+    protected static final String fieldSeparator = "**";
     protected String fullName;
     protected String phoneNumber;
     protected int id;
@@ -9,6 +12,9 @@ public class Person implements Serializable {
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.id = id;
+    }
+    public Person() {
+
     }
 
     public String getFullName() {
@@ -31,14 +37,31 @@ public class Person implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+    public String serializeToString() {
+        return this.getClass().getSimpleName() + fieldSeparator +
+                fullName + fieldSeparator +
+                phoneNumber + fieldSeparator +
+                id;
+    }
+    public static Person deserializeFromString(String serializedString) {
+        String[] fields = serializedString.split(fieldSeparator);
 
+        String className = fields[0];
+        String fullName = fields[1];
+        String phoneNumber = fields[2];
+        int id = Integer.parseInt(fields[3]);
+
+        switch (className) {
+            case "Person":
+                return new Person(fullName, phoneNumber, id) {};
+            default:
+                throw new IllegalArgumentException("Unknown class type: " + className);
+        }
+    }
     @Override
     public String toString() {
-        return "Person{" +
-                "fullName='" + fullName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", id=" + id +
-                '}';
+        return getFullName() + Format.fieldSeparator + getPhoneNumber() + Format.fieldSeparator + getId();
     }
+
 
 }
