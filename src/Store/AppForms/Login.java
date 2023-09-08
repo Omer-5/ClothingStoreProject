@@ -5,6 +5,8 @@ import javax.swing.*;
 import Store.Database.EmployeeDAO;
 import Store.Database.SocketData;
 import Store.Utilities;
+import Store.Client.ServerCommunication.DecodeExecuteCommand;
+import Store.Client.ServerCommunication.EncodeCommandEmployee;
 import Store.Database.Admin;
 import Store.Exceptions.EmployeeException;
 
@@ -111,13 +113,16 @@ public class Login extends JFrame {
                 if(id.equals("") || password.equals(""))
                     msg = EmployeeException.MsgId.MISSING_INFO;
                 else {
-                    msg = dao.Login(id, password);
+                    //msg = dao.Login(id, password);
+                    String command = EncodeCommandEmployee.Login(id, password);
+                    String res = DecodeExecuteCommand.decode_and_execute(command);
+                    msg = EmployeeException.MsgId.valueOf(res);
                 }
 
                 if(msg == EmployeeException.MsgId.SUCCESS) {
                     setVisible(false);
                     StoreApp mainAppForm = new StoreApp(dao.getEmployeeByID(Integer.parseInt(id)));
-                    mainAppForm.setVisible(true);
+                    mainAppForm.setVisible(true); 
                 }
                 else {
                     JLabel label = new JLabel(EmployeeException.Msg[msg.ordinal()], JLabel.CENTER);

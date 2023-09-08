@@ -6,8 +6,9 @@ import Store.Employees.Employee;
 
 public class DecodeExecuteCommandChat {
     //TODO: return type??
-    public static void execute(String command)
+    public static String execute(String command)
     {
+        String response = "";
         switch (Format.getMethod(command)) {
             case "sendMessage":
                 Employee temp = Employee.deserializeFromString(Format.getFirstParam(command));
@@ -21,10 +22,11 @@ public class DecodeExecuteCommandChat {
 
             case "createNewChat":                   // Employee #1 and #2 starting a new chat between them
                 break;
-                
+
             default:
                 break;
         }
         
+        return response;
     }
 }

@@ -9,11 +9,13 @@ public class DecodeExecuteCommand {
         String response = "";
         switch (Format.getType(command)) {
             case CHAT:
+                response = DecodeExecuteCommandChat.execute(command);
                 break;
             case CUSTOMER:
                 response = DecodeExecuteCommandCustomer.execute(command);
                 break;
             case EMPLOYEE:
+                response = DecodeExecuteCommandEmployee.execute(command);
                 break;
             case EXCEPTION:
                 break;

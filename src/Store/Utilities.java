@@ -36,7 +36,7 @@ public class Utilities {
         client = socketData;
     }
 
-    public static SocketData getClientSocketData(SocketData socketData) {
+    public static SocketData getClientSocketData() {
         return client;
     }
 

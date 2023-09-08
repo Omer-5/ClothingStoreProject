@@ -1,0 +1,30 @@
+package Store.Client.ServerCommunication;
+
+import Store.Employees.Employee;
+
+public class EncodeCommandEmployee {
+    public static String createNewEmployee(Employee emp) 
+    {
+        return Format.encode(ClassType.EMPLOYEE, "createNewEmployee", emp.serializeToString());
+    }
+    public static String updateEmployee(Employee emp)
+    {
+        return Format.encode(ClassType.EMPLOYEE, "updateEmployee", emp.serializeToString());
+    }
+    public static String deleteEmployee(int id)
+    {
+        return Format.encode(ClassType.EMPLOYEE, "deleteEmployee", Integer.toString(id));
+    }
+    public static String getEmployeeByID(int id)
+    {
+        return Format.encode(ClassType.EMPLOYEE, "getEmployeeByID", Integer.toString(id));
+    }
+    public static String getEmployeesByBranch(String branch)
+    {
+        return Format.encode(ClassType.EMPLOYEE, "getEmployeesByBranch", branch);
+    }
+    public static String Login(String username, String password)
+    {
+        return Format.encode(ClassType.EMPLOYEE, "Login", username, password);
+    }
+}

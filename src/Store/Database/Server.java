@@ -84,6 +84,7 @@ public class Server {
                 String inputString;
                 while ((inputString = socketData.getInputStream().readLine()) != null) {
                     //TODO: Separate Chat, DAO & other Server functions here
+                    System.out.println(inputString);
                     String res = DecodeExecuteCommand.decode_and_execute(inputString);
                     socketData.getOutputStream().println(res);
                 }
