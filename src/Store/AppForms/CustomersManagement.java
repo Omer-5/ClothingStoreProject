@@ -14,8 +14,12 @@ import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
 import Store.Utilities;
+import Store.Client.ServerCommunication.EncodeCommandCustomer;
 import Store.Client.ServerCommunication.Format;
 import Store.Customers.Customer;
+
+// TODO: remove after client-server
+import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Database.CustomerDAO;
 
 public class CustomersManagement extends JPanel {
@@ -233,31 +237,46 @@ public class CustomersManagement extends JPanel {
                     int row = customersTable.getSelectedRow();
                     int id = (int)dmCustomersTable.getValueAt(row, 3);
 
-                    CustomerDAO customerDAO = new CustomerDAO(); //TODO: Add Server-Side Action to get Customer Info here
-                    Customer customer = customerDAO.getCustomerByID(id);
-                    CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(customer);
+                    // OLD @smooth3x
+                    // CustomerDAO customerDAO = new CustomerDAO(); //TODO: Add Server-Side Action to get Customer Info here
+                    // Customer customer = customerDAO.getCustomerByID(id);
                     
-                    JDialog dialog = new JDialog();
-                    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-                    dialog.setModal(true); // Block interaction with other windows
-
-                    dialog.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosed(WindowEvent e) {
-                            // Action to perform when child dialog is closed
-                            ClearTablesCells();
-                            LoadCustomers();
-                        }
-                    });
+                    // New
+                    String command = EncodeCommandCustomer.getCustomerByID(id);
+                    // Send command to server, then process response
+                    String response = DecodeExecuteCommand.decode_and_execute(command); // Running on server
                     
-                    customerAddOrUpdate.setDialog(dialog);
-
-                    dialog.add(customerAddOrUpdate);
-                    
-                    dialog.pack();
-                    dialog.setLocationRelativeTo(null);
-                    dialog.setVisible(true);
-                    
+                    System.out.println(Format.getType(response));
+                    switch (Format.getType(response)) { // check to see response type
+                        case EXCEPTION:
+                            break;
+                        case MESSAGE:
+                            break;
+                        default:
+                            System.out.println(response);
+                            Customer customer = Customer.deserializeFromString(response);
+                            CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(customer);
+                            
+                            JDialog dialog = new JDialog();
+                            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                            dialog.setModal(true); // Block interaction with other windows
+        
+                            dialog.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosed(WindowEvent e) {
+                                    // Action to perform when child dialog is closed
+                                    ClearTablesCells();
+                                    LoadCustomers();
+                                }
+                            });
+                            
+                            customerAddOrUpdate.setDialog(dialog);
+                            dialog.add(customerAddOrUpdate);
+                            dialog.pack();
+                            dialog.setLocationRelativeTo(null);
+                            dialog.setVisible(true);
+                            break;
+                    }
                 }  
                 else if(buttonAction.equals("remove")) {
                     DefaultTableModel dmCustomersTable = (DefaultTableModel)customersTable.getModel();
@@ -266,7 +285,6 @@ public class CustomersManagement extends JPanel {
 
                     CustomerDAO customerDAO = new CustomerDAO(); //TODO: Add Server-Side Action to get Customer Info here
                     customerDAO.deleteCustomer(id);
-
                     dmCustomersTable.removeRow(row);
                 }    
             }

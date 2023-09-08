@@ -5,6 +5,7 @@ import java.util.List;
 
 import Store.Customers.Customer;
 import Store.Employees.Employee;
+import Store.Inventories.InventoryItem;
 
 // [TYPE] | [METHOD_NAME] | [PARAMETERS]
 public class Format {
@@ -20,7 +21,7 @@ public class Format {
     }
 
     public static String encode(ClassType type, String methodName, String param){
-        return encode(type, methodName)+ param + paramsSeparator;
+        return encode(type, methodName) + param + paramsSeparator;
     }
 
     public static String encode(ClassType type, String methodName, String param1, String param2){
@@ -50,6 +51,8 @@ public class Format {
             case "PURCHASE_HISTORY":
                 result = ClassType.PURCHASE_HISTORY;
                 break;
+            default:
+                result = ClassType.OBJECT;
         }
         return result;
     }
@@ -58,7 +61,6 @@ public class Format {
     {
         String temp = str.split(typeSeparator)[1];
         return temp.split(methodSeparator)[0];
-
     }
 
     public static String getFirstParam(String str)
@@ -113,6 +115,29 @@ public class Format {
         System.out.println(arr);
         for(Employee Employee: arr){
             result.append(Employee.serializeToString());
+            result.append(objectSeparator);
+        }
+        System.out.println(result);
+        return result.toString();
+    } 
+
+    public static List<InventoryItem> decodeInventoryItems(String str)
+    {
+       String[] objects = str.split(objectSeparator);
+       List<InventoryItem> arr = new ArrayList<>();
+    
+       for(String objectString: objects){
+           arr.add(InventoryItem.deserializeFromString(objectString));
+       }
+       return arr;
+    } 
+
+   public static String encodeInventoryItems(List<InventoryItem> arr)
+    {
+        StringBuilder result = new StringBuilder();
+        System.out.println(arr);
+        for(InventoryItem InventoryItem: arr){
+            result.append(InventoryItem.serializeToString());
             result.append(objectSeparator);
         }
         System.out.println(result);
