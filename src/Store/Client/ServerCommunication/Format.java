@@ -20,7 +20,7 @@ public class Format {
     }
 
     public static String encode(ClassType type, String methodName, String param){
-        return encode(type, methodName)+ param + paramsSeparator;
+        return encode(type, methodName) + param + paramsSeparator;
     }
 
     public static String encode(ClassType type, String methodName, String param1, String param2){
@@ -50,6 +50,8 @@ public class Format {
             case "PURCHASE_HISTORY":
                 result = ClassType.PURCHASE_HISTORY;
                 break;
+            default:
+                result = ClassType.OBJECT;
         }
         return result;
     }
@@ -58,7 +60,6 @@ public class Format {
     {
         String temp = str.split(typeSeparator)[1];
         return temp.split(methodSeparator)[0];
-
     }
 
     public static String getFirstParam(String str)
