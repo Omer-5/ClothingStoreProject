@@ -5,6 +5,7 @@ import java.util.List;
 
 import Store.Customers.Customer;
 import Store.Employees.Employee;
+import Store.Inventories.InventoryItem;
 
 // [TYPE] | [METHOD_NAME] | [PARAMETERS]
 public class Format {
@@ -114,6 +115,29 @@ public class Format {
         System.out.println(arr);
         for(Employee Employee: arr){
             result.append(Employee.serializeToString());
+            result.append(objectSeparator);
+        }
+        System.out.println(result);
+        return result.toString();
+    } 
+
+    public static List<InventoryItem> decodeInventoryItems(String str)
+    {
+       String[] objects = str.split(objectSeparator);
+       List<InventoryItem> arr = new ArrayList<>();
+    
+       for(String objectString: objects){
+           arr.add(InventoryItem.deserializeFromString(objectString));
+       }
+       return arr;
+    } 
+
+   public static String encodeInventoryItems(List<InventoryItem> arr)
+    {
+        StringBuilder result = new StringBuilder();
+        System.out.println(arr);
+        for(InventoryItem InventoryItem: arr){
+            result.append(InventoryItem.serializeToString());
             result.append(objectSeparator);
         }
         System.out.println(result);

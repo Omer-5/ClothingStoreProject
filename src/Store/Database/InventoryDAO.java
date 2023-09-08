@@ -33,6 +33,7 @@ public class InventoryDAO extends GeneralDAO {
 
         return collection.get(0);
     }
+
     private ArrayList<InventoryItem> resToInventoryCollection(ResultSet res) {
         ArrayList<InventoryItem> resArray = new ArrayList<>();
 
