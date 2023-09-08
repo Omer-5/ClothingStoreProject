@@ -4,26 +4,66 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import Store.Client.ServerCommunication.Format;
+import Store.AppForms.Chats;
+import Store.Client.ServerCommunication.ClassType;
+import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Inventories.InventoryItem;
 
 public class Server {
     private static final int PORT = 7000;
-    private static Map<Employee, SocketData> allClients = new HashMap<Employee, SocketData>();
-    private static Map<Employee, ChatSession> allChats = new HashMap<Employee, ChatSession>();
+    private static Map<Employee, SocketData> connections = new HashMap<Employee, SocketData>();
+    private static Map<Employee, ChatSession> chattingEmployees = new HashMap<Employee, ChatSession>();
 
     public static void main(String[] args) {
         System.out.println("--> Server is running...");
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
+                //TODO: Getting Employee When Client-Login Here
                 Employee emp = new Employee("ישראל ישראלי", "0528921319", 123456789, 212444, "חולון", "1111", EmployeeTitle.CASHIER);
                 new ClientHandler(serverSocket.accept(), emp).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Map<Employee, SocketData> getConnections() {
+        return connections;
+    }
+
+    public static Map<Employee, ChatSession> getChattingEmployees() {
+        return chattingEmployees;
+    }
+    public static void validateChatSession(ChatSession chat) {
+        int chattingCount = 0;
+
+        for (Map.Entry<Employee, ChatSession> entry : chattingEmployees.entrySet()) {
+            int tempSessionID = entry.getValue().getSessionID();
+            int sessionID = chat.getSessionID();
+
+            if(tempSessionID == sessionID)
+                chattingCount++;
+        }
+
+        if(chattingCount < 2) { // Close chat because not enough employees for chat
+            for (Map.Entry<Employee, ChatSession> entry : chattingEmployees.entrySet()) {
+                int tempSessionID = entry.getValue().getSessionID();
+                int sessionID = chat.getSessionID();
+
+                if(tempSessionID == sessionID) {
+                    Employee emp = entry.getKey();
+                    chattingEmployees.remove(emp); 
+                }
+            }
+        }        
+    }
+
+    public static ChatSession getChatSessionByEmployee(Employee emp) {
+        return chattingEmployees.get(emp);
     }
 
     private static class ClientHandler extends Thread {
@@ -37,15 +77,15 @@ public class Server {
 
         public void run() {
             try {
-                synchronized (allClients) {
-                    allClients.put(emp, socketData);
+                synchronized (connections) {
+                    connections.put(emp, socketData);
                 }
-
-                String message;
-                while ((message = socketData.getInputStream().readLine()) != null) {
-                    System.out.println("השרת החזיר: ההודעה התתקבלה בהצלחה");
-                    broadcast(message, socketData.getOutputStream()); // Broadcast the client's message to all clients
-                    //respondToClient(out, "הודעה חדשה: " + message); // Respond to the client
+    
+                String inputString;
+                while ((inputString = socketData.getInputStream().readLine()) != null) {
+                    //TODO: Separate Chat, DAO & other Server functions here
+                    String res = DecodeExecuteCommand.decode_and_execute(inputString);
+                    socketData.getOutputStream().println(res);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -56,25 +96,10 @@ public class Server {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                synchronized (allClients) {
-                    allClients.remove(emp);
+                synchronized (connections) {
+                    connections.remove(emp);
                 }
             }
-        }
-
-        private void broadcast(String message, PrintWriter sender) {
-            synchronized (allClients) {
-                for (Map.Entry<Employee, SocketData> entry : allClients.entrySet()) {
-                    SocketData socketData = entry.getValue();
-                    if (socketData.getOutputStream() != sender) {
-                        socketData.getOutputStream().println(message);
-                    }
-                }
-            }
-        }
-
-        private void respondToClient(PrintWriter clientWriter, String response) {
-            clientWriter.println(response);
         }
     }
 }
