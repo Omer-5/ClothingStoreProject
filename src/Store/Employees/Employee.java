@@ -87,6 +87,22 @@ public class Employee extends Person {
 
       return new Employee(fullName, phoneNumber, id, bankAccount, branch, employeeNumber, password, title);
    }
+// there is a main from GPT that checks the functions
+   public static void main(String[] args) {
+      // Assuming EmployeeTitle is an enum with a value "MANAGER" for demonstration purposes
+      Employee employee = new Employee("John Doe", "123-456-7890", 101, 12345678, "Store1", 1001, "password123", EmployeeTitle.MANAGER);
+
+      // Serialize the employee to string
+      String serializedString = employee.serializeToString();
+      System.out.println("Serialized Employee: " + serializedString);
+
+      // Deserialize the string back to an Employee
+      Employee deserializedEmployee = Employee.deserializeFromString(serializedString);
+      System.out.println("Deserialized Employee: " + deserializedEmployee.toString());
+
+      // Check if the original and deserialized employees are equal
+      System.out.println("Are the original and deserialized employees equal? " + employee.toString().equals(deserializedEmployee.toString()));
+   }
 }
 
 /*
