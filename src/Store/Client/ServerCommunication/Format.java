@@ -1,7 +1,9 @@
 package Store.Client.ServerCommunication;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import Store.Customers.Customer;
 import Store.Employees.Employee;
@@ -143,4 +145,26 @@ public class Format {
         System.out.println(result);
         return result.toString();
     } 
+
+    public static Set<String> decodeAvailableBranches(String str) {
+        String[] objects = str.split(objectSeparator);
+        Set<String> branches = new HashSet<>();
+        
+        for(String objectString: objects){
+           branches.add(objectString);
+       }
+
+       return branches;
+    }
+
+    public static String encodeAvailableBranches(Set<String> branches) {
+        StringBuilder result = new StringBuilder();
+
+        for (String branch : branches) {
+            result.append(branch);
+            result.append(objectSeparator);
+        }
+
+        return result.toString();
+    }
 }

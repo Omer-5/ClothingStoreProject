@@ -3,6 +3,7 @@ package Store.Client.ServerCommunication;
 import java.util.ArrayList;
 
 import Store.Database.EmployeeDAO;
+import Store.Database.Server;
 import Store.Employees.Employee;
 import Store.Exceptions.EmployeeException;
 

@@ -2,6 +2,7 @@ package Store.Client.ServerCommunication;
 
 import Store.Database.ChatSession;
 import Store.Database.Server;
+import Store.Database.SocketData;
 import Store.Employees.Employee;
 
 public class DecodeExecuteCommandChat {
@@ -11,12 +12,15 @@ public class DecodeExecuteCommandChat {
         String response = "";
         switch (Format.getMethod(command)) {
             case "sendMessage":
-                Employee temp = Employee.deserializeFromString(Format.getFirstParam(command));
+                Employee emp = Employee.deserializeFromString(Format.getFirstParam(command));
+                SocketData socketData = Server.getSocketDataByEmployee(emp);
                 String message = Format.getSecondParam(command);
-                ChatSession chat = Server.getChatSessionByEmployee(temp);
-                chat.broadcast(message, chat.getSocketDataByEmployee(temp).getOutputStream());
+                ChatSession chat = Server.getChatHandler().getChatSessionBySocketData(socketData);
+                chat.broadcast(message, socketData.getOutputStream());
                 break;
-
+            case "getAvailableBranches":
+                response = Format.encodeAvailableBranches(Server.getChatHandler().getAvailableBranches());
+                break;
             case "waitingForEmployeeToAccept":      // Employee #1 wanting to chat with other branch  --> look for available employee to accept
                 break;
 
