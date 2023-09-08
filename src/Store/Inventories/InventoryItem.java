@@ -1,5 +1,9 @@
 package Store.Inventories;
 
+import Store.Client.ServerCommunication.Format;
+import Store.Employees.Employee;
+import Store.Employees.EmployeeTitle;
+
 public class InventoryItem {
     private String branch;
     private int productID;
@@ -72,7 +76,50 @@ public class InventoryItem {
     public void setPrice(double price) {
         this.price = price;
     }
+
+
+    public String toString() {
+        return getBranch() + Format.fieldSeparator
+                + getProductID() + Format.fieldSeparator
+                + getName()+ Format.fieldSeparator
+                + getCategory()+ Format.fieldSeparator
+                + getQuantity()+ Format.fieldSeparator
+                + getPrice();
+    }
+    public String serializeToString()
+    {
+        return this.toString();
+    }
+
+    public static InventoryItem deserializeFromString(String serializedString) {
+        String[] fields = serializedString.split(Format.fieldSeparator);
+        String branch = fields[0];
+        int productID = Integer.parseInt(fields[1]);
+        String name = fields[2];
+        String category = fields[3];
+        int quantity = Integer.parseInt(fields[4]);
+        double price = Double.parseDouble(fields[5]);
+        return new InventoryItem(branch, productID, name, category, quantity, price);
+    }
+    // there is a main from GPT that checks the functions
+    public static void main(String[] args) {
+        // Create a new InventoryItem instance
+        InventoryItem item = new InventoryItem("Store1", 101, "Laptop", "Electronics", 5, 999.99);
+
+        // Serialize the item to string
+        String serializedString = item.serializeToString();
+        System.out.println("Serialized InventoryItem: " + serializedString);
+
+        // Deserialize the string back to an InventoryItem
+        InventoryItem deserializedItem = InventoryItem.deserializeFromString(serializedString);
+        System.out.println("Deserialized InventoryItem: " + deserializedItem.toString());
+
+        // Check if the original and deserialized items are equal
+        System.out.println("Are the original and deserialized items equal? " + item.toString().equals(deserializedItem.toString()));
+    }
 }
+
+
 
 /*
 CREATE TABLE Inventory (

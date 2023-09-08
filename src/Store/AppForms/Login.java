@@ -3,6 +3,8 @@ package Store.AppForms;
 import javax.swing.*;
 
 import Store.Database.EmployeeDAO;
+import Store.Database.SocketData;
+import Store.Utilities;
 import Store.Database.Admin;
 import Store.Exceptions.EmployeeException;
 
@@ -11,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.Socket;
 
 public class Login extends JFrame {
     private JTextField employeeIdField;
@@ -101,7 +105,7 @@ public class Login extends JFrame {
                 String password = new String(passwordChars);
 
                 EmployeeException.MsgId msg;
-                EmployeeDAO dao = new EmployeeDAO();
+                EmployeeDAO dao = new EmployeeDAO(); //TODO: DAO Server-Side
 
                 //TODO: Add Server Login Request Here (Socket etc..)
                 if(id.equals("") || password.equals(""))
@@ -173,7 +177,17 @@ public class Login extends JFrame {
         });
 
         add(panel);
+        initClient();
     }
+
+    private void initClient() {
+        try {
+            Utilities.setClientSocketData(new SocketData(new Socket("localhost", 7000))); // Replace with your server address and port
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Login loginForm = new Login();

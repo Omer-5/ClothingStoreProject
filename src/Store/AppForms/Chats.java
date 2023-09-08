@@ -13,6 +13,7 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 
+import Store.Database.SocketData;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 
@@ -37,9 +38,7 @@ public class Chats extends JPanel {
 
     private Employee emp;
 
-    private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private SocketData socketData;
 
     private StyledDocument doc;
     private Style regularStyle;
@@ -48,7 +47,7 @@ public class Chats extends JPanel {
 
     public Chats(Employee emp) {
         initComponents();
-        initClient();
+        //initClient();
 
         liveChatPanel_historyTextPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
@@ -315,11 +314,9 @@ public class Chats extends JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void initClient() {
+    /*private void initClient() {
         try {
-            socket = new Socket("localhost", 7000); // Replace with your server address and port
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            socketData = new SocketData(new Socket("localhost", 7000)); // Replace with your server address and port
 
             // Start a thread to continuously receive messages from the server
             new Thread(new Runnable() {
@@ -327,8 +324,9 @@ public class Chats extends JPanel {
                 public void run() {
                     try {
                         String message;
-                        while ((message = in.readLine()) != null && !message.equals("")) {
-                            appendMessage("", message);
+                        while ((message = socketData.getInputStream().readLine()) != null && !message.equals("")) {
+                            String[] messageSplit = message.split(": ");
+                            appendMessage(messageSplit[0], messageSplit[1], false);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -338,12 +336,12 @@ public class Chats extends JPanel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
     private void liveChatPanel_sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {
         String message = liveChatPanel_messageTextField.getText();
         String senderName = emp.getFullName();
 
-        appendMessage(senderName, message);
+        appendMessage(senderName, message, true);
         sendMessage(senderName, message);
 
         liveChatPanel_messageTextField.setText("");
@@ -353,17 +351,16 @@ public class Chats extends JPanel {
         liveChatPanel_sendMessageButton.doClick();
     }
 
-    private void appendMessage(String senderName, String message) {
+    private void appendMessage(String senderName, String message, boolean isCurrClient) {
         // Format the message as HTML with sender's name in bold
         try {
-            if(senderName.equals("")) { 
-                String[] messageSplit = message.split(": ");
-                doc.insertString(doc.getLength(), messageSplit[0] + ": ", otherClientStyle);
-                doc.insertString(doc.getLength(), messageSplit[1] + "\n", regularStyle);    
-            } else {
+            if(!isCurrClient) 
+                doc.insertString(doc.getLength(), senderName + ": ", otherClientStyle);  
+            else 
                 doc.insertString(doc.getLength(), senderName + ": ", boldStyle);
-                doc.insertString(doc.getLength(), message + "\n", regularStyle);
-            } 
+
+            doc.insertString(doc.getLength(), message + "\n", regularStyle);
+             
         } catch (BadLocationException ex) {
             ex.printStackTrace();
         }
@@ -371,7 +368,7 @@ public class Chats extends JPanel {
 
     private void sendMessage(String senderName, String message) {
         if (!message.isEmpty()) {
-            out.println(senderName + ": " + message);
+            socketData.getOutputStream().println(senderName + ": " + message);
         }
     }
 

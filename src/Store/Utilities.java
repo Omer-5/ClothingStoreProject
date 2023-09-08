@@ -1,9 +1,15 @@
 package Store;
 
 import javax.swing.*;
+
+import Store.Database.SocketData;
+
 import java.awt.*;
+import java.net.Socket;
 
 public class Utilities {
+    private static SocketData client;
+
     public static boolean isNumeric(String str)
     {
         int intValue;
@@ -24,6 +30,14 @@ public class Utilities {
         } catch( NumberFormatException e) {
             return false;
         }
+    }
+
+    public static void setClientSocketData(SocketData socketData) {
+        client = socketData;
+    }
+
+    public static SocketData getClientSocketData(SocketData socketData) {
+        return client;
     }
 
     public static void MessageBox(String text)
