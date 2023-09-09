@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Exceptions.EmployeeException;
+import Store.Server.Logger.Logger;
 import Store.Utilities;
 import Store.AppForms.Login;
 
@@ -18,6 +19,7 @@ public class EmployeeDAO extends GeneralDAO{
     public void createNewEmployee(Employee emp) 
     {
         insertObject("Employees", queryForInsert(emp));
+        Logger.registerEmployee(emp);
     }
 
     public void updateEmployee(Employee emp)

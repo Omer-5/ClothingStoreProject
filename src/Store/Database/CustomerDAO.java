@@ -8,6 +8,7 @@ import Store.Customers.Customer;
 import Store.Customers.CustomerNew;
 import Store.Customers.CustomerRegular;
 import Store.Customers.CustomerVIP;
+import Store.Server.Logger.Logger;
 
 // TODO: untested!
 public class CustomerDAO extends GeneralDAO {
@@ -15,6 +16,7 @@ public class CustomerDAO extends GeneralDAO {
     public void createNewCustomer(Customer customer, String customerType) {
         // Implementation of the insertObject method should be in GeneralDAO
         insertObject("Customers", queryForInsert(customer, customerType));
+        Logger.registerCustomer(customer);
     }
 
     public void updateCustomer(Customer customer, String customerType) {

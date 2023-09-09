@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 
 import Store.Inventories.InventoryItem;
 import Store.PurchaseHistory.*;
+import Store.Server.Logger.Logger;
 
 public class PurchaseHistoryDAO extends GeneralDAO {
 
@@ -33,6 +34,7 @@ public class PurchaseHistoryDAO extends GeneralDAO {
             PurchasedItem item = new PurchasedItem(orderID, items.get(i).getProductID());
             insertObject("[PurchaseHistoryItems]", queryForInsertItems(item));
         }
+        Logger.logPurchase(purchase);
     }
 
     private String queryForInsert(Purchase purchase) {
