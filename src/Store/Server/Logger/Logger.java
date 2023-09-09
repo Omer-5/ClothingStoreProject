@@ -34,22 +34,23 @@ public class Logger {
     public static void logPurchase(Purchase purchase) {
         log("Customer " + purchase.getCustomerID()+ " purchased " + purchase.getPurchaseID());
     }
-
+    
+    //TODO: handle chat
+    public static void saveChat(String fileName, String conversation) {
+        if (saveChatConversation == "Yes") {
+            // Save the entire chat to separate file
+        }
+        
+        // String logMessage = "[" + LocalDateTime.now() + "] " + sender + " to " + receiver + ": " + message;
+        // log(logMessage);
+    }
+    
     public static void logChatStarted()
     {
         log("Chat started ");
 
     }
-
-    public static void saveChat(String fileName, String conversation) {
-        if (saveChatConversation == "Yes") {
-            // Save the entire chat to separate file
-        }
-
-        // String logMessage = "[" + LocalDateTime.now() + "] " + sender + " to " + receiver + ": " + message;
-        // log(logMessage);
-    }
-
+    
     public static void turnOffSavingChat()
     {
         saveChatConversation = "No";
