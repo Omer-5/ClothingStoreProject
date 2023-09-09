@@ -3,14 +3,11 @@ package Store.Database;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Exceptions.EmployeeException;
 import Store.Server.Logger.Logger;
 import Store.Utilities;
-import Store.AppForms.Login;
 
 import java.sql.SQLException;
 
@@ -88,43 +85,6 @@ public class EmployeeDAO extends GeneralDAO{
             else
                 return EmployeeException.MsgId.SUCCESS;
         }
-    }
-
-
-    public void test()
-    {
-        ResultSet  res = getObject("Employees", "*", "FullName = 'Yossi'");
-        try{
-            while(res.next())
-            {
-                System.out.println(res.getString("FullName"));
-            }
-        }
-        catch (SQLException e)
-        {
-
-        }
-    }
-
-    public void test2()
-    {
-        Employee emp = new Employee("Daniel", "0528921319", 318595246, 123456, "חולון", "1111", EmployeeTitle.MANAGER);
-        createNewEmployee(emp);
-    }
-
-    public void test3()
-    {
-        Employee emp = new Employee("Daniel", "0528921319", 318595246, 123456, "חולון", "1111", EmployeeTitle.MANAGER);
-        emp.setFullName("Omer");
-        emp.setPassword("4444");
-
-        updateEmployee(emp);
-    }
-
-    public void test4() 
-    {
-        int id = 318595246;
-        deleteEmployee(318595246);
     }
     
     private String queryForInsert(Employee emp)
