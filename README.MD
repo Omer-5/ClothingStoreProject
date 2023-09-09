@@ -7,6 +7,7 @@ Tasks:
 - [ ] Logger
     - [ ] UI
     - [ ] Logic
+- [ ] Prevent logging to the same user from 2 different stations
 - [ ] Exceptions
 - [ ] Restructure files to client-server folders
 - [ ] Clean the code base + add comments
