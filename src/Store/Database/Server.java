@@ -11,7 +11,6 @@ import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Inventories.InventoryItem;
-import Store.Server.Logger.Logger;
 
 public class Server {
     private static final int PORT = 7000;
@@ -20,7 +19,6 @@ public class Server {
 
     public static void main(String[] args) {
         System.out.println("--> Server is running...");
-        Logger.initLogger();
         
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
