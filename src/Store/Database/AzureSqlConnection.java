@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 public class AzureSqlConnection {
     // Azure SQL Database connection details
-    private static PropertiesReader reader = new PropertiesReader("src/Store/Database/Secrets.properties"); //TODO: Change path after restructure
+    private static PropertiesHandler reader = new PropertiesHandler("src/Store/Database/Secrets.properties"); //TODO: Change path after restructure
     private static String SERVER_NAME = reader.getProperty("SERVER_NAME");
     private static String DATABASE_NAME = reader.getProperty("DATABASE_NAME");
     private static String USERNAME = reader.getProperty("USERNAME");
