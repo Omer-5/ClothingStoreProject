@@ -10,27 +10,22 @@ import Store.Customers.CustomerRegular;
 import Store.Customers.CustomerVIP;
 import Store.Server.Logger.Logger;
 
-// TODO: untested!
 public class CustomerDAO extends GeneralDAO {
 
     public void createNewCustomer(Customer customer, String customerType) {
-        // Implementation of the insertObject method should be in GeneralDAO
         insertObject("Customers", queryForInsert(customer, customerType));
         Logger.registerCustomer(customer);
     }
 
     public void updateCustomer(Customer customer, String customerType) {
-        // Implementation of the updateObject method should be in GeneralDAO
         updateObject("Customers", queryForUpdate(customer, customerType));
     }
 
     public void deleteCustomer(int id) {
-        // Implementation of the deleteObject method should be in GeneralDAO
         deleteObject("Customers", "ID=" + id);
     }
 
     public Customer getCustomerByID(int id) {
-        // Implementation of the getObject method should be in GeneralDAO
         ResultSet res = getObject("Customers", "*", "ID = " + id);
         ArrayList<Customer> collection = resToCollection(res);
         if (collection.isEmpty())
@@ -39,19 +34,14 @@ public class CustomerDAO extends GeneralDAO {
     }
 
     public ArrayList<Customer> getCustomersByType(String type) {
-        // Implementation of the getObject method should be in GeneralDAO
         ResultSet res = getObject("Customers", "*", "Type = '" + type + "'");
         return resToCollection(res);
     }
 
     public ArrayList<Customer> getCustomers() {
-        // Implementation of the getObject method should be in GeneralDAO
         ResultSet res = getObject("Customers", "*", "");
         return resToCollection(res);
     }
-
-    // Assuming that you have queryForInsert and queryForUpdate methods
-    // that handle Customer objects in a way similar to Employee objects
 
     private ArrayList<Customer> resToCollection(ResultSet res) {
         ArrayList<Customer> customers = new ArrayList<>();
@@ -68,21 +58,20 @@ public class CustomerDAO extends GeneralDAO {
                 }
             }
         } catch (SQLException e) {
-            // Handle exception
+            // TODO: Handle exception
             e.printStackTrace();
         }
         return customers;
     }
 
-    //TODO: ENUM?
     private Customer createCustomerFromResultSet(String fullName, String phoneNumber, int id, String type) {
         switch (type) {
             case "New":
-                return new CustomerNew(fullName, phoneNumber, id); // Ensure this constructor exists
+                return new CustomerNew(fullName, phoneNumber, id); 
             case "Regular":
-                return new CustomerRegular(fullName, phoneNumber, id); // Ensure this constructor exists
+                return new CustomerRegular(fullName, phoneNumber, id);
             case "VIP":
-                return new CustomerVIP(fullName, phoneNumber, id); // Ensure this constructor exists
+                return new CustomerVIP(fullName, phoneNumber, id); 
             default:
                 return null;
         }
