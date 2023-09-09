@@ -10,7 +10,7 @@ public class DecodeExecuteCommandChat {
     {
         Employee emp;
         SocketData socketData;
-        String response = "";
+        String response = ""; // TODO: add response
         switch (Format.getMethod(command)) {
             case "clientOnline":
                 emp = Employee.deserializeFromString(Format.getFirstParam(command));
