@@ -12,7 +12,7 @@ import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
 
 import Store.Inventories.InventoryItem;
-import Store.PurchaseHistory.Order;
+import Store.PurchaseHistory.Purchase;
 import Store.PurchaseHistory.PurchasedItem;
 import Store.Database.InventoryDAO;
 import Store.Database.PurchaseHistoryDAO;
@@ -640,7 +640,7 @@ public class CashRegister extends JPanel {
 
         LocalDateTime date = LocalDateTime.now();
 
-        Order order = new Order(customer.getId(), date, emp.getBranch(), items);
+        Purchase order = new Purchase(customer.getId(), date, emp.getBranch(), items);
 
         PurchaseHistoryDAO purchaseDAO = new PurchaseHistoryDAO(); //TODO: Add Server-Client Here
         purchaseDAO.createNewPurchase(order);

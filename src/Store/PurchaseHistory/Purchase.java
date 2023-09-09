@@ -7,28 +7,27 @@ import Store.Inventories.InventoryItem;
 import java.time.*;
 import java.util.ArrayList;
 
-public class Order {
+public class Purchase {
     private int purchaseID;
     private int customerID;
     private LocalDateTime date; 
     private String branch;
-
     private ArrayList<InventoryItem> purchasedItems;
 
-    public Order(int customerID, LocalDateTime date, String branch) {
+    public Purchase(int customerID, LocalDateTime date, String branch) {
         this.customerID = customerID;
         this.date = date;
         this.branch = branch;
     }
 
-    public Order(int customerID, LocalDateTime date, String branch, ArrayList<InventoryItem> purchasedItems) {
+    public Purchase(int customerID, LocalDateTime date, String branch, ArrayList<InventoryItem> purchasedItems) {
         this.customerID = customerID;
         this.date = date;
         this.branch = branch;
         this.purchasedItems = purchasedItems;
     }
 
-    public Order(int purchaseID, int customerID, LocalDateTime date, String branch) {
+    public Purchase(int purchaseID, int customerID, LocalDateTime date, String branch) {
         this.purchaseID = purchaseID;
         this.customerID = customerID;
         this.date = date;
@@ -51,8 +50,8 @@ public class Order {
         return this.branch;
     }
 
-    public void setPurchasedItems( ArrayList<InventoryItem> items) {
-        this.purchasedItems = purchasedItems;
+    public void setPurchasedItems(ArrayList<InventoryItem> items) {
+        this.purchasedItems = items;
     }
 
     public ArrayList<InventoryItem> getItems() {

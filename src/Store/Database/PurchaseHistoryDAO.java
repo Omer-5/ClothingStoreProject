@@ -16,7 +16,7 @@ public class PurchaseHistoryDAO extends GeneralDAO {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     DateTimeFormatter formatter_get = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public void createNewPurchase(Order order) {
+    public void createNewPurchase(Purchase order) {
         // Implementation of the insertObject method should be in GeneralDAO
         insertObject("PurchaseHistory", queryForInsert(order));  
         int orderID = -1;
@@ -35,7 +35,7 @@ public class PurchaseHistoryDAO extends GeneralDAO {
         }
     }
 
-    private String queryForInsert(Order order) {
+    private String queryForInsert(Purchase order) {
         String query = String.format("VALUES (%d, CONVERT(datetime, '%s', 103), N'%s')",
                 order.getCustomerID(),
                 formatter.format(order.getDate()),
@@ -54,7 +54,7 @@ public class PurchaseHistoryDAO extends GeneralDAO {
     // Additional helper method to convert ResultSet to InventoryItem objects
     public ArrayList<PurchasedItem> getItemsFromOrdersByBranchAndDays(String branch, int days) {
         ResultSet res;
-        ArrayList<Order> orders;
+        ArrayList<Purchase> orders;
         ArrayList<PurchasedItem> purchasedItems = new ArrayList<PurchasedItem>();
         
         if( days == 0 )
@@ -73,9 +73,9 @@ public class PurchaseHistoryDAO extends GeneralDAO {
         return purchasedItems;
     }
 
-    private ArrayList<Order> resToCollection(ResultSet res)
+    private ArrayList<Purchase> resToCollection(ResultSet res)
     {
-        ArrayList<Order> resArray = new ArrayList<>();
+        ArrayList<Purchase> resArray = new ArrayList<>();
 
         try {
             while(res.next())
@@ -87,7 +87,7 @@ public class PurchaseHistoryDAO extends GeneralDAO {
 
                 String branch = res.getString("Branch");
 
-                Order temp = new Order(purchaseID, customerID, date, branch); 
+                Purchase temp = new Purchase(purchaseID, customerID, date, branch); 
                 resArray.add(temp);
             }
         } catch (SQLException e) {
