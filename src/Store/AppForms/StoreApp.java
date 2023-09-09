@@ -1,4 +1,5 @@
 package Store.AppForms;
+import Store.Utilities;
 import Store.Employees.*;
 
 import javax.swing.*;
@@ -13,9 +14,28 @@ public class StoreApp extends JFrame {
     private JPanel contentPanel;
     private Employee emp;
 
+    private CashRegister cashRegister;
+    private CustomersManagement customersManagement;
+    private InventoryManagement inventoryManagement;
+    private Chats chats;
+    private BranchReport branchReport;
+
     public StoreApp(Employee emp) {
         this.emp = emp;
 
+        initComponents();
+
+        cashRegister = new CashRegister(emp); // Create the CashRegister panel
+        customersManagement = new CustomersManagement(); // Create the Customer Management panel
+        inventoryManagement = new InventoryManagement(emp.getBranch()); // Create the Inventory Management panel
+        chats = new Chats(emp); // Create the Chats panel
+        branchReport = new BranchReport(emp.getBranch()); // Create the Branch Report panel
+
+        cashRegister.setPreferredSize(contentPanel.getSize());
+        contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
+    }
+
+    public void initComponents() {
         setTitle("ניהול חנות בגדים - מסך ראשי [מחובר עם: " + emp.getFullName() + "] | [סניף: " + emp.getBranch() + "]");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1280, 720);
@@ -58,10 +78,6 @@ public class StoreApp extends JFrame {
 
         // Center align the frame on the screen
         setLocationRelativeTo(null);
-
-        CashRegister cashRegister = new CashRegister(emp); // Create the CashRegister panel
-        cashRegister.setPreferredSize(contentPanel.getSize());
-        contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
     }
 
     private void createNavigationButton(String iconPath, String label) {
@@ -118,34 +134,29 @@ public class StoreApp extends JFrame {
             contentPanel.removeAll();
             contentPanel.repaint();
 
+            if (panelName.equals("צ'אט"))
+                Utilities.setInChatPanel(emp, true);
+            else
+                Utilities.setInChatPanel(emp, false);
+
             if (panelName.equals("קופה")) {
-                CashRegister cashRegister = new CashRegister(emp); // Create the CashRegister panel
                 cashRegister.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
             } else if (panelName.equals("ניהול לקוחות")) { 
-                CustomersManagement customersManagement = new CustomersManagement(); // Create the CashRegister panel
                 customersManagement.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(customersManagement); // Add the CashRegister panel to the content panel's center
             } else if (panelName.equals("ניהול מלאי סניף")) { 
-                InventoryManagement inventoryManagement = new InventoryManagement(emp.getBranch()); // Create the CashRegister panel
                 inventoryManagement.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(inventoryManagement); // Add the CashRegister panel to the content panel's center
             } else if (panelName.equals("דוחות וסטטיסטיקות")) { 
-                BranchReport branchReport = new BranchReport(emp.getBranch()); // Create the CashRegister panel
                 branchReport.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(branchReport); // Add the CashRegister panel to the content panel's center
             }else if (panelName.equals("צ'אט")) { 
-                Chats chatPanel = new Chats(emp); // Create the CashRegister panel
-                chatPanel.setPreferredSize(contentPanel.getSize());
-                contentPanel.add(chatPanel); // Add the CashRegister panel to the content panel's center
+                chats.LoadAvailableBranches();
+                chats.setPreferredSize(contentPanel.getSize());
+                contentPanel.add(chats); // Add the CashRegister panel to the content panel's center
             }
-            /*else {
-                JLabel label = new JLabel(panelName + " Content", SwingConstants.CENTER);
-                label.setFont(new Font("Arial", Font.PLAIN, 24)); // Set font size
-                contentPanel.add(label, BorderLayout.CENTER); // Add a label for other panels
-            }*/
-
-            // Refresh the content panel
+            
             contentPanel.revalidate();
             contentPanel.repaint();
         }

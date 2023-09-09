@@ -9,17 +9,30 @@ public class DecodeExecuteCommandChat {
     //TODO: return type??
     public static String execute(String command)
     {
+        Employee emp;
+        SocketData socketData;
         String response = "";
         switch (Format.getMethod(command)) {
+            case "clientOnline":
+                emp = Employee.deserializeFromString(Format.getFirstParam(command));
+                socketData = Server.getSocketDataByEmployee(emp);
+                Server.ChatHandler.getAvailableEmployees().put(socketData, emp);
+                break;
+            case "clientOffline":
+                emp = Employee.deserializeFromString(Format.getFirstParam(command));
+                socketData = Server.getSocketDataByEmployee(emp);
+                Server.ChatHandler.getAvailableEmployees().remove(emp);
+                break;
             case "sendMessage":
-                Employee emp = Employee.deserializeFromString(Format.getFirstParam(command));
-                SocketData socketData = Server.getSocketDataByEmployee(emp);
+                emp = Employee.deserializeFromString(Format.getFirstParam(command));
+                socketData = Server.getSocketDataByEmployee(emp);
                 String message = Format.getSecondParam(command);
                 ChatSession chat = Server.getChatHandler().getChatSessionBySocketData(socketData);
                 chat.broadcast(message, socketData.getOutputStream());
                 break;
             case "getAvailableBranches":
-                response = Format.encodeAvailableBranches(Server.getChatHandler().getAvailableBranches());
+                String branch = Format.getFirstParam(command);
+                response = Format.encodeAvailableBranches(Server.getChatHandler().getAvailableBranches(branch));
                 break;
             case "waitingForEmployeeToAccept":      // Employee #1 wanting to chat with other branch  --> look for available employee to accept
                 break;

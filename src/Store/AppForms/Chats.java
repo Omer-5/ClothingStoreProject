@@ -1,26 +1,39 @@
 package Store.AppForms;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 
+import Store.Utilities;
+import Store.Client.ServerCommunication.EncodeCommandChat;
+import Store.Client.ServerCommunication.Format;
+import Store.Database.InventoryDAO;
 import Store.Database.SocketData;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
+import Store.Inventories.InventoryItem;
 
 public class Chats extends JPanel {
     
     private javax.swing.JPanel chatsPanel;
     private javax.swing.JTable chatsPanel_AvailableBranchesTable;
+    private javax.swing.JButton chatsPanel_reloadAvailableBranchesTableButton;
     private javax.swing.JSeparator chatsPanel__HeaderSeparator;
     private javax.swing.JLabel chatsPanel_mainLabel;
     private javax.swing.JLabel chatsPanel_subMainLabel;
@@ -35,11 +48,11 @@ public class Chats extends JPanel {
     private javax.swing.JTable manageChatsPanel_AvailableChatsTable;
     private javax.swing.JSeparator manageChatsPanel__HeaderSeparator1;
     private javax.swing.JLabel manageChatsPanel_mainLabel;
+    private javax.swing.JButton manageChatsPanel_reloadAvailableChatsTableButton;
 
     private Employee emp;
 
-    private SocketData socketData;
-
+    // Chat Styles
     private StyledDocument doc;
     private Style regularStyle;
     private Style otherClientStyle;
@@ -47,23 +60,8 @@ public class Chats extends JPanel {
 
     public Chats(Employee emp) {
         initComponents();
-        //initClient();
-
-        liveChatPanel_historyTextPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-
-        // Create a StyledDocument
-        doc = liveChatPanel_historyTextPane.getStyledDocument();
-
-        // Create styles
-        regularStyle = doc.addStyle("Regular", null);
-        StyleConstants.setFontFamily(regularStyle, "Calibri");
-        StyleConstants.setFontSize(regularStyle, 18);
-
-        boldStyle = doc.addStyle("Bold", regularStyle);
-        StyleConstants.setBold(boldStyle, true);
-
-        otherClientStyle = doc.addStyle("Bold", boldStyle);
-        StyleConstants.setForeground(otherClientStyle, Color.blue);
+        initComponentsSettings();
+        setLiveChat(false);
 
         this.emp = emp;
     }
@@ -76,11 +74,13 @@ public class Chats extends JPanel {
         chatsPanel__HeaderSeparator = new javax.swing.JSeparator();
         jScrollPane4 = new javax.swing.JScrollPane();
         chatsPanel_AvailableBranchesTable = new javax.swing.JTable();
+        chatsPanel_reloadAvailableBranchesTableButton = new javax.swing.JButton();
         manageChatsPanel = new javax.swing.JPanel();
         manageChatsPanel_mainLabel = new javax.swing.JLabel();
         manageChatsPanel__HeaderSeparator1 = new javax.swing.JSeparator();
         jScrollPane5 = new javax.swing.JScrollPane();
         manageChatsPanel_AvailableChatsTable = new javax.swing.JTable();
+        manageChatsPanel_reloadAvailableChatsTableButton = new javax.swing.JButton();
         liveChatPanel = new javax.swing.JPanel();
         liveChatPanel_messageTextField = new javax.swing.JTextField();
         liveChatPanel_sendMessageButton = new javax.swing.JButton();
@@ -108,7 +108,7 @@ public class Chats extends JPanel {
 
             },
             new String [] {
-                "פעולות", "שם סניף"
+                "התחל שיחה", "שם סניף"
             }
         ) {
             Class[] types = new Class [] {
@@ -131,6 +131,15 @@ public class Chats extends JPanel {
             chatsPanel_AvailableBranchesTable.getColumnModel().getColumn(0).setResizable(false);
             chatsPanel_AvailableBranchesTable.getColumnModel().getColumn(1).setResizable(false);
         }
+
+        chatsPanel_reloadAvailableBranchesTableButton.setBackground(new java.awt.Color(51, 153, 0));
+        chatsPanel_reloadAvailableBranchesTableButton.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
+        chatsPanel_reloadAvailableBranchesTableButton.setText("רענן");
+        chatsPanel_reloadAvailableBranchesTableButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chatsPanel_reloadAvailableBranchesTableButtonActionPerformed(evt);
+            }
+        });
 
         manageChatsPanel.setBackground(new java.awt.Color(204, 204, 204));
 
@@ -170,62 +179,77 @@ public class Chats extends JPanel {
             manageChatsPanel_AvailableChatsTable.getColumnModel().getColumn(3).setResizable(false);
         }
 
+        manageChatsPanel_reloadAvailableChatsTableButton.setBackground(new java.awt.Color(51, 153, 0));
+        manageChatsPanel_reloadAvailableChatsTableButton.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
+        manageChatsPanel_reloadAvailableChatsTableButton.setText("רענן");
+        manageChatsPanel_reloadAvailableChatsTableButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manageChatsPanel_reloadAvailableChatsTableButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout manageChatsPanelLayout = new javax.swing.GroupLayout(manageChatsPanel);
         manageChatsPanel.setLayout(manageChatsPanelLayout);
         manageChatsPanelLayout.setHorizontalGroup(
             manageChatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(manageChatsPanelLayout.createSequentialGroup()
-                .addGap(69, 69, 69)
-                .addGroup(manageChatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageChatsPanelLayout.createSequentialGroup()
+                .addGap(68, 68, 68)
+                .addGroup(manageChatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(manageChatsPanel__HeaderSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(manageChatsPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(manageChatsPanel_mainLabel)
-                        .addGap(51, 51, 51))
-                    .addComponent(manageChatsPanel__HeaderSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(51, 51, 51)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(manageChatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(manageChatsPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
-                    .addContainerGap()))
+            .addGroup(manageChatsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(manageChatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(manageChatsPanel_reloadAvailableChatsTableButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         manageChatsPanelLayout.setVerticalGroup(
             manageChatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(manageChatsPanelLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addContainerGap()
                 .addComponent(manageChatsPanel_mainLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(manageChatsPanel__HeaderSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(251, Short.MAX_VALUE))
-            .addGroup(manageChatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageChatsPanelLayout.createSequentialGroup()
-                    .addContainerGap(70, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap()))
+                .addComponent(manageChatsPanel__HeaderSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(manageChatsPanel_reloadAvailableChatsTableButton)
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout chatsPanelLayout = new javax.swing.GroupLayout(chatsPanel);
         chatsPanel.setLayout(chatsPanelLayout);
         chatsPanelLayout.setHorizontalGroup(
             chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatsPanelLayout.createSequentialGroup()
+            .addGroup(chatsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(manageChatsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatsPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatsPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(chatsPanelLayout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(chatsPanel_mainLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(chatsPanel_subMainLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(chatsPanel__HeaderSeparator, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(72, 72, 72))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatsPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(chatsPanelLayout.createSequentialGroup()
+                                .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(chatsPanel_subMainLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(chatsPanel__HeaderSeparator, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(72, 72, 72))
+                            .addGroup(chatsPanelLayout.createSequentialGroup()
+                                .addGap(52, 52, 52)
+                                .addComponent(chatsPanel_mainLabel)
+                                .addGap(20, 20, 20))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatsPanelLayout.createSequentialGroup()
+                        .addGroup(chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, chatsPanelLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(manageChatsPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(chatsPanel_reloadAvailableBranchesTableButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         chatsPanelLayout.setVerticalGroup(
             chatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,10 +259,12 @@ public class Chats extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chatsPanel_subMainLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chatsPanel__HeaderSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(chatsPanel__HeaderSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chatsPanel_reloadAvailableBranchesTableButton)
+                .addGap(35, 35, 35)
                 .addComponent(manageChatsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -314,29 +340,62 @@ public class Chats extends JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    /*private void initClient() {
-        try {
-            socketData = new SocketData(new Socket("localhost", 7000)); // Replace with your server address and port
+    private void initComponentsSettings() {
+        liveChatPanel_historyTextPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
-            // Start a thread to continuously receive messages from the server
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        String message;
-                        while ((message = socketData.getInputStream().readLine()) != null && !message.equals("")) {
-                            String[] messageSplit = message.split(": ");
-                            appendMessage(messageSplit[0], messageSplit[1], false);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Create a StyledDocument
+        doc = liveChatPanel_historyTextPane.getStyledDocument();
+
+        // Create styles
+        regularStyle = doc.addStyle("Regular", null);
+        StyleConstants.setFontFamily(regularStyle, "Calibri");
+        StyleConstants.setFontSize(regularStyle, 18);
+
+        boldStyle = doc.addStyle("Bold", regularStyle);
+        StyleConstants.setBold(boldStyle, true);
+
+        otherClientStyle = doc.addStyle("Bold", boldStyle);
+        StyleConstants.setForeground(otherClientStyle, Color.blue);
+
+    }
+    
+    private void setLiveChat(boolean status) {
+        if(status) {
+            liveChatPanel_messageTextField.setEnabled(true);
+            liveChatPanel_sendMessageButton.setEnabled(true);
         }
-    }*/
+        else {
+            liveChatPanel_messageTextField.setEnabled(false);
+        liveChatPanel_sendMessageButton.setEnabled(false);
+        }
+    }
+    
+    public void LoadAvailableBranches() {
+        ClearTablesCells();
+
+        String command = EncodeCommandChat.getAvailableBranches(emp.getBranch());
+        Set<String> branches;
+
+        Utilities.getClientSocketData().getOutputStream().println(command);
+        try {
+            String res = Utilities.getClientSocketData().getInputStream().readLine();
+            if( res != "" ) {
+                branches = Format.decodeAvailableBranches(res);
+            
+            for(String branch : branches)
+                addRowWithButtonsToAvailableBranchesTable(branch);
+            }   
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+            branches = new HashSet<>();
+        }
+
+        CenterTablesCells();
+    }
+    
+
     private void liveChatPanel_sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {
         String message = liveChatPanel_messageTextField.getText();
         String senderName = emp.getFullName();
@@ -349,6 +408,14 @@ public class Chats extends JPanel {
 
     private void liveChatPanel_messageTextFieldActionPerformed(java.awt.event.ActionEvent evt) {
         liveChatPanel_sendMessageButton.doClick();
+    }
+
+    private void manageChatsPanel_reloadAvailableChatsTableButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
+    }
+
+    private void chatsPanel_reloadAvailableBranchesTableButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        LoadAvailableBranches();
     }
 
     private void appendMessage(String senderName, String message, boolean isCurrClient) {
@@ -368,9 +435,148 @@ public class Chats extends JPanel {
 
     private void sendMessage(String senderName, String message) {
         if (!message.isEmpty()) {
-            socketData.getOutputStream().println(senderName + ": " + message);
+            Utilities.getClientSocketData().getOutputStream().println(senderName + ": " + message);
         }
     }
+
+    public void listen(Employee emp, SocketData socketData) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String message;
+                    while ((message = socketData.getInputStream().readLine()) != null) {
+                        //String[] messageSplit = message.split(": ");
+                        //appendMessage(messageSplit[0], messageSplit[1], false);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void ClearTablesCells() {
+        DefaultTableModel dmCustomerTable = (DefaultTableModel)chatsPanel_AvailableBranchesTable.getModel();
+        dmCustomerTable.getDataVector().removeAllElements();
+        dmCustomerTable.fireTableDataChanged(); 
+    }
+
+    private void CenterTablesCells() {
+        
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        for (int columnIndex = 0; columnIndex < chatsPanel_AvailableBranchesTable.getColumnCount(); columnIndex++) {
+            chatsPanel_AvailableBranchesTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
+
+        for (int columnIndex = 0; columnIndex < manageChatsPanel_AvailableChatsTable.getColumnCount(); columnIndex++) {
+            manageChatsPanel_AvailableChatsTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+        }
+
+        chatsPanel_AvailableBranchesTable.getColumn("התחל שיחה").setCellRenderer(new ButtonRenderer("src/Store/images/icon-start-chatting.png"));
+        chatsPanel_AvailableBranchesTable.getColumn("התחל שיחה").setCellEditor(new ButtonEditor(new JCheckBox(), "src/Store/images/icon-start-chatting"));
+
+        manageChatsPanel_AvailableChatsTable.getColumn("הצטרף").setCellRenderer(new ButtonRenderer("src/Store/images/icon-start-chatting"));
+        manageChatsPanel_AvailableChatsTable.getColumn("הצטרף").setCellEditor(new ButtonEditor(new JCheckBox(), "src/Store/images/icon-start-chatting"));
+    }
+
+
+    private void addRowWithButtonsToAvailableBranchesTable(String branch) { 
+        Object[] rowData = { branch, branch };
+
+        ((DefaultTableModel)chatsPanel_AvailableBranchesTable.getModel()).addRow(rowData);
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        private String iconLocation;
+        public ButtonRenderer(String iconLocation) {
+            this.iconLocation = iconLocation;
+            setOpaque(true);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setForeground(table.getSelectionForeground());
+                setBackground(table.getSelectionForeground());
+            } else {
+                setForeground(table.getForeground());
+                setBackground(table.getForeground());
+            }
+
+            setHorizontalAlignment(SwingConstants.CENTER);
+
+            // Load and set the image icon
+            ImageIcon icon = new ImageIcon(iconLocation);
+            Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+            setIcon(new ImageIcon(scaledImage));
+            return this;
+        }
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private String branch;
+        private boolean isPushed;
+        private String iconLocation;
+      
+        public ButtonEditor(JCheckBox checkBox, String iconLocation) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    fireEditingStopped();
+                }
+            });
+
+            this.iconLocation = iconLocation;
+        }
+      
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            if (isSelected) {
+                button.setForeground(table.getSelectionForeground());
+                button.setBackground(table.getSelectionForeground());
+            } else {
+                button.setForeground(table.getForeground());
+                button.setBackground(table.getForeground());
+            }
+
+            ImageIcon icon = new ImageIcon(iconLocation);
+            Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+            button.setIcon(new ImageIcon(scaledImage));
+            
+            branch = (value == null || value == "") ? "" : value.toString();
+            isPushed = true;
+
+            return button;
+        }
+      
+        public Object getCellEditorValue() {
+            if (isPushed) {
+                
+            }
+            
+            isPushed = false;
+            return branch;
+        }
+      
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+      
+        protected void fireEditingStopped() {
+            try {
+                super.fireEditingStopped();
+            }
+            catch( Exception e ) {
+
+            }
+        }
+    } 
+    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

@@ -153,7 +153,6 @@ public class Format {
         for(String objectString: objects){
            branches.add(objectString);
        }
-
        return branches;
     }
 
@@ -164,7 +163,6 @@ public class Format {
             result.append(branch);
             result.append(objectSeparator);
         }
-
         return result.toString();
     }
 }
