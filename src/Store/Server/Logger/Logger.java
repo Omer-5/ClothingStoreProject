@@ -35,6 +35,12 @@ public class Logger {
         log("Customer " + purchase.getCustomerID()+ " purchased " + purchase.getPurchaseID());
     }
 
+    public static void logChatStarted()
+    {
+        log("Chat started ");
+
+    }
+
     public static void saveChat(String fileName, String conversation) {
         if (saveChatConversation == "Yes") {
             // Save the entire chat to separate file
