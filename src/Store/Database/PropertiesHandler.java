@@ -4,11 +4,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.io.*;
 
-public class PropertiesReader {
+public class PropertiesHandler {
     private Properties properties;
+    private String filePath;
 
-    public PropertiesReader(String filePath) {
+    public PropertiesHandler(String filePath) {
+        this.filePath = filePath;
         properties = new Properties();
         try (InputStream inputStream = new FileInputStream(filePath)) {
             properties.load(inputStream);
@@ -19,5 +22,14 @@ public class PropertiesReader {
 
     public String getProperty(String key) {
         return properties.getProperty(key);
+    }
+
+    public void setProperty(String key, String value) {
+        properties.setProperty(key, value);
+        try (OutputStream outputStream = new FileOutputStream(filePath)) {
+            properties.store(outputStream, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

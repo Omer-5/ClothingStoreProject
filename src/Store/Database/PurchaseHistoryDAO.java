@@ -10,17 +10,18 @@ import java.time.temporal.ChronoUnit;
 
 import Store.Inventories.InventoryItem;
 import Store.PurchaseHistory.*;
+import Store.Server.Logger.Logger;
 
 public class PurchaseHistoryDAO extends GeneralDAO {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     DateTimeFormatter formatter_get = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public void createNewPurchase(Purchase order) {
+    public void createNewPurchase(Purchase purchase) {
         // Implementation of the insertObject method should be in GeneralDAO
-        insertObject("PurchaseHistory", queryForInsert(order));  
+        insertObject("PurchaseHistory", queryForInsert(purchase));  
         int orderID = -1;
-        ResultSet rs = getObject("PurchaseHistory", "TOP 1 *", "CustomerID=" + order.getCustomerID() + " ORDER BY date DESC");
+        ResultSet rs = getObject("PurchaseHistory", "TOP 1 *", "CustomerID=" + purchase.getCustomerID() + " ORDER BY date DESC");
         try {
             rs.next();
             orderID = Integer.parseInt(rs.getString("PurchaseID"));
@@ -28,18 +29,19 @@ public class PurchaseHistoryDAO extends GeneralDAO {
             System.out.println(e);
         }
 
-        ArrayList<InventoryItem> items = order.getItems();
+        ArrayList<InventoryItem> items = purchase.getItems();
         for( int i=0; i < items.size(); i++) {
             PurchasedItem item = new PurchasedItem(orderID, items.get(i).getProductID());
             insertObject("[PurchaseHistoryItems]", queryForInsertItems(item));
         }
+        Logger.logPurchase(purchase);
     }
 
-    private String queryForInsert(Purchase order) {
+    private String queryForInsert(Purchase purchase) {
         String query = String.format("VALUES (%d, CONVERT(datetime, '%s', 103), N'%s')",
-                order.getCustomerID(),
-                formatter.format(order.getDate()),
-                order.getBranch());
+                purchase.getCustomerID(),
+                formatter.format(purchase.getDate()),
+                purchase.getBranch());
         return query;
     }
 

@@ -11,7 +11,6 @@ import Store.Database.SocketData;
 import Store.Employees.Employee;
 
 public class DecodeExecuteCommandChat {
-    //TODO: return type??
     public static String execute(String command)
     {
         Employee emp;
