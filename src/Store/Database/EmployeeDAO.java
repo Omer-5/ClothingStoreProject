@@ -74,15 +74,17 @@ public class EmployeeDAO extends GeneralDAO{
 
     public String Login(String username, String password) throws SQLException
     {
+            String response;
             Employee emp = getEmployeeByID(Integer.parseInt(username));
             if(emp == null)
-                return Format.encodeException("לא קיים משתמש כזה במערכת");
+                response = Format.encodeException("לא קיים משתמש כזה במערכת");
             else if(!emp.getPassword().equals(password)) 
-                return Format.encodeException("הסיסמה שהכנסת שגויה");
+                response = Format.encodeException("הסיסמה שהכנסת שגויה");
             else if(Server.getSocketDataByEmployee(emp) != null)
-                return Format.encodeException("המשתמש כבר מחובר למערכת");
+                response = Format.encodeException("המשתמש כבר מחובר למערכת");
             else
-                return emp.serializeToString();
+                response = emp.serializeToString();
+            return response;
     }
     
     private String queryForInsert(Employee emp)
