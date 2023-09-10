@@ -46,8 +46,7 @@ public class DecodeExecuteCommandEmployee {
             case "Login":
                 String username = Format.getFirstParam(command);
                 String password = Format.getSecondParam(command);
-                EmployeeException.MsgId msg = DAO.Login(username, password);
-                response = msg.toString();
+                response =  DAO.Login(username, password);
                 break;
         }
         return response;

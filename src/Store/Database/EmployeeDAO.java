@@ -8,6 +8,7 @@ import Store.Employees.EmployeeTitle;
 import Store.Exceptions.EmployeeException;
 import Store.Server.Logger.Logger;
 import Store.Utilities;
+import Store.Client.ServerCommunication.Format;
 
 import java.sql.SQLException;
 
@@ -71,22 +72,17 @@ public class EmployeeDAO extends GeneralDAO{
         return resArray;
     }
 
-    public EmployeeException.MsgId Login(String username, String password) throws SQLException
+    public String Login(String username, String password) throws SQLException
     {
-        if( !Utilities.isNumeric(username) )
-            return EmployeeException.MsgId.ONLY_DIGITS;
-        else
-        {
             Employee emp = getEmployeeByID(Integer.parseInt(username));
             if(emp == null)
-                return EmployeeException.MsgId.NO_USER;
+                return Format.encodeException("לא קיים משתמש כזה במערכת");
             else if(!emp.getPassword().equals(password)) 
-                return EmployeeException.MsgId.WRONG_PASSWORD;
+                return Format.encodeException("הסיסמה שהכנסת שגויה");
             else if(Server.getSocketDataByEmployee(emp) != null)
-                return EmployeeException.MsgId.ALREADY_LOGGED_IN;
+                return Format.encodeException("המשתמש כבר מחובר למערכת");
             else
-                return EmployeeException.MsgId.SUCCESS;
-        }
+                return emp.serializeToString();
     }
     
     private String queryForInsert(Employee emp)

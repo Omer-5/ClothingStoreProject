@@ -80,7 +80,7 @@ public class Format {
 
     public static String encodeException(String message)
     {
-        return ClassType.EXCEPTION + typeSeparator + message;
+        return encode(ClassType.EXCEPTION, "", message);
     }
 
     public static List<Customer> decodeCustomers(String str)
