@@ -1,5 +1,6 @@
 package Store.Client.ServerCommunication;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import Store.Database.EmployeeDAO;
@@ -8,12 +9,11 @@ import Store.Employees.Employee;
 import Store.Exceptions.EmployeeException;
 
 public class DecodeExecuteCommandEmployee {
-    public static String execute(String command)
-    {
+    public static String execute(String command) throws SQLException {
         EmployeeDAO DAO = new EmployeeDAO();
         Employee emp;
         int id;
-        String response = ""; //TODO: add response
+        String response = Format.encodeSuccessMessage();
         switch (Format.getMethod(command)) {
             //public static String createNewEmployee(Employee emp)
             case "createNewEmployee":
@@ -46,11 +46,9 @@ public class DecodeExecuteCommandEmployee {
             case "Login":
                 String username = Format.getFirstParam(command);
                 String password = Format.getSecondParam(command);
-                EmployeeException.MsgId msg = DAO.Login(username, password);
-                response = msg.toString();
+                response =  DAO.Login(username, password);
                 break;
         }
-
         return response;
     }
 

@@ -8,6 +8,7 @@ import Store.Employees.EmployeeTitle;
 import Store.Exceptions.EmployeeException;
 import Store.Server.Logger.Logger;
 import Store.Utilities;
+import Store.Client.ServerCommunication.Format;
 
 import java.sql.SQLException;
 
@@ -29,7 +30,7 @@ public class EmployeeDAO extends GeneralDAO{
         deleteObject("Employees", "ID=" + id);
     }
 
-    public Employee getEmployeeByID(int id)
+    public Employee getEmployeeByID(int id) throws SQLException
     {
         ResultSet  res = getObject("Employees", "*", "ID = "+ id);
         
@@ -40,7 +41,7 @@ public class EmployeeDAO extends GeneralDAO{
         return collection.get(0);
     }
 
-    public ArrayList<Employee> getEmployeesByBranch(String branch)
+    public ArrayList<Employee> getEmployeesByBranch(String branch) throws SQLException
     {
         ResultSet  res = getObject("Employees", "*", "branch = N'"+ branch+"'");
         return resToCollection(res);
@@ -71,22 +72,19 @@ public class EmployeeDAO extends GeneralDAO{
         return resArray;
     }
 
-    public EmployeeException.MsgId Login(String username, String password)
+    public String Login(String username, String password) throws SQLException
     {
-        if( !Utilities.isNumeric(username) )
-            return EmployeeException.MsgId.ONLY_DIGITS;
-        else
-        {
+            String response;
             Employee emp = getEmployeeByID(Integer.parseInt(username));
             if(emp == null)
-                return EmployeeException.MsgId.NO_USER;
+                response = Format.encodeException("לא קיים משתמש כזה במערכת");
             else if(!emp.getPassword().equals(password)) 
-                return EmployeeException.MsgId.WRONG_PASSWORD;
+                response = Format.encodeException("הסיסמה שהכנסת שגויה");
             else if(Server.getSocketDataByEmployee(emp) != null)
-                return EmployeeException.MsgId.ALREADY_LOGGED_IN;
+                response = Format.encodeException("המשתמש כבר מחובר למערכת");
             else
-                return EmployeeException.MsgId.SUCCESS;
-        }
+                response = emp.serializeToString();
+            return response;
     }
     
     private String queryForInsert(Employee emp)

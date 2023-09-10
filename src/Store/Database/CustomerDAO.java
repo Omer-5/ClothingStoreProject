@@ -11,7 +11,6 @@ import Store.Customers.CustomerVIP;
 import Store.Server.Logger.Logger;
 
 public class CustomerDAO extends GeneralDAO {
-
     public void createNewCustomer(Customer customer, String customerType) {
         insertObject("Customers", queryForInsert(customer, customerType));
         Logger.registerCustomer(customer);
@@ -25,7 +24,7 @@ public class CustomerDAO extends GeneralDAO {
         deleteObject("Customers", "ID=" + id);
     }
 
-    public Customer getCustomerByID(int id) {
+    public Customer getCustomerByID(int id) throws SQLException{
         ResultSet res = getObject("Customers", "*", "ID = " + id);
         ArrayList<Customer> collection = resToCollection(res);
         if (collection.isEmpty())
@@ -33,33 +32,28 @@ public class CustomerDAO extends GeneralDAO {
         return collection.get(0);
     }
 
-    public ArrayList<Customer> getCustomersByType(String type) {
+    public ArrayList<Customer> getCustomersByType(String type) throws SQLException{
         ResultSet res = getObject("Customers", "*", "Type = '" + type + "'");
         return resToCollection(res);
     }
 
-    public ArrayList<Customer> getCustomers() {
+    public ArrayList<Customer> getCustomers() throws SQLException{
         ResultSet res = getObject("Customers", "*", "");
         return resToCollection(res);
     }
 
-    private ArrayList<Customer> resToCollection(ResultSet res) {
+    private ArrayList<Customer> resToCollection(ResultSet res) throws SQLException {
         ArrayList<Customer> customers = new ArrayList<>();
-        try {
-            while (res.next()) {
-                String fullName = res.getString("FullName");
-                String phoneNumber = res.getString("PhoneNumber");
-                int id = res.getInt("ID");
-                String type = res.getString("Type");
+        while (res.next()) {
+            String fullName = res.getString("FullName");
+            String phoneNumber = res.getString("PhoneNumber");
+            int id = res.getInt("ID");
+            String type = res.getString("Type");
 
-                Customer customer = createCustomerFromResultSet(fullName, phoneNumber, id, type);
-                if (customer != null) {
-                    customers.add(customer);
-                }
+            Customer customer = createCustomerFromResultSet(fullName, phoneNumber, id, type);
+            if (customer != null) {
+                customers.add(customer);
             }
-        } catch (SQLException e) {
-            // TODO: Handle exception
-            e.printStackTrace();
         }
         return customers;
     }

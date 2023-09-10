@@ -14,17 +14,11 @@ public class GeneralDAO {
         connection = AzureSqlConnection.getConnection(); 
     }
 
-    private ResultSet executeQuery(String query)
+    private ResultSet executeQuery(String query) throws SQLException
     {
-       try{
-            Statement statement = connection.createStatement();
-            ResultSet res = statement.executeQuery(query);
-            return res;
-        }
-        catch (SQLException e){
-            //TODO: Handle
-        }
-        return null;
+        Statement statement = connection.createStatement();
+        ResultSet res = statement.executeQuery(query);
+        return res;
     }
 
     private void executeUpdate(String query) 
@@ -41,7 +35,7 @@ public class GeneralDAO {
         }
     }
 
-    protected ResultSet getObject(String tableName, String params, String condition)
+    protected ResultSet getObject(String tableName, String params, String condition) throws SQLException
     {
         String conditionString = "";
         if (condition != "") conditionString = "WHERE " + condition;

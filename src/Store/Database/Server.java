@@ -9,6 +9,7 @@ import Store.AppForms.Chats;
 import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Client.ServerCommunication.EncodeCommandChat;
+import Store.Client.ServerCommunication.EncodeCommandEmployee;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Inventories.InventoryItem;
@@ -70,20 +71,27 @@ public class Server {
         public void run() {
             try {
                 String inputString;
-                while ((inputString = socketData.getInputStream().readLine()) != null) {
-                    //TODO: Separate Chat, DAO & other Server functions here
-                    System.out.println(inputString);
-                    String res = DecodeExecuteCommand.decode_and_execute(inputString);
+                boolean notLoggedIn = true;
 
-                    if(res.equals("SUCCESS")) {
-                        EmployeeDAO DAO = new EmployeeDAO();
-                        Employee emp = DAO.getEmployeeByID(Integer.parseInt(Format.getFirstParam(inputString)));
-
+                // Handle login
+                while (notLoggedIn && (inputString = socketData.getInputStream().readLine()) != null) {
+                    String loginResponse = DecodeExecuteCommand.decode_and_execute(inputString);
+                    if(Format.getType(loginResponse) == ClassType.EMPLOYEE) {
+                        notLoggedIn = false;
+                        Employee emp = Employee.deserializeFromString(loginResponse);
                         synchronized(connections) {
                             connections.put(emp, socketData);
                         }
                     }
-                    System.out.println("SERVER: SocketData Response: " + socketData);
+                    socketData.getOutputStream().println(loginResponse);
+                }
+
+                // Main loop
+                while ((inputString = socketData.getInputStream().readLine()) != null) {
+                    System.out.println("input string: " + inputString);
+                    String res = DecodeExecuteCommand.decode_and_execute(inputString);
+                    System.out.println("output string: " + res);
+                    // System.out.println("SERVER: SocketData Response: " + socketData.getClientAddress());
                     socketData.getOutputStream().println(res);
                 }
             } catch (IOException e) {

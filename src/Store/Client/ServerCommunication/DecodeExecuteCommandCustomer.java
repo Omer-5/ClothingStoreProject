@@ -1,13 +1,14 @@
 package Store.Client.ServerCommunication;
 
+import java.sql.SQLException;
+
 import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
 
 public class DecodeExecuteCommandCustomer {
-    public static String execute(String command)
-    {
+    public static String execute(String command) throws SQLException {
         CustomerDAO DAO = new CustomerDAO();
-        String response = ""; //TODO: add response
+        String response = Format.encodeSuccessMessage();
         switch (Format.getMethod(command)) {
             case "createNewCustomer":
             // static String createNewCustomer(Customer customer, String customerType) {

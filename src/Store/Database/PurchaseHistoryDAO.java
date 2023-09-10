@@ -16,17 +16,14 @@ public class PurchaseHistoryDAO extends GeneralDAO {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     DateTimeFormatter formatter_get = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public void createNewPurchase(Purchase purchase) {
+    public void createNewPurchase(Purchase purchase) throws SQLException {
         // Implementation of the insertObject method should be in GeneralDAO
         insertObject("PurchaseHistory", queryForInsert(purchase));  
         int orderID = -1;
         ResultSet rs = getObject("PurchaseHistory", "TOP 1 *", "CustomerID=" + purchase.getCustomerID() + " ORDER BY date DESC");
-        try {
-            rs.next();
-            orderID = Integer.parseInt(rs.getString("PurchaseID"));
-        } catch(SQLException e) {
-            System.out.println(e);
-        }
+        rs.next();
+        orderID = Integer.parseInt(rs.getString("PurchaseID"));
+    
 
         List<InventoryItem> items = purchase.getItems();
         for( int i=0; i < items.size(); i++) {
@@ -53,7 +50,7 @@ public class PurchaseHistoryDAO extends GeneralDAO {
     }
 
     // Additional helper method to convert ResultSet to InventoryItem objects
-    public ArrayList<PurchasedItem> getItemsFromOrdersByBranchAndDays(String branch, int days) {
+    public ArrayList<PurchasedItem> getItemsFromOrdersByBranchAndDays(String branch, int days) throws SQLException {
         ResultSet res;
         ArrayList<Purchase> orders;
         ArrayList<PurchasedItem> purchasedItems = new ArrayList<PurchasedItem>();
@@ -74,51 +71,37 @@ public class PurchaseHistoryDAO extends GeneralDAO {
         return purchasedItems;
     }
 
-    private ArrayList<Purchase> resToCollection(ResultSet res)
-    {
+    private ArrayList<Purchase> resToCollection(ResultSet res) throws SQLException {
         ArrayList<Purchase> resArray = new ArrayList<>();
+        while(res.next())
+        {
+            int purchaseID = Integer.parseInt(res.getString("PurchaseID"));
+            int customerID = Integer.parseInt(res.getString("CustomerID"));
 
-        try {
-            while(res.next())
-            {
-                int purchaseID = Integer.parseInt(res.getString("PurchaseID"));
-                int customerID = Integer.parseInt(res.getString("CustomerID"));
+            LocalDateTime date = LocalDateTime.parse(res.getString("Date"), formatter_get);
 
-                LocalDateTime date = LocalDateTime.parse(res.getString("Date"), formatter_get);
+            String branch = res.getString("Branch");
 
-                String branch = res.getString("Branch");
-
-                Purchase temp = new Purchase(purchaseID, customerID, date, branch); 
-                resArray.add(temp);
-            }
-        } catch (SQLException e) {
-            // TODO: handle exception
-            System.out.println(e);
+            Purchase temp = new Purchase(purchaseID, customerID, date, branch); 
+            resArray.add(temp);
         }
         return resArray;
     }
 
-    private ArrayList<PurchasedItem> getItemsByPurchaseID(int purchaseID) {
+    private ArrayList<PurchasedItem> getItemsByPurchaseID(int purchaseID) throws SQLException {
         ResultSet res = getObject("PurchaseHistoryItems", "*", "PurchaseID=" + purchaseID); 
         return resToItemsCollection(res);
     }
 
-    private ArrayList<PurchasedItem> resToItemsCollection(ResultSet res)
-    {
+    private ArrayList<PurchasedItem> resToItemsCollection(ResultSet res) throws SQLException {
         ArrayList<PurchasedItem> resArray = new ArrayList<>();
+        while(res.next())
+        {
+            int purchaseID = Integer.parseInt(res.getString("PurchaseID"));
+            int productID = Integer.parseInt(res.getString("ProductID"));
 
-        try {
-            while(res.next())
-            {
-                int purchaseID = Integer.parseInt(res.getString("PurchaseID"));
-                int productID = Integer.parseInt(res.getString("ProductID"));
-
-                PurchasedItem temp = new PurchasedItem(purchaseID, productID); 
-                resArray.add(temp);
-            }
-        } catch (SQLException e) {
-            // TODO: handle exception
-            System.out.println(e);
+            PurchasedItem temp = new PurchasedItem(purchaseID, productID); 
+            resArray.add(temp);
         }
         return resArray;
     }

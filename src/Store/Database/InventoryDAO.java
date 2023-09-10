@@ -18,12 +18,12 @@ public class InventoryDAO extends GeneralDAO {
         updateObject("Inventory", queryForUpdate(item));
     }
 
-    public void deleteItem(int productID) {
+    public void deleteItem(int productID)  {
         // Implementation of the deleteObject method should be in GeneralDAO
         deleteObject("Inventory", "ProductID=" + productID);
     }
 
-    public InventoryItem getItemByProductID(int productID) {
+    public InventoryItem getItemByProductID(int productID) throws SQLException {
         // Implementation of the getObject method should be in GeneralDAO
         ResultSet  res = getObject("Inventory", "*", "productID = "+ productID);
         
@@ -34,27 +34,27 @@ public class InventoryDAO extends GeneralDAO {
         return collection.get(0);
     }
 
-    private ArrayList<InventoryItem> resToInventoryCollection(ResultSet res) {
-        ArrayList<InventoryItem> resArray = new ArrayList<>();
+    // private ArrayList<InventoryItem> resToInventoryCollection(ResultSet res) {
+    //     ArrayList<InventoryItem> resArray = new ArrayList<>();
 
-        try {
-            while(res.next()) {
-                String branch = res.getString("branch");
-                int productID = res.getInt("productID");
-                String name = res.getString("name");
-                String category = res.getString("category");
-                int quantity = res.getInt("quantity");
-                double price = res.getDouble("price");
+    //     try {
+    //         while(res.next()) {
+    //             String branch = res.getString("branch");
+    //             int productID = res.getInt("productID");
+    //             String name = res.getString("name");
+    //             String category = res.getString("category");
+    //             int quantity = res.getInt("quantity");
+    //             double price = res.getDouble("price");
 
-                InventoryItem temp = new InventoryItem(branch, productID, name, category, quantity, price);
-                resArray.add(temp);
-            }
-        } catch (SQLException e) {
-            // TODO: handle exception
-            System.out.println(e);
-        }
-        return resArray;
-    }
+    //             InventoryItem temp = new InventoryItem(branch, productID, name, category, quantity, price);
+    //             resArray.add(temp);
+    //         }
+    //     } catch (SQLException e) {
+    //         // TODO: handle exception
+    //         System.out.println(e);
+    //     }
+    //     return resArray;
+    // }
 
     private String queryForInsert(InventoryItem item) {
         String query = String.format("VALUES (N'%s', N'%s', N'%s', %d, %.2f)",
@@ -81,31 +81,24 @@ public class InventoryDAO extends GeneralDAO {
 
 
     // Additional helper method to convert ResultSet to InventoryItem objects
-    public ArrayList<InventoryItem> getInventoryItemsByBranch(String branch) {
+    public ArrayList<InventoryItem> getInventoryItemsByBranch(String branch) throws SQLException {
         ResultSet  res = getObject("Inventory", "*", "Branch = N'"+ branch+"'");
         return resToCollection(res);
     }
 
-    private ArrayList<InventoryItem> resToCollection(ResultSet res)
-    {
+    private ArrayList<InventoryItem> resToCollection(ResultSet res) throws SQLException {
         ArrayList<InventoryItem> resArray = new ArrayList<>();
+        while(res.next())
+        {
+            String branch = res.getString("Branch");
+            int productID = Integer.parseInt(res.getString("ProductID"));
+            String name = res.getString("Name");
+            String category = res.getString("Category");
+            int quantity = Integer.parseInt(res.getString("Quantity"));
+            double price = Double.parseDouble(res.getString("Price"));
 
-        try {
-            while(res.next())
-            {
-                String branch = res.getString("Branch");
-                int productID = Integer.parseInt(res.getString("ProductID"));
-                String name = res.getString("Name");
-                String category = res.getString("Category");
-                int quantity = Integer.parseInt(res.getString("Quantity"));
-                double price = Double.parseDouble(res.getString("Price"));
-
-                InventoryItem temp = new InventoryItem(branch, productID, name, category, quantity, price);
-                resArray.add(temp);
-            }
-        } catch (SQLException e) {
-            // TODO: handle exception
-            System.out.println(e);
+            InventoryItem temp = new InventoryItem(branch, productID, name, category, quantity, price);
+            resArray.add(temp);
         }
         return resArray;
     }

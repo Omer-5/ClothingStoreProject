@@ -4,9 +4,11 @@ import javax.swing.*;
 
 import Store.Database.EmployeeDAO;
 import Store.Database.SocketData;
+import Store.Employees.Employee;
 import Store.Utilities;
 import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Client.ServerCommunication.EncodeCommandEmployee;
+import Store.Client.ServerCommunication.Format;
 import Store.Database.Admin;
 import Store.Exceptions.EmployeeException;
 
@@ -19,6 +21,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class Login extends JFrame {
     private JTextField employeeIdField;
@@ -107,51 +110,33 @@ public class Login extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String id = employeeIdField.getText();
+            String id = employeeIdField.getText();
 
-                char[] passwordChars = passwordField.getPassword();
-                String password = new String(passwordChars);
+            char[] passwordChars = passwordField.getPassword();
+            String password = new String(passwordChars);
 
-                EmployeeException.MsgId msg;
-                EmployeeDAO dao = new EmployeeDAO(); //TODO: DAO Server-Side
-
-                //TODO: Add Server Login Request Here (Socket etc..)
-                if(id.equals("") || password.equals(""))
-                    msg = EmployeeException.MsgId.MISSING_INFO;
-                else {
-                    //msg = dao.Login(id, password);
-
-                    //----Server Simulation-----
+            if(id.equals("") || password.equals("")) 
+                Utilities.MessageBox("חלק מהשדות לא הוכנסו");
+            else {
+                if( !Utilities.isNumeric(id) ) {
+                    Utilities.MessageBox("תעודת הזהות חייבת להכיל רק ספרות");
+                } else {
                     String command = EncodeCommandEmployee.Login(id, password);
-                    Utilities.getClientSocketData().getOutputStream().println(command);
-                    
-                    String res = "";
-                    try {
-                        res = Utilities.getClientSocketData().getInputStream().readLine();
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                    String response = Utilities.SendReceive(command);
+                    System.out.println("login response: "+ response);
+                    switch(Format.getType(response)) {
+                        case EXCEPTION:
+                            Utilities.MessageBox(Format.getFirstParam(response));
+                            break;
+                        default: // Successful login, getting back the user
+                            Utilities.MessageBox("התחברת בהצלחה!");
+                            setVisible(false);
+                            StoreApp mainAppForm = new StoreApp(Employee.deserializeFromString(response));
+                            mainAppForm.setVisible(true); 
                     }
-                    msg = EmployeeException.MsgId.valueOf(res);
-                    //----------------------------  
                 }
-
-                if(msg == EmployeeException.MsgId.SUCCESS) {
-                    setVisible(false);
-                    StoreApp mainAppForm = new StoreApp(dao.getEmployeeByID(Integer.parseInt(id)));
-                    mainAppForm.setVisible(true); 
-                }
-                else {
-                    JLabel label = new JLabel(EmployeeException.Msg[msg.ordinal()], JLabel.CENTER);
-                    label.setFont(font);
-                    JOptionPane.showMessageDialog(Login.this,
-                        label,
-                        "הודעה חדשה",
-                        JOptionPane.INFORMATION_MESSAGE);
-                }
-                
-                
             }
+        }
         });
 
         // Manage Hyperlink Actions - Validate Credentials and Redirecting to Admin Form
