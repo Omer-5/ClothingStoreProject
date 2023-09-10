@@ -8,6 +8,7 @@ import Store.Client.ServerCommunication.Format;
 import Store.AppForms.Chats;
 import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.DecodeExecuteCommand;
+import Store.Client.ServerCommunication.EncodeCommandChat;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Inventories.InventoryItem;
@@ -80,7 +81,7 @@ public class Server {
                             connections.put(emp, socketData);
                         }
                     }
-
+                    System.out.println("SERVER: SocketData Response: " + socketData);
                     socketData.getOutputStream().println(res);
                 }
             } catch (IOException e) {
@@ -100,7 +101,7 @@ public class Server {
                 if(chatHandler.getChattingEmployees().containsKey(socketData)) {
                     ChatSession chat = chatHandler.getChatSessionBySocketData(socketData);
                     chat.removeListener(socketData);
-                    chatHandler.validateChatSession(chat);
+                    chatHandler.getAvailableEmployees().remove(socketData);
                 }
                 else {
                     synchronized(chatHandler.getAvailableEmployees()) {
@@ -123,7 +124,7 @@ public class Server {
         }
         
         public void createChatSession(SocketData socketEmp, SocketData socketEmp2) {
-            ChatSession chat = new ChatSession();
+            ChatSession chat = new ChatSession(getEmployeeBySocketData(socketEmp), getEmployeeBySocketData(socketEmp2));
             chat.addListener(socketEmp, getEmployeeBySocketData(socketEmp));
             chat.addListener(socketEmp2, getEmployeeBySocketData(socketEmp2));
 
@@ -131,11 +132,25 @@ public class Server {
             chattingEmployees.put(socketEmp2, chat);
         }
 
+        public ChatSession getChatSessionByID(int sessionID) {
+            for (Map.Entry<SocketData, ChatSession> entry : chattingEmployees.entrySet()) {
+                ChatSession chat = entry.getValue();
+
+                if(chat.getSessionID() == sessionID)
+                    return chat;
+            }
+
+            return null;
+        }
         public static void endChatSession(ChatSession chat) {
             for (Map.Entry<SocketData, ChatSession> entry : chattingEmployees.entrySet()) {
                 if (entry.getValue() == chat) {
                     SocketData socketData = entry.getKey();
+                    chat.removeListener(socketData);
                     chattingEmployees.remove(socketData);
+
+                    String command = "CHAT@@@abortCurrentChat###";
+                    socketData.getOutputStream().println(command);
                 }
             }
         }
@@ -151,9 +166,33 @@ public class Server {
             return branches;
         }
 
+        public static Set<ChatSession> getAvailableChats(String branch) {
+            Set<ChatSession> chats = new HashSet<>();
+            for (Map.Entry<SocketData, ChatSession> entry : chattingEmployees.entrySet()) {
+                //ChatSession chat = entry.getValue();
+                //Employee emp = chat.getCreatorEmployee();
+                Employee emp = Server.getEmployeeBySocketData(entry.getKey());
+
+                if(emp.getBranch().equals(branch))
+                    chats.add(entry.getValue());
+            }
+            return chats;
+        }
+
+        public static SocketData getFirstAvailableEmployeByBranch(String branch) {
+            for (Map.Entry<SocketData, Employee> entry : availableEmployees.entrySet()) {
+                Employee emp = entry.getValue();
+
+                if(emp.getBranch().equals(branch)) 
+                    return entry.getKey();
+                    
+            }
+
+            return null;
+        }
+
         public static void validateChatSession(ChatSession chat) {
             int chattingCount = 0;
-
             for (Map.Entry<SocketData, ChatSession> entry : chattingEmployees.entrySet()) {
                 int tempSessionID = entry.getValue().getSessionID();
                 int sessionID = chat.getSessionID();
@@ -168,6 +207,7 @@ public class Server {
         }
 
         public static ChatSession getChatSessionBySocketData(SocketData socketData) {
+            System.out.println(chattingEmployees);
             return chattingEmployees.get(socketData);
         }
     }

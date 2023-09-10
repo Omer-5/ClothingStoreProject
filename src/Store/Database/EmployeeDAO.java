@@ -83,6 +83,8 @@ public class EmployeeDAO extends GeneralDAO{
                 return EmployeeException.MsgId.NO_USER;
             else if(!emp.getPassword().equals(password)) 
                 return EmployeeException.MsgId.WRONG_PASSWORD;
+            else if(Server.getSocketDataByEmployee(emp) != null)
+                return EmployeeException.MsgId.ALREADY_LOGGED_IN;
             else
                 return EmployeeException.MsgId.SUCCESS;
         }

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.Normalizer.Form;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,6 +46,7 @@ public class Chats extends JPanel {
     private javax.swing.JPanel liveChatPanel;
     private javax.swing.JTextField liveChatPanel_messageTextField;
     private javax.swing.JButton liveChatPanel_sendMessageButton;
+    private javax.swing.JButton liveChatPanel_exitChatButton;
     private javax.swing.JPanel manageChatsPanel;
     private javax.swing.JTable manageChatsPanel_AvailableChatsTable;
     private javax.swing.JSeparator manageChatsPanel__HeaderSeparator1;
@@ -58,10 +61,20 @@ public class Chats extends JPanel {
     private Style otherClientStyle;
     private Style boldStyle;
 
+    private int currSessionID = -1;
+    private listenToServer currServerListenThread;
+
     public Chats(Employee emp) {
         initComponents();
         initComponentsSettings();
         setLiveChat(false);
+
+        if(emp.getTitle() != EmployeeTitle.MANAGER)
+            manageChatsPanel.setVisible(false);
+
+        currServerListenThread = new listenToServer();
+        currServerListenThread.start();
+        currServerListenThread.resumeThread();
 
         this.emp = emp;
     }
@@ -83,9 +96,10 @@ public class Chats extends JPanel {
         manageChatsPanel_reloadAvailableChatsTableButton = new javax.swing.JButton();
         liveChatPanel = new javax.swing.JPanel();
         liveChatPanel_messageTextField = new javax.swing.JTextField();
-        liveChatPanel_sendMessageButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         liveChatPanel_historyTextPane = new javax.swing.JTextPane();
+        liveChatPanel_sendMessageButton = new javax.swing.JButton();
+        liveChatPanel_exitChatButton = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
         setMinimumSize(new java.awt.Dimension(1044, 670));
@@ -279,6 +293,9 @@ public class Chats extends JPanel {
             }
         });
 
+        liveChatPanel_historyTextPane.setEditable(false);
+        jScrollPane2.setViewportView(liveChatPanel_historyTextPane);
+
         liveChatPanel_sendMessageButton.setBackground(new java.awt.Color(51, 153, 0));
         liveChatPanel_sendMessageButton.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
         liveChatPanel_sendMessageButton.setText("שלח");
@@ -288,33 +305,42 @@ public class Chats extends JPanel {
             }
         });
 
-        liveChatPanel_historyTextPane.setEditable(false);
-        jScrollPane2.setViewportView(liveChatPanel_historyTextPane);
+        liveChatPanel_exitChatButton.setBackground(new java.awt.Color(153, 0, 0));
+        liveChatPanel_exitChatButton.setFont(new java.awt.Font("Arial", 0, 16)); // NOI18N
+        liveChatPanel_exitChatButton.setText("צא מהשיחה");
+        liveChatPanel_exitChatButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                liveChatPanel_exitChatButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout liveChatPanelLayout = new javax.swing.GroupLayout(liveChatPanel);
         liveChatPanel.setLayout(liveChatPanelLayout);
         liveChatPanelLayout.setHorizontalGroup(
             liveChatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(liveChatPanelLayout.createSequentialGroup()
-                .addContainerGap(8, Short.MAX_VALUE)
-                .addComponent(liveChatPanel_sendMessageButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(liveChatPanel_messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(liveChatPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(liveChatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(liveChatPanelLayout.createSequentialGroup()
+                        .addComponent(liveChatPanel_exitChatButton, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(liveChatPanel_sendMessageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(liveChatPanel_messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(24, 24, 24))
         );
         liveChatPanelLayout.setVerticalGroup(
             liveChatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, liveChatPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(liveChatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(liveChatPanel_messageTextField)
-                    .addComponent(liveChatPanel_sendMessageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(liveChatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(liveChatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(liveChatPanel_exitChatButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(liveChatPanel_sendMessageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(liveChatPanel_messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -363,27 +389,50 @@ public class Chats extends JPanel {
         if(status) {
             liveChatPanel_messageTextField.setEnabled(true);
             liveChatPanel_sendMessageButton.setEnabled(true);
+            liveChatPanel_exitChatButton.setEnabled(true);
+
+            chatsPanel_AvailableBranchesTable.setEnabled(false);
+            chatsPanel_reloadAvailableBranchesTableButton.setEnabled(false);
+            manageChatsPanel_AvailableChatsTable.setEnabled(false);
+            manageChatsPanel_reloadAvailableChatsTableButton.setEnabled(false);
+
+            liveChatPanel_historyTextPane.setText("");
+            appendMessage("---- מנהל המערכת", "נפתח צ'אט חדש, אתם יכולים להתחיל לשוחח! -----", false);
         }
         else {
             liveChatPanel_messageTextField.setEnabled(false);
-        liveChatPanel_sendMessageButton.setEnabled(false);
+            liveChatPanel_sendMessageButton.setEnabled(false);
+            liveChatPanel_exitChatButton.setEnabled(false);
+
+            chatsPanel_AvailableBranchesTable.setEnabled(true);
+            chatsPanel_reloadAvailableBranchesTableButton.setEnabled(true);
+            manageChatsPanel_AvailableChatsTable.setEnabled(true);
+            manageChatsPanel_reloadAvailableChatsTableButton.setEnabled(true);
         }
     }
     
-    public void LoadAvailableBranches() {
-        ClearTablesCells();
+    private void setCurrentChat(int sessionID) {
+        this.currSessionID = sessionID;
+        setLiveChat(true);
+        appendMessage("הודעה מהשרת", "שיחה חדשה התחילה, אתם יכולים להתחיל לצ'וטט!", true);
+    }
 
+    public void LoadAvailableBranches() {
+        ClearAvailableBranchesTableCells();
+
+        currServerListenThread.pauseThread();
+        
         String command = EncodeCommandChat.getAvailableBranches(emp.getBranch());
         Set<String> branches;
 
         Utilities.getClientSocketData().getOutputStream().println(command);
         try {
             String res = Utilities.getClientSocketData().getInputStream().readLine();
-            if( res != "" ) {
+            if( res.length() != 0 ) {
                 branches = Format.decodeAvailableBranches(res);
             
-            for(String branch : branches)
-                addRowWithButtonsToAvailableBranchesTable(branch);
+                for(String branch : branches)
+                    addRowWithButtonsToAvailableBranchesTable(branch);
             }   
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -392,10 +441,41 @@ public class Chats extends JPanel {
             branches = new HashSet<>();
         }
 
-        CenterTablesCells();
+        currServerListenThread.resumeThread();
+
+        CenterAvailableBranchesTableCells();
     }
     
+    public void LoadAvailableChats() {
+        ClearAvailableChatsTableCells();
 
+        currServerListenThread.pauseThread();
+        
+        String command = EncodeCommandChat.getAvailableChats(emp.getBranch());
+        java.util.List<Object[]> tableLines;
+
+        Utilities.getClientSocketData().getOutputStream().println(command);
+        try {
+            String res = Utilities.getClientSocketData().getInputStream().readLine();
+            if( res.length() != 0 ) {
+                tableLines = Format.decodeAvailableChats(res);
+            
+                for(Object[] object : tableLines) {
+                    ((DefaultTableModel)manageChatsPanel_AvailableChatsTable.getModel()).addRow(object);
+                }
+            }   
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+            tableLines = new ArrayList<>();
+        }
+
+        currServerListenThread.resumeThread();
+
+        CenterAvailableChatsTableCells();
+    }
+    
     private void liveChatPanel_sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {
         String message = liveChatPanel_messageTextField.getText();
         String senderName = emp.getFullName();
@@ -406,12 +486,17 @@ public class Chats extends JPanel {
         liveChatPanel_messageTextField.setText("");
     }
 
+    private void liveChatPanel_exitChatButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        String command = EncodeCommandChat.leaveChat(emp);
+        Utilities.getClientSocketData().getOutputStream().println(command);
+    }
+
     private void liveChatPanel_messageTextFieldActionPerformed(java.awt.event.ActionEvent evt) {
         liveChatPanel_sendMessageButton.doClick();
     }
 
     private void manageChatsPanel_reloadAvailableChatsTableButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        LoadAvailableChats();
     }
 
     private void chatsPanel_reloadAvailableBranchesTableButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -435,34 +520,24 @@ public class Chats extends JPanel {
 
     private void sendMessage(String senderName, String message) {
         if (!message.isEmpty()) {
-            Utilities.getClientSocketData().getOutputStream().println(senderName + ": " + message);
+            String command = EncodeCommandChat.sendMessage(emp, message);
+            Utilities.getClientSocketData().getOutputStream().println(command);
+            try {
+                String res = Utilities.getClientSocketData().getInputStream().readLine();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
-    public void listen(Employee emp, SocketData socketData) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String message;
-                    while ((message = socketData.getInputStream().readLine()) != null) {
-                        //String[] messageSplit = message.split(": ");
-                        //appendMessage(messageSplit[0], messageSplit[1], false);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    private void ClearTablesCells() {
+    private void ClearAvailableBranchesTableCells() {
         DefaultTableModel dmCustomerTable = (DefaultTableModel)chatsPanel_AvailableBranchesTable.getModel();
         dmCustomerTable.getDataVector().removeAllElements();
         dmCustomerTable.fireTableDataChanged(); 
     }
 
-    private void CenterTablesCells() {
+    private void CenterAvailableBranchesTableCells() {
         
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -470,18 +545,28 @@ public class Chats extends JPanel {
         for (int columnIndex = 0; columnIndex < chatsPanel_AvailableBranchesTable.getColumnCount(); columnIndex++) {
             chatsPanel_AvailableBranchesTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
         }
+        chatsPanel_AvailableBranchesTable.getColumn("התחל שיחה").setCellRenderer(new ButtonRenderer("src/Store/images/icon-start-chatting.png"));
+        chatsPanel_AvailableBranchesTable.getColumn("התחל שיחה").setCellEditor(new ButtonEditor(new JCheckBox(), "src/Store/images/icon-start-chatting"));
+    }
 
+    private void ClearAvailableChatsTableCells() {
+        DefaultTableModel dmCustomerTable = (DefaultTableModel)manageChatsPanel_AvailableChatsTable.getModel();
+        dmCustomerTable.getDataVector().removeAllElements();
+        dmCustomerTable.fireTableDataChanged(); 
+    }
+
+    private void CenterAvailableChatsTableCells() {
+        
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
         for (int columnIndex = 0; columnIndex < manageChatsPanel_AvailableChatsTable.getColumnCount(); columnIndex++) {
             manageChatsPanel_AvailableChatsTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
         }
 
-        chatsPanel_AvailableBranchesTable.getColumn("התחל שיחה").setCellRenderer(new ButtonRenderer("src/Store/images/icon-start-chatting.png"));
-        chatsPanel_AvailableBranchesTable.getColumn("התחל שיחה").setCellEditor(new ButtonEditor(new JCheckBox(), "src/Store/images/icon-start-chatting"));
-
-        manageChatsPanel_AvailableChatsTable.getColumn("הצטרף").setCellRenderer(new ButtonRenderer("src/Store/images/icon-start-chatting"));
-        manageChatsPanel_AvailableChatsTable.getColumn("הצטרף").setCellEditor(new ButtonEditor(new JCheckBox(), "src/Store/images/icon-start-chatting"));
+        manageChatsPanel_AvailableChatsTable.getColumn("הצטרף").setCellRenderer(new ButtonRenderer("src/Store/images/icon-start-chatting.png"));
+        manageChatsPanel_AvailableChatsTable.getColumn("הצטרף").setCellEditor(new ButtonEditor2(new JCheckBox(), "src/Store/images/icon-start-chatting.png"));
     }
-
 
     private void addRowWithButtonsToAvailableBranchesTable(String branch) { 
         Object[] rowData = { branch, branch };
@@ -555,7 +640,9 @@ public class Chats extends JPanel {
       
         public Object getCellEditorValue() {
             if (isPushed) {
-                
+                String command = EncodeCommandChat.requestChatWithBranch(emp, branch);
+                Utilities.getClientSocketData().getOutputStream().println(command);
+
             }
             
             isPushed = false;
@@ -577,7 +664,69 @@ public class Chats extends JPanel {
         }
     } 
     
+     class ButtonEditor2 extends DefaultCellEditor {
+        protected JButton button;
+        private int sessionID;
+        private boolean isPushed;
+        private String iconLocation;
+      
+        public ButtonEditor2(JCheckBox checkBox, String iconLocation) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    fireEditingStopped();
+                }
+            });
 
+            this.iconLocation = iconLocation;
+        }
+      
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            if (isSelected) {
+                button.setForeground(table.getSelectionForeground());
+                button.setBackground(table.getSelectionForeground());
+            } else {
+                button.setForeground(table.getForeground());
+                button.setBackground(table.getForeground());
+            }
+
+            ImageIcon icon = new ImageIcon(iconLocation);
+            Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+            button.setIcon(new ImageIcon(scaledImage));
+            
+            sessionID = (value == null || value == "") ? -1 : Integer.parseInt(value.toString());
+            isPushed = true;
+
+            return button;
+        }
+      
+        public Object getCellEditorValue() {
+            if (isPushed) {
+                String command = EncodeCommandChat.joinChatSession(emp, sessionID);
+                Utilities.getClientSocketData().getOutputStream().println(command);
+            }
+            
+            isPushed = false;
+            return sessionID;
+        }
+      
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+      
+        protected void fireEditingStopped() {
+            try {
+                super.fireEditingStopped();
+            }
+            catch( Exception e ) {
+
+            }
+        }
+    } 
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Cash Register"); // Create a JFrame
@@ -589,5 +738,73 @@ public class Chats extends JPanel {
             frame.pack(); // Pack the frame to fit its contents
             frame.setVisible(true); // Make the frame visible
         });
+    }
+
+    private class listenToServer extends Thread {
+        private volatile boolean isRunning = true;
+
+        @Override
+        public void run() {
+            try {
+                String message;
+                // Mark the current position
+                BufferedReader br = Utilities.getClientSocketData().getInputStream();
+
+                // Read and process lines
+                while (true) {
+                    Thread.sleep(100);
+                    if(isRunning) {
+                        //System.out.println("BR Mark..");
+                        br.mark(8192);
+                        
+                        while (br.ready()) {  
+                            System.out.println("BR Ready..");
+                            message = br.readLine();
+                            System.out.println("BR ReadLine..");
+                            if (message != null && message.contains("CHAT@@@")) {
+                                System.out.println("Confirmed CHATLIVE Command.. " + message);
+                                switch (Format.getType(message)) {
+                                    case CHAT:
+                                        switch (Format.getMethod(message)) {
+                                            case "setCurrentChat":
+                                                System.out.println("In Chat Number: " + Format.getFirstParam(message));
+                                                setLiveChat(true);
+                                                break;
+                                            case "receiveMessage":
+                                                Employee emp = Employee.deserializeFromString(Format.getFirstParam(message));
+                                                String text = Format.getSecondParam(message);
+                                                appendMessage(emp.getFullName(), text, false);
+                                                break;
+                                            case "abortCurrentChat":
+                                                currSessionID = -1;
+                                                appendMessage("---- הודעת מערכת", "הצ'אט הסתיים ----", false);
+                                                setLiveChat(false);
+                                                LoadAvailableBranches();
+                                                break;
+                                        }
+                                        break;
+                                }
+                            } else {
+                                br.reset();
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        public void pauseThread() {
+            isRunning = false;
+        }
+
+        public void resumeThread() {
+            isRunning = true;
+        }
     }
 }

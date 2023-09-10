@@ -15,7 +15,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.Socket;
 
 public class Login extends JFrame {
@@ -23,7 +25,11 @@ public class Login extends JFrame {
     private JPasswordField passwordField;
 
     public Login() {
+        initClient();
+        initComponents(); 
+    }
 
+    public void initComponents() {
         setTitle("ניהול חנות בגדים - התחברות");
         setSize(300, 440);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -114,9 +120,20 @@ public class Login extends JFrame {
                     msg = EmployeeException.MsgId.MISSING_INFO;
                 else {
                     //msg = dao.Login(id, password);
+
+                    //----Server Simulation-----
                     String command = EncodeCommandEmployee.Login(id, password);
-                    String res = DecodeExecuteCommand.decode_and_execute(command);
+                    Utilities.getClientSocketData().getOutputStream().println(command);
+                    
+                    String res = "";
+                    try {
+                        res = Utilities.getClientSocketData().getInputStream().readLine();
+                    } catch (IOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
                     msg = EmployeeException.MsgId.valueOf(res);
+                    //----------------------------  
                 }
 
                 if(msg == EmployeeException.MsgId.SUCCESS) {
@@ -182,14 +199,14 @@ public class Login extends JFrame {
         });
 
         add(panel);
-        initClient();
     }
-
+    
     private void initClient() {
         try {
             Utilities.setClientSocketData(new SocketData(new Socket("localhost", 7000))); // Replace with your server address and port
+            System.out.println(Utilities.getClientSocketData());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Cannot connect to the Server! Please check that ther Server is Running!");
         }
     }
 

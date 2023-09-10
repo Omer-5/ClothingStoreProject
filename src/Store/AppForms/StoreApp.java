@@ -63,7 +63,9 @@ public class StoreApp extends JFrame {
         createNavigationButton("src/Store/images/icon-chat.png", "צ'אט");
         createNavigationButton("src/Store/images/icon-customers.png", "ניהול לקוחות");
         createNavigationButton("src/Store/images/icon-inventory.png", "ניהול מלאי סניף");
-        createNavigationButton("src/Store/images/icon-reports.png", "דוחות וסטטיסטיקות"); //TODO: Permissions for MANAGER
+
+        if(emp.getTitle() == EmployeeTitle.MANAGER)
+            createNavigationButton("src/Store/images/icon-reports.png", "דוחות וסטטיסטיקות"); //TODO: Permissions for MANAGER
         
 
         // Set right-to-left component orientation
@@ -153,6 +155,7 @@ public class StoreApp extends JFrame {
                 contentPanel.add(branchReport); // Add the CashRegister panel to the content panel's center
             }else if (panelName.equals("צ'אט")) { 
                 chats.LoadAvailableBranches();
+                chats.LoadAvailableChats();
                 chats.setPreferredSize(contentPanel.getSize());
                 contentPanel.add(chats); // Add the CashRegister panel to the content panel's center
             }

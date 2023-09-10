@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import Store.Customers.Customer;
+import Store.Database.ChatSession;
 import Store.Employees.Employee;
 import Store.Inventories.InventoryItem;
 
@@ -161,6 +162,35 @@ public class Format {
 
         for (String branch : branches) {
             result.append(branch);
+            result.append(objectSeparator);
+        }
+        return result.toString();
+    }
+
+    public static List<Object[]> decodeAvailableChats(String str) {
+        String[] objects = str.split(objectSeparator);
+        List<Object[]> tableLines = new ArrayList<>();
+        
+        for(String objectString: objects){
+           String[] fields = objectString.split(fieldSeparator);
+           Object[] object = {fields[0], fields[1], fields[2], fields[3] };
+
+           tableLines.add(object);
+       }
+       return tableLines;
+    }
+
+    public static String encodeAvailableChats(Set<ChatSession> chats) {
+        StringBuilder result = new StringBuilder();
+
+        for (ChatSession chat : chats) {
+            result.append(chat.getSessionID());
+            result.append(fieldSeparator);
+            result.append(chat.getReceiverEmployee().getBranch());
+            result.append(fieldSeparator);
+            result.append(chat.getReceiverEmployee().getFullName());
+            result.append(fieldSeparator);
+            result.append(chat.getCreatorEmployee().getFullName());
             result.append(objectSeparator);
         }
         return result.toString();

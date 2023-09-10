@@ -1,5 +1,10 @@
 package Store.Client.ServerCommunication;
 
+import java.net.Socket;
+import java.text.Normalizer.Form;
+import java.util.Map;
+
+import Store.Utilities;
 import Store.Database.ChatSession;
 import Store.Database.Server;
 import Store.Database.SocketData;
@@ -11,7 +16,10 @@ public class DecodeExecuteCommandChat {
     {
         Employee emp;
         SocketData socketData;
+        String branch;
+        ChatSession chat;
         String response = "";
+
         switch (Format.getMethod(command)) {
             case "clientOnline":
                 emp = Employee.deserializeFromString(Format.getFirstParam(command));
@@ -21,25 +29,58 @@ public class DecodeExecuteCommandChat {
             case "clientOffline":
                 emp = Employee.deserializeFromString(Format.getFirstParam(command));
                 socketData = Server.getSocketDataByEmployee(emp);
-                Server.ChatHandler.getAvailableEmployees().remove(emp);
+                Server.ChatHandler.getAvailableEmployees().remove(socketData);
                 break;
             case "sendMessage":
                 emp = Employee.deserializeFromString(Format.getFirstParam(command));
                 socketData = Server.getSocketDataByEmployee(emp);
                 String message = Format.getSecondParam(command);
-                ChatSession chat = Server.getChatHandler().getChatSessionBySocketData(socketData);
-                chat.broadcast(message, socketData.getOutputStream());
+                chat = Server.ChatHandler.getChatSessionBySocketData(socketData);
+                chat.broadcast(emp, message, socketData.getOutputStream());
                 break;
             case "getAvailableBranches":
-                String branch = Format.getFirstParam(command);
-                response = Format.encodeAvailableBranches(Server.getChatHandler().getAvailableBranches(branch));
+                branch = Format.getFirstParam(command);
+                response = Format.encodeAvailableBranches(Server.ChatHandler.getAvailableBranches(branch));
                 break;
-            case "waitingForEmployeeToAccept":      // Employee #1 wanting to chat with other branch  --> look for available employee to accept
+            case "getAvailableChats":
+                branch = Format.getFirstParam(command);
+                response = Format.encodeAvailableChats(Server.ChatHandler.getAvailableChats(branch));
                 break;
+            case "requestChatWithBranch":                   // Employee #1 and #2 starting a new chat between them
+                emp = Employee.deserializeFromString(Format.getFirstParam(command));
+                branch = Format.getSecondParam(command);
+                SocketData otherEmpSocketData = Server.ChatHandler.getFirstAvailableEmployeByBranch(branch);
 
-            case "createNewChat":                   // Employee #1 and #2 starting a new chat between them
-                break;
+                if(otherEmpSocketData != null) {
+                    chat = new ChatSession(emp, Server.getEmployeeBySocketData(otherEmpSocketData));
+                    chat.addListener(otherEmpSocketData, Server.getEmployeeBySocketData(otherEmpSocketData));
+                    chat.addListener(Server.getSocketDataByEmployee(emp), emp);
 
+                    Server.ChatHandler.getChattingEmployees().put(otherEmpSocketData, chat);
+                    Server.ChatHandler.getChattingEmployees().put(Server.getSocketDataByEmployee(emp), chat);
+
+                    otherEmpSocketData.getOutputStream().println("CHAT@@@setCurrentChat###" + chat.getSessionID());
+                    response = "CHAT@@@setCurrentChat###" + chat.getSessionID();
+                }
+                break;
+            case "leaveChat":
+                emp = Employee.deserializeFromString(Format.getFirstParam(command));
+                socketData = Server.getSocketDataByEmployee(emp);
+                chat = Server.ChatHandler.getChatSessionBySocketData(socketData);
+                chat.removeListener(socketData);
+                response = "CHAT@@@abortCurrentChat###";
+                break;
+            case "joinChatSession":
+                int sessionID = Integer.parseInt(Format.getSecondParam(command));
+                emp = Employee.deserializeFromString(Format.getFirstParam(command));
+                socketData = Server.getSocketDataByEmployee(emp);
+                chat = Server.getChatHandler().getChatSessionByID(sessionID);
+
+                chat.addListener(socketData, emp);
+                Server.ChatHandler.getChattingEmployees().put(socketData, chat);
+
+                response = "CHAT@@@setCurrentChat###" + chat.getSessionID();
+                break;
             default:
                 break;
         }
