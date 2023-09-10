@@ -2,6 +2,7 @@ package Store.Database;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class SocketData {
     private Socket socket;
@@ -12,8 +13,8 @@ public class SocketData {
     public SocketData(Socket socket) {
         this.socket = socket;
         try {
-            this.inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.outputStream = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+            this.inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            this.outputStream = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
