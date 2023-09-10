@@ -121,8 +121,8 @@ public class Login extends JFrame {
                 if( !Utilities.isNumeric(id) ) {
                     Utilities.MessageBox("תעודת הזהות חייבת להכיל רק ספרות");
                 } else {
-                    String command2 = EncodeCommandEmployee.Login(id, password);
-                    String response = Utilities.SendReceive(command2);
+                    String command = EncodeCommandEmployee.Login(id, password);
+                    String response = Utilities.SendReceive(command);
                     System.out.println("login response: "+ response);
                     switch(Format.getType(response)) {
                         case EXCEPTION:
