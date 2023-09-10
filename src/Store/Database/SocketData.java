@@ -13,7 +13,7 @@ public class SocketData {
         this.socket = socket;
         try {
             this.inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.outputStream = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+            this.outputStream = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
