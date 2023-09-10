@@ -1,6 +1,8 @@
 package Store;
 
 import javax.swing.*;
+
+import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.EncodeCommandChat;
 import Store.Database.SocketData;
 import Store.Employees.Employee;
@@ -118,6 +120,20 @@ public class Utilities {
                 label,
                 "הודעה חדשה",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public static String SendReceive(String command)
+    {
+        String response = ClassType.EXCEPTION.toString();
+        Utilities.getClientSocketData().getOutputStream().println(command);
+        try {
+            response = Utilities.getClientSocketData().getInputStream().readLine();
+            System.out.println(response);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return response;
     }
 }
 

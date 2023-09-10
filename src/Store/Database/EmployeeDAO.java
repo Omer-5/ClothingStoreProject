@@ -29,7 +29,7 @@ public class EmployeeDAO extends GeneralDAO{
         deleteObject("Employees", "ID=" + id);
     }
 
-    public Employee getEmployeeByID(int id)
+    public Employee getEmployeeByID(int id) throws SQLException
     {
         ResultSet  res = getObject("Employees", "*", "ID = "+ id);
         
@@ -40,7 +40,7 @@ public class EmployeeDAO extends GeneralDAO{
         return collection.get(0);
     }
 
-    public ArrayList<Employee> getEmployeesByBranch(String branch)
+    public ArrayList<Employee> getEmployeesByBranch(String branch) throws SQLException
     {
         ResultSet  res = getObject("Employees", "*", "branch = N'"+ branch+"'");
         return resToCollection(res);
@@ -71,7 +71,7 @@ public class EmployeeDAO extends GeneralDAO{
         return resArray;
     }
 
-    public EmployeeException.MsgId Login(String username, String password)
+    public EmployeeException.MsgId Login(String username, String password) throws SQLException
     {
         if( !Utilities.isNumeric(username) )
             return EmployeeException.MsgId.ONLY_DIGITS;

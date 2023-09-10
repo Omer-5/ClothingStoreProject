@@ -1,5 +1,6 @@
 package Store.Client.ServerCommunication;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import Store.Database.EmployeeDAO;
@@ -8,8 +9,7 @@ import Store.Employees.Employee;
 import Store.Exceptions.EmployeeException;
 
 public class DecodeExecuteCommandEmployee {
-    public static String execute(String command)
-    {
+    public static String execute(String command) throws SQLException {
         EmployeeDAO DAO = new EmployeeDAO();
         Employee emp;
         int id;
@@ -50,7 +50,6 @@ public class DecodeExecuteCommandEmployee {
                 response = msg.toString();
                 break;
         }
-
         return response;
     }
 

@@ -78,6 +78,11 @@ public class Format {
         return temp.split(paramsSeparator)[0];
     }
 
+    public static String encodeException(String message)
+    {
+        return ClassType.EXCEPTION + typeSeparator + message;
+    }
+
     public static List<Customer> decodeCustomers(String str)
     {
         String[] objects = str.split(objectSeparator);

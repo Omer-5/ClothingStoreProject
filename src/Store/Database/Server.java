@@ -9,6 +9,7 @@ import Store.AppForms.Chats;
 import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Client.ServerCommunication.EncodeCommandChat;
+import Store.Client.ServerCommunication.EncodeCommandEmployee;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Inventories.InventoryItem;
@@ -76,8 +77,8 @@ public class Server {
                     String res = DecodeExecuteCommand.decode_and_execute(inputString);
 
                     if(res.equals("SUCCESS")) {
-                        EmployeeDAO DAO = new EmployeeDAO();
-                        Employee emp = DAO.getEmployeeByID(Integer.parseInt(Format.getFirstParam(inputString)));
+                        String command = EncodeCommandEmployee.getEmployeeByID(Integer.parseInt(Format.getFirstParam(inputString)));
+                        Employee emp = Employee.deserializeFromString(DecodeExecuteCommand.decode_and_execute(command));
 
                         synchronized(connections) {
                             connections.put(emp, socketData);
