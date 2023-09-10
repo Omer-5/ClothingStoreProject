@@ -83,6 +83,10 @@ public class Format {
         return encode(ClassType.EXCEPTION, "", message);
     }
 
+    public static String encodeSuccessMessage(){
+        return encode(ClassType.SUCCESS, "", "הפעולה בוצעה בהצלחה!");
+    }
+
     public static List<Customer> decodeCustomers(String str)
     {
         String[] objects = str.split(objectSeparator);

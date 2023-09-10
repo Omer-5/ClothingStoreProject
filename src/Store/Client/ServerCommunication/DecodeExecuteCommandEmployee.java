@@ -13,7 +13,7 @@ public class DecodeExecuteCommandEmployee {
         EmployeeDAO DAO = new EmployeeDAO();
         Employee emp;
         int id;
-        String response = ""; //TODO: add response
+        String response = Format.encodeSuccessMessage();
         switch (Format.getMethod(command)) {
             //public static String createNewEmployee(Employee emp)
             case "createNewEmployee":

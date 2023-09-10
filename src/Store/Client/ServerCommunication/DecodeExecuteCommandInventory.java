@@ -8,7 +8,7 @@ import Store.Inventories.InventoryItem;
 public class DecodeExecuteCommandInventory {
     public static String execute(String command) throws SQLException {
         InventoryDAO DAO = new InventoryDAO();
-        String response = ""; //TODO: add response
+        String response = Format.encodeSuccessMessage();
         switch (Format.getMethod(command)) {
             case "getInventoryItemsByBranch":
                 // public ArrayList<InventoryItem> getInventoryItemsByBranch(String branch) {
