@@ -2,11 +2,10 @@ package Store.Database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.util.List;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 import Store.Inventories.InventoryItem;
 import Store.PurchaseHistory.*;
@@ -29,7 +28,7 @@ public class PurchaseHistoryDAO extends GeneralDAO {
             System.out.println(e);
         }
 
-        ArrayList<InventoryItem> items = purchase.getItems();
+        List<InventoryItem> items = purchase.getItems();
         for( int i=0; i < items.size(); i++) {
             PurchasedItem item = new PurchasedItem(orderID, items.get(i).getProductID());
             insertObject("[PurchaseHistoryItems]", queryForInsertItems(item));

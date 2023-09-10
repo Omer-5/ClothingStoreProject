@@ -1,7 +1,12 @@
 package Store.PurchaseHistory;
 
+import java.text.Normalizer.Form;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
+
+import Store.Client.ServerCommunication.Format;
 import Store.Inventories.InventoryItem;
 
 /**
@@ -10,43 +15,14 @@ import Store.Inventories.InventoryItem;
  */
 public class Purchase {
 
-    /**
-     * Unique identifier for the purchase.
-     */
     private int purchaseID;
-
-    /**
-     * Identifier of the customer making the purchase.
-     */
     private int customerID;
-
-    /**
-     * Date and time when the purchase was made.
-     */
     private LocalDateTime date;
-
-    /**
-     * Branch where the purchase was made.
-     */
     private String branch;
 
-    /**
-     * List of items included in the purchase.
-     */
-    private ArrayList<InventoryItem> purchasedItems;
+    private List<InventoryItem> purchasedItems;
 
-    /**
-     * Creates a new purchase instance with the given customer ID, date, and branch.
-     *
-     * @param customerID The ID of the customer.
-     * @param date Date and time of the purchase.
-     * @param branch Branch where the purchase was made.
-     */
-    public Purchase(int customerID, LocalDateTime date, String branch) {
-        this.customerID = customerID;
-        this.date = date;
-        this.branch = branch;
-    }
+    static DateTimeFormatter formatter_get = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Creates a new purchase instance with the given customer ID, date, branch, and purchased items.
@@ -56,7 +32,7 @@ public class Purchase {
      * @param branch Branch where the purchase was made.
      * @param purchasedItems List of items that were purchased.
      */
-    public Purchase(int customerID, LocalDateTime date, String branch, ArrayList<InventoryItem> purchasedItems) {
+    public Purchase(int customerID, LocalDateTime date, String branch, List<InventoryItem> purchasedItems) {
         this.customerID = customerID;
         this.date = date;
         this.branch = branch;
@@ -128,8 +104,77 @@ public class Purchase {
      *
      * @return The list of purchased items.
      */
-    public ArrayList<InventoryItem> getItems() {
+    public List<InventoryItem> getItems() {
         return this.purchasedItems;
+    }
+
+    /**
+    * Returns a string representation of the a purchase.
+    *
+    * @return The string representation of the purchase.
+    */
+    @Override
+    public String toString() {
+        return  purchaseID + Format.fieldSeparator +
+                customerID + Format.fieldSeparator + 
+                date + Format.fieldSeparator + 
+                branch;
+    }
+
+    // Type 1: createNewPurchase, Type 2: Import Purchases List<> for Reports
+    public String toString(int type) {
+        String response = customerID + Format.fieldSeparator + date + Format.fieldSeparator + branch;
+
+        switch(type) {
+            case 1:
+                return response + Format.fieldSeparator + Format.encodeInventoryItems(purchasedItems);
+            case 2:
+                return purchaseID + Format.fieldSeparator + response;
+        }
+
+        return null;
+    }
+
+    /**
+        * Serializes the purchase object to a string representation.
+        *
+        * @return The serialized string representation of the purchase.
+        */
+    public String serializeToString(int type) {
+        return this.toString(type);
+    }
+
+    /**
+        * Deserializes a string representation of an purchased item back to an PurchasedItem object.
+        *
+        * @param serializedString The serialized string representation of the purchased item.
+        * @return The deserialized PurchasedItem object.
+        */
+    public static Purchase deserializeFromString(String serializedString, int type) {
+        String[] fields = serializedString.split(Format.fieldSeparator);
+        
+        int customerID;
+        LocalDateTime date;
+        String branch;
+
+        switch(type) { 
+            case 1:
+                customerID = Integer.parseInt(fields[0]);
+                date = LocalDateTime.parse(fields[1], formatter_get);
+                branch = fields[2];
+                List<InventoryItem> purchasedItems = Format.decodeInventoryItems(fields[3]);
+
+                return new Purchase(customerID, date, branch, purchasedItems);
+            case 2: 
+                int purchaseID = Integer.parseInt(fields[0]);
+                customerID = Integer.parseInt(fields[1]);
+                date = LocalDateTime.parse(fields[2], formatter_get);
+                branch = fields[3];
+
+                return new Purchase(purchaseID, customerID, date, branch);
+        }
+
+        return null;
     }
 }
 
