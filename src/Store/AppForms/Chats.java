@@ -74,7 +74,7 @@ public class Chats extends JPanel {
 
         currServerListenThread = new listenToServer();
         currServerListenThread.start();
-        currServerListenThread.resumeThread();
+        currServerListenThread.pauseThread();
 
         this.emp = emp;
     }
@@ -727,6 +727,10 @@ public class Chats extends JPanel {
         }
     } 
     
+    public listenToServer getListenToServerThread() {
+        return this.currServerListenThread;
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Cash Register"); // Create a JFrame
@@ -740,7 +744,7 @@ public class Chats extends JPanel {
         });
     }
 
-    private class listenToServer extends Thread {
+    public class listenToServer extends Thread {
         private volatile boolean isRunning = true;
 
         @Override

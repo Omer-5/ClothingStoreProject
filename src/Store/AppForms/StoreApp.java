@@ -136,10 +136,15 @@ public class StoreApp extends JFrame {
             contentPanel.removeAll();
             contentPanel.repaint();
 
-            if (panelName.equals("צ'אט"))
+            if (panelName.equals("צ'אט")) {
                 Utilities.setInChatPanel(emp, true);
-            else
+                chats.getListenToServerThread().resumeThread();
+            }
+            else {
                 Utilities.setInChatPanel(emp, false);
+                chats.getListenToServerThread().pauseThread();
+            }
+                
 
             if (panelName.equals("קופה")) {
                 cashRegister.setPreferredSize(contentPanel.getSize());
