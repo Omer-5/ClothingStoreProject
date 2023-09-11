@@ -457,7 +457,8 @@ public class Chats extends JPanel {
         Utilities.getClientSocketData().getOutputStream().println(command);
         try {
             String res = Utilities.getClientSocketData().getInputStream().readLine();
-            if( res.length() != 0 ) {
+            System.out.println("Response: [" + res + "]");
+            if( res.length() != 0 && !res.equals("ריק")) {
                 tableLines = Format.decodeAvailableChats(res);
             
                 for(Object[] object : tableLines) {

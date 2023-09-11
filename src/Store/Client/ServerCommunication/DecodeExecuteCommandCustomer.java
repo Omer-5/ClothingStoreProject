@@ -8,18 +8,23 @@ import Store.Database.CustomerDAO;
 public class DecodeExecuteCommandCustomer {
     public static String execute(String command) throws SQLException {
         CustomerDAO DAO = new CustomerDAO();
+        Customer temp;
         String response = Format.encodeSuccessMessage();
         switch (Format.getMethod(command)) {
             case "createNewCustomer":
             // static String createNewCustomer(Customer customer, String customerType) {
-                Customer temp = Customer.deserializeFromString(Format.getFirstParam(command));
+                temp = Customer.deserializeFromString(Format.getFirstParam(command));
                 String customerType = Format.getSecondParam(command);
                 DAO.createNewCustomer(temp, customerType);
                 break;        
             case "getCustomerByID":
                 // public Customer getCustomerByID(int id) {
                 int id = Integer.parseInt(Format.getFirstParam(command));
-                response = DAO.getCustomerByID(id).serializeToString();
+                temp = DAO.getCustomerByID(id);
+                if(temp != null)
+                    response = temp.serializeToString();
+                else
+                    response = Format.encodeException("לא נמצא לקוח עם התעודת זהות הזאת במערכת");
                 break;
             case "updateCustomer":
                 // public void updateCustomer(Customer customer, String customerType) {

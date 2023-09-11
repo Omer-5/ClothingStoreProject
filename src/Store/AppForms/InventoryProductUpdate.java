@@ -202,12 +202,12 @@ public class InventoryProductUpdate extends JPanel{
             Utilities.MessageBox("וודא שכל השדות אינם ריקים");
             return;
         }
-        else if(!Utilities.isNumeric(quantity)) {
-            Utilities.MessageBox("כמות חייבת להיות מספר");
+        else if(!Utilities.isNumeric(quantity) || !Utilities.isPositiveInt(quantity)) {
+            Utilities.MessageBox("כמות חייבת להיות מספר חיובי");
             return;
         }
-        else if(!Utilities.isDouble(price)) {
-            Utilities.MessageBox("מחיר חייב להיות מספר");
+        else if(!Utilities.isDouble(price) || !Utilities.isPositiveDouble(price)) {
+            Utilities.MessageBox("מחיר חייב להיות מספר חיובי");
             return;
         }
 

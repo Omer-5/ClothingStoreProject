@@ -53,14 +53,18 @@ public class BranchReport extends JPanel {
         initComponents();
         this.branch = branch;
         this.loadBranchInfo();
-        this.isLoaded = true;
+        
     }
 
     public void loadBranchInfo()
     {
+        isLoaded = false;
+
         LoadProducts();
-        // LoadProductsComboBox();
+        LoadProductsComboBox();
         filterPanel_StartButton.doClick();
+
+        this.isLoaded = true;
     }
 
     private void initComponents() {
@@ -405,56 +409,57 @@ public class BranchReport extends JPanel {
             }
         }
         
-        PurchaseHistoryDAO dao = new PurchaseHistoryDAO();
-        try {
-        purchasedItems = dao.getItemsFromOrdersByBranchAndDays(branch, days);
-        // Set quantity for all items to 0
-        for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
-            Integer key = entry.getKey();
-            InventoryItem value = entry.getValue();
-            value.setQuantity(0);
-            
-            itemsMap.put(key, value);
-        }
-        
-        for(PurchasedItem item: purchasedItems) {
-            int quantity = itemsMap.get(item.getProductID()).getQuantity() + 1;
-            InventoryItem temp = itemsMap.get(item.getProductID());
-            temp.setQuantity(quantity);
-    
-        } 
-    } catch (SQLException e)  
-    { 
-        System.out.println(e);
-    }
-        // command = EncodeCommandPurchaseHistory.getItemsFromOrdersByBranchAndDays(branch, days);
-        // response = Utilities.SendReceive(command);
-        // switch (Format.getType(response)) {
-        //     case EXCEPTION:
-        //         Utilities.MessageBox(Format.getFirstParam(response));
-        //         break;
-        //     default:
-        //         purchasedItems = Format.decodePurchasedItems(Format.getFirstParam(response));
-
-        //         // Set quantity for all items to 0
-        //         for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
-        //             Integer key = entry.getKey();
-        //             InventoryItem value = entry.getValue();
-        //             value.setQuantity(0);
-                    
-        //             itemsMap.put(key, value);
-        //         }
+        // PurchaseHistoryDAO dao = new PurchaseHistoryDAO();
+        // try {
+        //     purchasedItems = dao.getItemsFromOrdersByBranchAndDays(branch, days);
+        //     // Set quantity for all items to 0
+        //     for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
+        //         Integer key = entry.getKey();
+        //         InventoryItem value = entry.getValue();
+        //         value.setQuantity(0);
                 
-        //         for(PurchasedItem item: purchasedItems) {
-        //             int quantity = itemsMap.get(item.getProductID()).getQuantity() + 1;
-        //             InventoryItem temp = itemsMap.get(item.getProductID());
-        //             temp.setQuantity(quantity);
-    
-        //             itemsMap.put(item.getProductID(), temp);
-        //         }
-        //         LoadReport();
-        //         break;
+        //         itemsMap.put(key, value);
+        //     }
+            
+        //     for(PurchasedItem item: purchasedItems) {
+        //         int quantity = itemsMap.get(item.getProductID()).getQuantity() + 1;
+        //         InventoryItem temp = itemsMap.get(item.getProductID());
+        //         temp.setQuantity(quantity);
+        
+        //     } 
+
+        //     LoadReport();
+        // } catch (SQLException e)  
+        // { 
+        //     System.out.println(e);
         // }
+        command = EncodeCommandPurchaseHistory.getItemsFromOrdersByBranchAndDays(branch, days);
+        response = Utilities.SendReceive(command);
+        switch (Format.getType(response)) {
+            case EXCEPTION:
+                Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            default:
+                purchasedItems = Format.decodePurchasedItems(response);
+                // Set quantity for all items to 0
+                for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
+                    Integer key = entry.getKey();
+                    InventoryItem value = entry.getValue();
+                    value.setQuantity(0);
+                    
+                    itemsMap.put(key, value);
+                }
+                
+                for(PurchasedItem item: purchasedItems) {
+                    int quantity = itemsMap.get(item.getProductID()).getQuantity() + 1;
+                    InventoryItem temp = itemsMap.get(item.getProductID());
+                    temp.setQuantity(quantity);
+    
+                    itemsMap.put(item.getProductID(), temp);
+                }
+                LoadReport();
+                break;
+        }
     }
 
 
@@ -475,7 +480,6 @@ public class BranchReport extends JPanel {
                 }
                 break;
         }
-        
     }
 
     public void LoadReport() {
@@ -513,9 +517,11 @@ public class BranchReport extends JPanel {
         filterPanel_productComboBox.removeAllItems();
         filterPanel_productComboBox.addItem("הכל");
 
-        for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
-            filterPanel_productComboBox.addItem(entry.getValue().getName());
-        }
+        if(itemsMap != null) { 
+            for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
+                filterPanel_productComboBox.addItem(entry.getValue().getName());
+            }
+        } 
     }
 
     private void addRowToProductTable(String name, String category, double price, int quantity) { 
