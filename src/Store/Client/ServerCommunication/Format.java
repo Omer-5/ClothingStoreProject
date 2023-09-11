@@ -63,6 +63,12 @@ public class Format {
             case "SUCCESS":
                 result = ClassType.SUCCESS;
                 break;
+            case "EMPTY":
+                result = ClassType.EMPTY;
+                break;
+            case "LOGGER":
+                result = ClassType.LOGGER;
+                break;
             default:
                 result = ClassType.OBJECT;
                 break;
@@ -91,6 +97,11 @@ public class Format {
     public static String encodeException(String message)
     {
         return encode(ClassType.EXCEPTION, "", message);
+    }
+
+    public static String encodeEmpty(String optionalString)
+    {
+        return encode(ClassType.EMPTY, "", "");
     }
 
     public static String encodeSuccessMessage(){

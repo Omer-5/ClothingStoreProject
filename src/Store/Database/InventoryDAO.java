@@ -3,6 +3,7 @@ package Store.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import Store.Inventories.InventoryItem;
 
@@ -27,34 +28,12 @@ public class InventoryDAO extends GeneralDAO {
         // Implementation of the getObject method should be in GeneralDAO
         ResultSet  res = getObject("Inventory", "*", "productID = "+ productID);
         
-        ArrayList<InventoryItem> collection = resToCollection(res);
+        List<InventoryItem> collection = resToCollection(res);
         if(collection.isEmpty())
             return null;
 
         return collection.get(0);
     }
-
-    // private ArrayList<InventoryItem> resToInventoryCollection(ResultSet res) {
-    //     ArrayList<InventoryItem> resArray = new ArrayList<>();
-
-    //     try {
-    //         while(res.next()) {
-    //             String branch = res.getString("branch");
-    //             int productID = res.getInt("productID");
-    //             String name = res.getString("name");
-    //             String category = res.getString("category");
-    //             int quantity = res.getInt("quantity");
-    //             double price = res.getDouble("price");
-
-    //             InventoryItem temp = new InventoryItem(branch, productID, name, category, quantity, price);
-    //             resArray.add(temp);
-    //         }
-    //     } catch (SQLException e) {
-    //         // TODO: handle exception
-    //         System.out.println(e);
-    //     }
-    //     return resArray;
-    // }
 
     private String queryForInsert(InventoryItem item) {
         String query = String.format("VALUES (N'%s', N'%s', N'%s', %d, %.2f)",
@@ -79,15 +58,14 @@ public class InventoryDAO extends GeneralDAO {
         return query;
     }
 
-
     // Additional helper method to convert ResultSet to InventoryItem objects
-    public ArrayList<InventoryItem> getInventoryItemsByBranch(String branch) throws SQLException {
+    public List<InventoryItem> getInventoryItemsByBranch(String branch) throws SQLException {
         ResultSet  res = getObject("Inventory", "*", "Branch = N'"+ branch+"'");
         return resToCollection(res);
     }
 
-    private ArrayList<InventoryItem> resToCollection(ResultSet res) throws SQLException {
-        ArrayList<InventoryItem> resArray = new ArrayList<>();
+    private List<InventoryItem> resToCollection(ResultSet res) throws SQLException {
+        List<InventoryItem> resArray = new ArrayList<>();
         while(res.next())
         {
             String branch = res.getString("Branch");

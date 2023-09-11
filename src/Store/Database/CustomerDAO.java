@@ -3,6 +3,7 @@ package Store.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import Store.Customers.Customer;
 import Store.Customers.CustomerNew;
@@ -26,24 +27,24 @@ public class CustomerDAO extends GeneralDAO {
 
     public Customer getCustomerByID(int id) throws SQLException{
         ResultSet res = getObject("Customers", "*", "ID = " + id);
-        ArrayList<Customer> collection = resToCollection(res);
+        List<Customer> collection = resToCollection(res);
         if (collection.isEmpty())
             return null;
         return collection.get(0);
     }
 
-    public ArrayList<Customer> getCustomersByType(String type) throws SQLException{
+    public List<Customer> getCustomersByType(String type) throws SQLException{
         ResultSet res = getObject("Customers", "*", "Type = '" + type + "'");
         return resToCollection(res);
     }
 
-    public ArrayList<Customer> getCustomers() throws SQLException{
+    public List<Customer> getCustomers() throws SQLException{
         ResultSet res = getObject("Customers", "*", "");
         return resToCollection(res);
     }
 
-    private ArrayList<Customer> resToCollection(ResultSet res) throws SQLException {
-        ArrayList<Customer> customers = new ArrayList<>();
+    private List<Customer> resToCollection(ResultSet res) throws SQLException {
+        List<Customer> customers = new ArrayList<>();
         while (res.next()) {
             String fullName = res.getString("FullName");
             String phoneNumber = res.getString("PhoneNumber");

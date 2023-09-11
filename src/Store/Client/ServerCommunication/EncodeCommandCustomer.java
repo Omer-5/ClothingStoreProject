@@ -26,12 +26,4 @@ public class EncodeCommandCustomer {
     public static String getCustomers() {
         return Format.encode(ClassType.CUSTOMER, "getCustomers");
     }
-    
-    // public static void main(String[] args) {
-    //     int idtest = 5;
-    //     Customer customer = new CustomerVIP("Omer Daniel", "12345", idtest);
-    //     String command = EncodeCommandCustomer.createNewCustomer(customer, customer.getType());
-    //     System.out.println(command);
-    //     // ArrayList<Customer> temp = (ArrayList<CustomerRegular>)DecodeExecuteCommand.decode_and_execute(command);     
-    // }
 }

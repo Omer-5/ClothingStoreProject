@@ -271,6 +271,8 @@ public class InventoryManagement extends JPanel{
             case EXCEPTION:
                 Utilities.MessageBox(Format.getFirstParam(response));
                 break;
+            case EMPTY:
+                break;
             default:
                 System.out.println("Response: " + response);
                 items = Format.decodeInventoryItems(response);

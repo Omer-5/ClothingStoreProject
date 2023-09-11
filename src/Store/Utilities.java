@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.EncodeCommandChat;
+import Store.Client.ServerCommunication.Format;
 import Store.Database.SocketData;
 import Store.Employees.Employee;
 
@@ -132,14 +133,13 @@ public class Utilities {
 
     public static String SendReceive(String command)
     {
-        String response = ClassType.EXCEPTION.toString();
+        String response = Format.encodeException("!שגיאת תקשורת מול השרת");
         Utilities.getClientSocketData().getOutputStream().println(command);
         try {
             response = Utilities.getClientSocketData().getInputStream().readLine();
-            //System.out.println(response);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            return response;
         }
         return response;
     }

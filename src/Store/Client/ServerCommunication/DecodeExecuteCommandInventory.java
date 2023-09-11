@@ -1,6 +1,7 @@
 package Store.Client.ServerCommunication;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import Store.Database.InventoryDAO;
 import Store.Inventories.InventoryItem;
@@ -8,11 +9,16 @@ import Store.Inventories.InventoryItem;
 public class DecodeExecuteCommandInventory {
     public static String execute(String command) throws SQLException {
         InventoryDAO DAO = new InventoryDAO();
+        List<InventoryItem> inventoryItems;
         String response = Format.encodeSuccessMessage();
         switch (Format.getMethod(command)) {
             case "getInventoryItemsByBranch":
                 // public ArrayList<InventoryItem> getInventoryItemsByBranch(String branch) {
-                response = Format.encodeInventoryItems(DAO.getInventoryItemsByBranch(Format.getFirstParam(command)));
+                inventoryItems = DAO.getInventoryItemsByBranch(Format.getFirstParam(command));
+                if(inventoryItems.size() == 0)
+                    response = Format.encodeEmpty("");
+                else
+                    response = Format.encodeInventoryItems(inventoryItems);
                 break;
             case "createNewItem":
                 // public void createNewItem(InventoryItem item) {
@@ -28,7 +34,11 @@ public class DecodeExecuteCommandInventory {
                 break;
             case "getItemByProductID":
                 // public InventoryItem getItemByProductID(int productID) {
-                response = Format.encodeInventoryItems(DAO.getInventoryItemsByBranch(Format.getFirstParam(command)));
+                inventoryItems = DAO.getInventoryItemsByBranch(Format.getFirstParam(command));
+                if(inventoryItems.size() == 0)
+                    response = Format.encodeEmpty("");
+                else
+                    response = Format.encodeInventoryItems(inventoryItems);
                 break;
         }
         return response;

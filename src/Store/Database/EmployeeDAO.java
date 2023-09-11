@@ -2,6 +2,7 @@ package Store.Database;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
@@ -34,22 +35,22 @@ public class EmployeeDAO extends GeneralDAO{
     {
         ResultSet  res = getObject("Employees", "*", "ID = "+ id);
         
-        ArrayList<Employee> collection = resToCollection(res);
+        List<Employee> collection = resToCollection(res);
         if(collection.isEmpty())
             return null;
 
         return collection.get(0);
     }
 
-    public ArrayList<Employee> getEmployeesByBranch(String branch) throws SQLException
+    public List<Employee> getEmployeesByBranch(String branch) throws SQLException
     {
         ResultSet  res = getObject("Employees", "*", "branch = N'"+ branch+"'");
         return resToCollection(res);
     }
 
-    private ArrayList<Employee> resToCollection(ResultSet res)
+    private List<Employee> resToCollection(ResultSet res)
     {
-        ArrayList<Employee> resArray = new ArrayList<>();
+        List<Employee> resArray = new ArrayList<>();
 
         try {
             while(res.next())

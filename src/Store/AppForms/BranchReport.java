@@ -439,6 +439,8 @@ public class BranchReport extends JPanel {
             case EXCEPTION:
                 Utilities.MessageBox(Format.getFirstParam(response));
                 break;
+            case EMPTY:
+                break;
             default:
                 purchasedItems = Format.decodePurchasedItems(response);
                 // Set quantity for all items to 0
@@ -469,6 +471,8 @@ public class BranchReport extends JPanel {
         switch (Format.getType(response)) {
             case EXCEPTION:
                 Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            case EMPTY:
                 break;
             default:
                 List<InventoryItem> items = Format.decodeInventoryItems(response);

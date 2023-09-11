@@ -542,30 +542,30 @@ public class CashRegister extends JPanel {
             response = Utilities.SendReceive(command);
 
             switch(Format.getType(response)) {
-                case EXCEPTION:
-                    if(Format.getFirstParam(response).equals("לא נמצא לקוח עם התעודת זהות הזאת במערכת")) {
-                        ClearCustomerInfo();
+                case EMPTY:
+                    ClearCustomerInfo();
 
-                        int id = Integer.parseInt(searchPanel_IdTextField.getText());
-                        CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(id);
-                            
-                        JDialog dialog = new JDialog();
-                        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-                        dialog.setModal(true); // Block interaction with other windows
-                        dialog.addWindowListener(new WindowAdapter() {
-                            @Override
-                            public void windowClosed(WindowEvent e) {
-                                if(customerAddOrUpdate.IsExitedSuccessfully())
-                                    searchPanel_StartButton.doClick();
-                            }
-                        });
-                        customerAddOrUpdate.setDialog(dialog);
-                        dialog.add(customerAddOrUpdate);
-                        dialog.pack();
-                        dialog.setLocationRelativeTo(null);
-                        dialog.setVisible(true);
-                    } else
-                        Utilities.MessageBox(Format.getFirstParam(response));
+                    int id = Integer.parseInt(searchPanel_IdTextField.getText());
+                    CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(id);
+                        
+                    JDialog dialog = new JDialog();
+                    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    dialog.setModal(true); // Block interaction with other windows
+                    dialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            if(customerAddOrUpdate.IsExitedSuccessfully())
+                                searchPanel_StartButton.doClick();
+                        }
+                    });
+                    customerAddOrUpdate.setDialog(dialog);
+                    dialog.add(customerAddOrUpdate);
+                    dialog.pack();
+                    dialog.setLocationRelativeTo(null);
+                    dialog.setVisible(true);
+                    break;
+                case EXCEPTION:
+                    Utilities.MessageBox(Format.getFirstParam(response));
                     break;
                 default: 
                     customer = Customer.deserializeFromString(response);
@@ -575,6 +575,10 @@ public class CashRegister extends JPanel {
 
                     switch (Format.getType(response)) {
                         case EXCEPTION:
+                            Utilities.MessageBox(Format.getFirstParam(response));
+                            break;
+                        case EMPTY:
+                            Utilities.MessageBox(Format.getFirstParam(response));
                             break;
                         default:
                             inventory = Format.decodeInventoryItems(response);

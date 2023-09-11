@@ -1,6 +1,7 @@
 package Store.Client.ServerCommunication;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import Store.Customers.Customer;
 import Store.Database.CustomerDAO;
@@ -8,27 +9,28 @@ import Store.Database.CustomerDAO;
 public class DecodeExecuteCommandCustomer {
     public static String execute(String command) throws SQLException {
         CustomerDAO DAO = new CustomerDAO();
-        Customer temp;
+        Customer customer;
+        List<Customer> customers;
         String response = Format.encodeSuccessMessage();
         switch (Format.getMethod(command)) {
             case "createNewCustomer":
             // static String createNewCustomer(Customer customer, String customerType) {
-                temp = Customer.deserializeFromString(Format.getFirstParam(command));
+                customer = Customer.deserializeFromString(Format.getFirstParam(command));
                 String customerType = Format.getSecondParam(command);
-                DAO.createNewCustomer(temp, customerType);
+                DAO.createNewCustomer(customer, customerType);
                 break;        
             case "getCustomerByID":
                 // public Customer getCustomerByID(int id) {
                 int id = Integer.parseInt(Format.getFirstParam(command));
-                temp = DAO.getCustomerByID(id);
-                if(temp != null)
-                    response = temp.serializeToString();
+                customer = DAO.getCustomerByID(id);
+                if(customer != null)
+                    response = customer.serializeToString();
                 else
-                    response = Format.encodeException("לא נמצא לקוח עם התעודת זהות הזאת במערכת");
+                    response = Format.encodeEmpty("לא נמצא לקוח עם התעודת זהות הזאת במערכת");
                 break;
             case "updateCustomer":
                 // public void updateCustomer(Customer customer, String customerType) {
-                Customer customer = Customer.deserializeFromString(Format.getFirstParam(command));
+                customer = Customer.deserializeFromString(Format.getFirstParam(command));
                 DAO.updateCustomer(customer, Format.getSecondParam(command));
                 break;
             case "deleteCustomer":
@@ -36,12 +38,20 @@ public class DecodeExecuteCommandCustomer {
                 DAO.deleteCustomer(Integer.parseInt(Format.getFirstParam(command)));
                 break;
             case "getCustomers":
-                //     public ArrayList<Customer> getCustomers() {
-                response = Format.encodeCustomers(DAO.getCustomers());
+                //     public List<Customer> getCustomers() {
+                customers = DAO.getCustomers();
+                if(customers.size() == 0)
+                    response = Format.encodeEmpty("");
+                else 
+                    response = Format.encodeCustomers(customers);
                 break;
             case "getCustomersByType":
-                // public ArrayList<Customer> getCustomersByType(String type) {
-                response = Format.encodeCustomers(DAO.getCustomersByType(Format.getFirstParam(command)));
+                // public List<Customer> getCustomersByType(String type) {
+                customers = DAO.getCustomersByType(Format.getFirstParam(command));
+                if(customers.size() == 0)
+                    response = Format.encodeEmpty("");
+                else
+                    response = Format.encodeCustomers(customers);
                 break;
             }
         return response;

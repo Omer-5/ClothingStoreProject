@@ -123,6 +123,8 @@ public class CustomersManagement extends JPanel {
             case EXCEPTION:
                 Utilities.MessageBox(Format.getFirstParam(response));
                 break;
+            case EMPTY:
+                break;
             default:
                 customers = Format.decodeCustomers(response);
                 customersMap = new HashMap<Integer, Customer>();
@@ -247,6 +249,8 @@ public class CustomersManagement extends JPanel {
                     switch (Format.getType(response)) { 
                         case EXCEPTION:
                             Utilities.MessageBox(Format.getFirstParam(response));
+                            break;
+                        case EMPTY:
                             break;
                         default:
                             System.out.println(response);

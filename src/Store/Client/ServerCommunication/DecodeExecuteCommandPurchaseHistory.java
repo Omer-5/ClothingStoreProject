@@ -15,7 +15,6 @@ public class DecodeExecuteCommandPurchaseHistory {
         String response = Format.encodeSuccessMessage();
 
         switch(Format.getMethod(command)) {
-
             case "createNewPurchase":
                 System.out.println(command);
                 purchase = Purchase.deserializeFromString(command, 1);
@@ -26,7 +25,7 @@ public class DecodeExecuteCommandPurchaseHistory {
                 int days = Integer.parseInt(Format.getSecondParam(command));
                 List<PurchasedItem> temp = DAO.getItemsFromOrdersByBranchAndDays(branch, days);
                 if(temp.size() == 0)
-                    response = Format.encodeException("אין נתונים עבור היום שנבחר");
+                    response = Format.encodeEmpty("אין נתונים עבור היום שנבחר");
                 else
                     response = Format.encodePurchasedItems(temp);
                 break;

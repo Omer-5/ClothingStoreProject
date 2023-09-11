@@ -2,6 +2,7 @@ package Store.Client.ServerCommunication;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import Store.Database.EmployeeDAO;
 import Store.Database.Server;
@@ -34,13 +35,19 @@ public class DecodeExecuteCommandEmployee {
             case "getEmployeeByID":
                 id = Integer.parseInt(Format.getFirstParam(command));
                 emp = DAO.getEmployeeByID(id);
-                response = emp.serializeToString();
+                if(emp == null)
+                    response = Format.encodeEmpty("");
+                else
+                    response = emp.serializeToString();
                 break;
             //public static String getEmployeesByBranch(String branch)
             case "getEmployeesByBranch":
                 String branch = Format.getFirstParam(command);
-                ArrayList<Employee> empList = DAO.getEmployeesByBranch(branch);
-                response = Format.encodeEmployees(empList);
+                List<Employee> empList = DAO.getEmployeesByBranch(branch);
+                if(empList.size() == 0)
+                    response = Format.encodeEmpty("");
+                else
+                    response = Format.encodeEmployees(empList);
                 break;
             //public static String Login(String username, String password)
             case "Login":
