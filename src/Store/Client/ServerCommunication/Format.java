@@ -161,12 +161,10 @@ public class Format {
    public static String encodeEmployees(List<Employee> arr)
     {
         StringBuilder result = new StringBuilder();
-        System.out.println(arr);
         for(Employee Employee: arr){
             result.append(Employee.serializeToString());
             result.append(objectSeparator);
         }
-        System.out.println(result);
         return result.toString();
     } 
 

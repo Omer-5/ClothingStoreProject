@@ -119,6 +119,7 @@ public class EmployeesManagement extends JPanel {
             }
         });
 
+        savingChats.add(mainPanel_savingButton);
         mainPanel_savingButton.setText("עם שמירה");
         mainPanel_savingButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
         mainPanel_savingButton.addActionListener(new java.awt.event.ActionListener() {
@@ -127,6 +128,7 @@ public class EmployeesManagement extends JPanel {
             }
         });
 
+        savingChats.add(mainPanel_notSavingButton);
         mainPanel_notSavingButton.setText("ללא שמירה");
         mainPanel_notSavingButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
         mainPanel_notSavingButton.addActionListener(new java.awt.event.ActionListener() {
@@ -249,6 +251,7 @@ public class EmployeesManagement extends JPanel {
         ClearTablesCells();
         command = EncodeCommandEmployee.getEmployees();
         response = Utilities.SendReceive(command);
+
         switch (Format.getType(response)) {
             case EXCEPTION:
                 Utilities.MessageBox(Format.getFirstParam(response));
@@ -266,6 +269,7 @@ public class EmployeesManagement extends JPanel {
                     employeesMap.put(temp.getId(), temp);
                 }
                 CenterTablesCells();
+            break;
         }
         
         // EmployeeDAO DAO = new EmployeeDAO();

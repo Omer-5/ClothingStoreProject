@@ -79,17 +79,19 @@ public class Server {
                     {
                         String loginResponse = DecodeExecuteCommand.decode_and_execute(inputString);
 
-                        switch (Format.getType(loginResponse)) {
-                            case EMPTY:
-                                break;
-                        
-                            default:
-                                notLoggedIn = false;
-                                Employee emp = Employee.deserializeFromString(loginResponse);
-                                synchronized(connections) {           
-                                    connections.put(emp, socketData);
-                                }
-                                break;
+                        if(Format.getMethod(inputString) == "Login") {
+                                switch (Format.getType(loginResponse)) {
+                                case EMPTY:
+                                    break;
+                            
+                                default:
+                                    notLoggedIn = false;
+                                    Employee emp = Employee.deserializeFromString(loginResponse);
+                                    synchronized(connections) {           
+                                        connections.put(emp, socketData);
+                                    }
+                                    break;
+                            }
                         }
                     
                         socketData.getOutputStream().println(loginResponse);
