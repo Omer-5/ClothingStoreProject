@@ -15,24 +15,9 @@ import Store.PurchaseHistory.Purchase;
  */
 public class Logger {
 
-    /**
-     * The basic path for storing logs.
-     */
     private static final String basicPath = "src/Store/Server/Logger/";
-
-    /**
-     * The complete path to the log file.
-     */
     private static final String LOG_FILE_PATH = basicPath + "log.txt";
-
-    /**
-     * Configuration to decide whether to save chat conversations.
-     */
     private static String saveChatConversation;
-
-    /**
-     * Handler for properties configuration.
-     */
     private static PropertiesHandler propertiesHandler;
 
     /**

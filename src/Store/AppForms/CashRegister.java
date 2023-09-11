@@ -3,20 +3,16 @@ package Store.AppForms;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
 import Store.Utilities;
+import Store.Client.ServerCommunication.EncodeCommandCustomer;
+import Store.Client.ServerCommunication.EncodeCommandInventory;
+import Store.Client.ServerCommunication.EncodeCommandPurchaseHistory;
+import Store.Client.ServerCommunication.Format;
 import Store.Customers.Customer;
-import Store.Database.CustomerDAO;
-
 import Store.Inventories.InventoryItem;
 import Store.PurchaseHistory.Purchase;
-import Store.PurchaseHistory.PurchasedItem;
-import Store.Database.InventoryDAO;
-import Store.Database.PurchaseHistoryDAO;
-import Store.Database.PurchaseHistoryDAO;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 
@@ -25,26 +21,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-
 public class CashRegister extends JPanel {
-    Employee emp; 
-    Customer customer;
-    ArrayList<InventoryItem> inventory;
-    Map<Integer, InventoryItem> inventoryMap;
-    Map<String, InventoryItem> inventoryMapByName;
-    double totalPrice = 0;
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private Employee emp; 
+    private Customer customer;
+    private String command, response;
+    private List<InventoryItem> inventory;
+    private Map<Integer, InventoryItem> inventoryMap;
+    private Map<String, InventoryItem> inventoryMapByName;
+    private double totalPrice = 0;
 
     // Variables declaration - do not modify                     
     private javax.swing.JLabel MainPanel_OrderLabel;
@@ -547,71 +537,79 @@ public class CashRegister extends JPanel {
         if( Utilities.isNumeric(searchPanel_IdTextField.getText())) {
             ClearTablesCells();
             int customerId = Integer.parseInt(searchPanel_IdTextField.getText());
-            CustomerDAO customerDao = new CustomerDAO(); //TODO: DAO Needs to be on the Server-Side!            
-            customer = customerDao.getCustomerByID(customerId);
+            
+            command = EncodeCommandCustomer.getCustomerByID(customerId);
+            
+            response = Utilities.SendReceive(command);
+            switch(Format.getType(response)) {
+                case EXCEPTION:
+                    Utilities.MessageBox(Format.getFirstParam(response));
+                    break;
+                default: 
+                    customer = Customer.deserializeFromString(response);
+                    if( customer != null ) {
+                        command = EncodeCommandInventory.getInventoryItemsByBranch(emp.getBranch());
+                        response = Utilities.SendReceive(command);
 
-            if( customer != null ) {
-                InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: DAO Needs to be on the Server-Side! 
-                inventory = inventoryDAO.getInventoryItemsByBranch(emp.getBranch());
-
-                for(int i=0; i < inventory.size(); i++) {
-                    InventoryItem temp = inventory.get(i);
-                    if(temp.getQuantity() > 0) {
-                        addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
-                        inventoryMap.put(temp.getProductID(), temp);
-                        inventoryMapByName.put(temp.getName(), temp);
-                    }   
-                }
-
-                orderPanel_FullNameDataLabel.setText(customer.getFullName());
-                orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
-                orderPanel_CustomerTypeDataLabel.setText(customer.getType());
-                orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
-
-                pricePanel_PriceNumber.setText("0.00");
-                finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
-
-                CenterTablesCells();
-            }
-            else { 
-                int id = Integer.parseInt(searchPanel_IdTextField.getText());
-                CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(id);
-                    
-                JDialog dialog = new JDialog();
-                dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-                dialog.setModal(true); // Block interaction with other windows
-
-                dialog.addWindowListener(new WindowAdapter() {
-                    @Override
-                    public void windowClosed(WindowEvent e) {
-                        if(customerAddOrUpdate.IsExitedSuccessfully())
-                            searchPanel_StartButton.doClick();
+                        switch (Format.getType(response)) {
+                            case EXCEPTION:
+                                break;
+                            default:
+                                inventory = Format.decodeInventoryItems(response);
+                                for(int i=0; i < inventory.size(); i++) {
+                                    InventoryItem temp = inventory.get(i);
+                                    if(temp.getQuantity() > 0) {
+                                        addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
+                                        inventoryMap.put(temp.getProductID(), temp);
+                                        inventoryMapByName.put(temp.getName(), temp);
+                                    }   
+                                }
+                                orderPanel_FullNameDataLabel.setText(customer.getFullName());
+                                orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
+                                orderPanel_CustomerTypeDataLabel.setText(customer.getType());
+                                orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
+                                pricePanel_PriceNumber.setText("0.00");
+                                finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
+                
+                                CenterTablesCells();
+                                break;
+                        }
+        
                     }
-                });
-                
-                customerAddOrUpdate.setDialog(dialog);
-
-                dialog.add(customerAddOrUpdate);
-                
-                dialog.pack();
-                dialog.setLocationRelativeTo(null);
-                dialog.setVisible(true);
-            } 
-        }                                               
-        else
-            Utilities.MessageBox("תעודת הזהות חייבת להכיל רק מספרים"); //TODO: Add Exception here
-
+                    else { 
+                        int id = Integer.parseInt(searchPanel_IdTextField.getText());
+                        CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(id);
+                            
+                        JDialog dialog = new JDialog();
+                        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        dialog.setModal(true); // Block interaction with other windows
+                        dialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                if(customerAddOrUpdate.IsExitedSuccessfully())
+                                    searchPanel_StartButton.doClick();
+                            }
+                        });
+                        customerAddOrUpdate.setDialog(dialog);
+                        dialog.add(customerAddOrUpdate);
+                        dialog.pack();
+                        dialog.setLocationRelativeTo(null);
+                        dialog.setVisible(true);
+                    } 
+                    break;
+                }                                               
+            }
+            else
+                Utilities.MessageBox("תעודת הזהות חייבת להכיל רק מספרים"); 
     }   
 
     private void orderPanel_SubmitOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        if(mainPanel_CartTable.getRowCount() == 0) { //TODO: Exception
+        if(mainPanel_CartTable.getRowCount() == 0) { 
             Utilities.MessageBox("כדי לבצע קנייה עליך להוסיף מוצרים לסל קניות");
             return;
         }                                                             
-        ArrayList<InventoryItem> items = new ArrayList<InventoryItem>();
+        List<InventoryItem> items = new ArrayList<InventoryItem>();
         Map<String, InventoryItem> itemsToUpdate = new HashMap<String, InventoryItem>();
-
-        Object[] rowData = new Object [mainPanel_CartTable.getRowCount()];
 
         for (int i = 0; i < mainPanel_CartTable.getRowCount(); i++) {  // Loop through the rows
             String productName = mainPanel_CartTable.getValueAt(i, 2).toString();
@@ -624,7 +622,7 @@ public class CashRegister extends JPanel {
                 itemsToUpdate.put(item.getName(), item);
                 items.add(item);
 
-                if(originalItem.getQuantity() < item.getQuantity()) { //TODO: Exception
+                if(originalItem.getQuantity() < item.getQuantity()) { 
                     Utilities.MessageBox("כמות המוצר '" + item.getName() + "' שבחרת גדולה מהכמות במלאי");
                     return;
                 }
@@ -637,32 +635,34 @@ public class CashRegister extends JPanel {
                 items.add(newItem);
             } 
         }
-
         LocalDateTime date = LocalDateTime.now();
-
         Purchase order = new Purchase(customer.getId(), date, emp.getBranch(), items);
-
-        PurchaseHistoryDAO purchaseDAO = new PurchaseHistoryDAO(); //TODO: Add Server-Client Here
-        purchaseDAO.createNewPurchase(order);
-
-        InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: Add Server-Client Here
-        for (Map.Entry<String, InventoryItem> entry : itemsToUpdate.entrySet()) {
-            InventoryItem item = entry.getValue();
-            InventoryItem originalItem = inventoryMapByName.get(item.getName());
-            item.setQuantity(originalItem.getQuantity() - item.getQuantity());
-            inventoryDAO.updateItem(item);
+        command = EncodeCommandPurchaseHistory.createNewPurchase(order);
+        response = Utilities.SendReceive(command);
+        switch (Format.getType(response)) {
+            case EXCEPTION:
+                Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            default: // Created new purchase
+                for (Map.Entry<String, InventoryItem> entry : itemsToUpdate.entrySet()) {
+                    InventoryItem item = entry.getValue();
+                    InventoryItem originalItem = inventoryMapByName.get(item.getName());
+                    item.setQuantity(originalItem.getQuantity() - item.getQuantity());
+                    command = EncodeCommandInventory.updateItem(item);
+                    response = Utilities.SendReceive(command);
+                }
+                ClearTablesCells();
+                orderPanel_FullNameDataLabel.setText("----------------------");
+                orderPanel_CustomerTypeDataLabel.setText("----------------------");
+                orderPanel_PhoneDataLabel.setText("----------------------");
+                orderPanel_CustomerTypeDataLabel.setText("----------------------");
+                orderPanel_DiscountPercentageDataLabel.setText("-------------------");
+                pricePanel_PriceNumber.setText("0.00");
+                finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
+                Utilities.MessageBox("ההזמנה הוזמנה בהצלחה!");
+                break;
         }
-
-        ClearTablesCells();
-
-        orderPanel_CustomerTypeDataLabel.setText("----------------------");
-        orderPanel_PhoneDataLabel.setText("----------------------");
-        orderPanel_CustomerTypeDataLabel.setText("----------------------");
-        orderPanel_DiscountPercentageDataLabel.setText("-------------------");
-        pricePanel_PriceNumber.setText("0.00");
-        finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
-
-        Utilities.MessageBox("ההזמנה הוזמנה בהצלחה!");
+        
     }  
 
     // mainPanel_SupplyTable & mainPanel_CartTable Methods

@@ -13,7 +13,6 @@ public class StoreApp extends JFrame {
     private JPanel navigationPanel;
     private JPanel contentPanel;
     private Employee emp;
-
     private CashRegister cashRegister;
     private CustomersManagement customersManagement;
     private InventoryManagement inventoryManagement;
@@ -65,7 +64,7 @@ public class StoreApp extends JFrame {
         createNavigationButton("src/Store/images/icon-inventory.png", "ניהול מלאי סניף");
 
         if(emp.getTitle() == EmployeeTitle.MANAGER)
-            createNavigationButton("src/Store/images/icon-reports.png", "דוחות וסטטיסטיקות"); //TODO: Permissions for MANAGER
+            createNavigationButton("src/Store/images/icon-reports.png", "דוחות וסטטיסטיקות"); 
         
 
         // Set right-to-left component orientation
@@ -151,12 +150,15 @@ public class StoreApp extends JFrame {
                 contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
             } else if (panelName.equals("ניהול לקוחות")) { 
                 customersManagement.setPreferredSize(contentPanel.getSize());
+                customersManagement.LoadCustomers();
                 contentPanel.add(customersManagement); // Add the CashRegister panel to the content panel's center
             } else if (panelName.equals("ניהול מלאי סניף")) { 
                 inventoryManagement.setPreferredSize(contentPanel.getSize());
+                inventoryManagement.LoadInventory();
                 contentPanel.add(inventoryManagement); // Add the CashRegister panel to the content panel's center
             } else if (panelName.equals("דוחות וסטטיסטיקות")) { 
                 branchReport.setPreferredSize(contentPanel.getSize());
+                branchReport.loadBranchInfo();
                 contentPanel.add(branchReport); // Add the CashRegister panel to the content panel's center
             }else if (panelName.equals("צ'אט")) { 
                 chats.LoadAvailableBranches();
@@ -168,13 +170,5 @@ public class StoreApp extends JFrame {
             contentPanel.revalidate();
             contentPanel.repaint();
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Employee emp = new Employee("ישראל ישראלי", "0528921319", 123456789, 212444, "חולון", "1111", EmployeeTitle.CASHIER);
-            StoreApp form = new StoreApp(emp);
-            form.setVisible(true);
-        });
     }
 }

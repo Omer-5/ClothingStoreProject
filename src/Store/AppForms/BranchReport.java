@@ -1,23 +1,20 @@
 package Store.AppForms;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.List;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import Store.Utilities;
-import Store.Database.*;
-import Store.Employees.Employee;
-import Store.Employees.EmployeeTitle;
+import Store.Client.ServerCommunication.EncodeCommandInventory;
+import Store.Client.ServerCommunication.EncodeCommandPurchaseHistory;
+import Store.Client.ServerCommunication.Format;
+import Store.Database.PurchaseHistoryDAO;
 import Store.Inventories.*;
 import Store.PurchaseHistory.*;
 
@@ -47,20 +44,23 @@ public class BranchReport extends JPanel {
     private javax.swing.JLabel revenuePanel_totalLabel;
     private javax.swing.ButtonGroup timeSelectionGroup;
 
-    private String branch;
+    private String branch, command, response;
     private Map<Integer, InventoryItem> itemsMap;
     private boolean isLoaded = false;
 
+
     public BranchReport(String branch) {
         initComponents();
-
         this.branch = branch;
-
-        LoadProducts();
-        LoadProductsComboBox();
-        filterPanel_StartButton.doClick();
-
+        this.loadBranchInfo();
         this.isLoaded = true;
+    }
+
+    public void loadBranchInfo()
+    {
+        LoadProducts();
+        // LoadProductsComboBox();
+        filterPanel_StartButton.doClick();
     }
 
     private void initComponents() {
@@ -391,9 +391,7 @@ public class BranchReport extends JPanel {
 
     private void filterPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {
         int days = 0;
-        ArrayList<PurchasedItem> purchasedItems;
-
-        PurchaseHistoryDAO dao = new PurchaseHistoryDAO(); //TODO: DAO Needs to be on the Server-Side! 
+        List<PurchasedItem> purchasedItems;
 
         for (Enumeration<AbstractButton> buttons = timeSelectionGroup.getElements(); buttons.hasMoreElements();) {
             AbstractButton button = buttons.nextElement();
@@ -407,8 +405,9 @@ public class BranchReport extends JPanel {
             }
         }
         
+        PurchaseHistoryDAO dao = new PurchaseHistoryDAO();
+        try {
         purchasedItems = dao.getItemsFromOrdersByBranchAndDays(branch, days);
-
         // Set quantity for all items to 0
         for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
             Integer key = entry.getKey();
@@ -417,31 +416,69 @@ public class BranchReport extends JPanel {
             
             itemsMap.put(key, value);
         }
-
+        
         for(PurchasedItem item: purchasedItems) {
             int quantity = itemsMap.get(item.getProductID()).getQuantity() + 1;
             InventoryItem temp = itemsMap.get(item.getProductID());
             temp.setQuantity(quantity);
+    
+        } 
+    } catch (SQLException e)  
+    { 
+        System.out.println(e);
+    }
+        // command = EncodeCommandPurchaseHistory.getItemsFromOrdersByBranchAndDays(branch, days);
+        // response = Utilities.SendReceive(command);
+        // switch (Format.getType(response)) {
+        //     case EXCEPTION:
+        //         Utilities.MessageBox(Format.getFirstParam(response));
+        //         break;
+        //     default:
+        //         purchasedItems = Format.decodePurchasedItems(Format.getFirstParam(response));
 
-            itemsMap.put(item.getProductID(), temp);
-        }
-
-        LoadReport();
+        //         // Set quantity for all items to 0
+        //         for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
+        //             Integer key = entry.getKey();
+        //             InventoryItem value = entry.getValue();
+        //             value.setQuantity(0);
+                    
+        //             itemsMap.put(key, value);
+        //         }
+                
+        //         for(PurchasedItem item: purchasedItems) {
+        //             int quantity = itemsMap.get(item.getProductID()).getQuantity() + 1;
+        //             InventoryItem temp = itemsMap.get(item.getProductID());
+        //             temp.setQuantity(quantity);
+    
+        //             itemsMap.put(item.getProductID(), temp);
+        //         }
+        //         LoadReport();
+        //         break;
+        // }
     }
 
 
     private void LoadProducts() {
-        InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: DAO Needs to be on the Server-Side! 
-        ArrayList<InventoryItem> items = inventoryDAO.getInventoryItemsByBranch(this.branch);
-        itemsMap = new HashMap<Integer, InventoryItem>();
-
-        for(int i=0; i < items.size(); i++) {
-            InventoryItem temp = items.get(i);
-            itemsMap.put(temp.getProductID(), temp);
+        command = EncodeCommandInventory.getInventoryItemsByBranch(branch);
+        response = Utilities.SendReceive(command);
+        switch (Format.getType(response)) {
+            case EXCEPTION:
+                Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            default:
+                List<InventoryItem> items = Format.decodeInventoryItems(response);
+                itemsMap = new HashMap<Integer, InventoryItem>();
+                
+                for(int i=0; i < items.size(); i++) {
+                    InventoryItem temp = items.get(i);
+                    itemsMap.put(temp.getProductID(), temp);
+                }
+                break;
         }
+        
     }
 
-    private void LoadReport() {
+    public void LoadReport() {
         ClearTablesCells();
 
         int revenue = 0;

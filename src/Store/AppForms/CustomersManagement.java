@@ -18,10 +18,6 @@ import Store.Client.ServerCommunication.EncodeCommandCustomer;
 import Store.Client.ServerCommunication.Format;
 import Store.Customers.Customer;
 
-// TODO: remove after client-server
-import Store.Client.ServerCommunication.DecodeExecuteCommand;
-import Store.Database.CustomerDAO;
-
 public class CustomersManagement extends JPanel {
     // Variables declaration - do not modify   
     private javax.swing.JPanel jPanel1;              
@@ -29,6 +25,7 @@ public class CustomersManagement extends JPanel {
     private javax.swing.JScrollPane jScrollPane3;
     private List<Customer> customers;
     private Map<Integer, Customer> customersMap;
+    private String command, response;
 
     public CustomersManagement() {
         initComponents();
@@ -118,20 +115,27 @@ public class CustomersManagement extends JPanel {
     }// </editor-fold>                        
 
 
-    private void LoadCustomers() {
-        CustomerDAO customerDAO = new CustomerDAO(); //TODO: DAO Needs to be on the Server-Side! 
-        customers = customerDAO.getCustomers();
-        customersMap = new HashMap<Integer, Customer>();
-
-        for(int i=0; i < customers.size(); i++) {
-            Customer temp = customers.get(i);
-            addRowWithButtonsToCustomersTable(temp.getFullName(), temp.getPhoneNumber(), temp.getId(), temp.getType());
-
-            customersMap.put(temp.getId(), temp);
+    public void LoadCustomers() {
+        String command = EncodeCommandCustomer.getCustomers();
+        String response = Utilities.SendReceive(command);
+        switch (Format.getType(response)) {
+            case EXCEPTION:
+                Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            default:
+                customers = Format.decodeCustomers(response);
+                customersMap = new HashMap<Integer, Customer>();
+        
+                for(int i=0; i < customers.size(); i++) {
+                    Customer temp = customers.get(i);
+                    addRowWithButtonsToCustomersTable(temp.getFullName(), temp.getPhoneNumber(), temp.getId(), temp.getType());
+        
+                    customersMap.put(temp.getId(), temp);
+                }
+                CenterTablesCells();
         }
-
-        CenterTablesCells();
     }
+
     private void ClearTablesCells() {
         DefaultTableModel dmCustomerTable = (DefaultTableModel)customersTable.getModel();
         dmCustomerTable.getDataVector().removeAllElements();
@@ -236,21 +240,12 @@ public class CustomersManagement extends JPanel {
                     DefaultTableModel dmCustomersTable = (DefaultTableModel)customersTable.getModel();
                     int row = customersTable.getSelectedRow();
                     int id = (int)dmCustomersTable.getValueAt(row, 3);
-
-                    // OLD @smooth3x
-                    // CustomerDAO customerDAO = new CustomerDAO(); //TODO: Add Server-Side Action to get Customer Info here
-                    // Customer customer = customerDAO.getCustomerByID(id);
                     
-                    // New
                     String command = EncodeCommandCustomer.getCustomerByID(id);
-                    // Send command to server, then process response
-                    String response = DecodeExecuteCommand.decode_and_execute(command); // Running on server
-                    
-                    System.out.println(Format.getType(response));
-                    switch (Format.getType(response)) { // check to see response type
+                    String response = Utilities.SendReceive(command);
+                    switch (Format.getType(response)) { 
                         case EXCEPTION:
-                            break;
-                        case MESSAGE:
+                            Utilities.MessageBox(Format.getFirstParam(response));
                             break;
                         default:
                             System.out.println(response);
@@ -269,7 +264,6 @@ public class CustomersManagement extends JPanel {
                                     LoadCustomers();
                                 }
                             });
-                            
                             customerAddOrUpdate.setDialog(dialog);
                             dialog.add(customerAddOrUpdate);
                             dialog.pack();
@@ -282,13 +276,20 @@ public class CustomersManagement extends JPanel {
                     DefaultTableModel dmCustomersTable = (DefaultTableModel)customersTable.getModel();
                     int row = customersTable.getSelectedRow();
                     int id = (int)dmCustomersTable.getValueAt(row, 3);
-
-                    CustomerDAO customerDAO = new CustomerDAO(); //TODO: Add Server-Side Action to get Customer Info here
-                    customerDAO.deleteCustomer(id);
-                    dmCustomersTable.removeRow(row);
+                    command = EncodeCommandCustomer.deleteCustomer(id);
+                    response = Utilities.SendReceive(command);
+                    switch (Format.getType(response)) {
+                        case EXCEPTION:
+                            break;
+                        case SUCCESS:
+                            dmCustomersTable.removeRow(row);
+                            break;
+                        default:
+                            break;
+                        }
+                    Utilities.MessageBox(Format.getFirstParam(response));
                 }    
             }
-            
             isPushed = false;
             return customerId;
         }

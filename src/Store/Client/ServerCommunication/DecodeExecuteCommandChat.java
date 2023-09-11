@@ -17,7 +17,7 @@ public class DecodeExecuteCommandChat {
         SocketData socketData;
         String branch;
         ChatSession chat;
-        String response = "";
+        String response = Format.encodeSuccessMessage();
 
         switch (Format.getMethod(command)) {
             case "clientOnline":

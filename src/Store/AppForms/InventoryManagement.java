@@ -3,6 +3,7 @@ package Store.AppForms;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -12,9 +13,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
 import Store.Utilities;
-import Store.Customers.Customer;
-import Store.Database.CustomerDAO;
-import Store.Database.InventoryDAO;
+import Store.Client.ServerCommunication.ClassType;
+import Store.Client.ServerCommunication.EncodeCommandInventory;
+import Store.Client.ServerCommunication.Format;
 import Store.Inventories.InventoryItem;
 
 public class InventoryManagement extends JPanel{
@@ -33,9 +34,9 @@ public class InventoryManagement extends JPanel{
     private javax.swing.JComboBox<String> addProductPanel_categoryComboBox;
     private javax.swing.JLabel addProductPanel_categoryLabel;
 
-    private ArrayList<InventoryItem> items;
+    private List<InventoryItem> items;
     private Map<String, InventoryItem> itemsMap;
-    private String branch;
+    private String branch, command, response;
 
     public InventoryManagement(String branch) {
         initComponents();
@@ -234,7 +235,6 @@ public class InventoryManagement extends JPanel{
     }// </editor-fold>                        
 
     private void addProductPanel_SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {                                                             
-        InventoryDAO inventoryDAO = new InventoryDAO();   
         String name = addProductPanel_productNameTextField.getText();    
         String price = addProductPanel_unitPriceTextField.getText();
         String quantity = addProductPanel_quantityTextField.getText();
@@ -255,28 +255,34 @@ public class InventoryManagement extends JPanel{
         }
 
         InventoryItem temp = new InventoryItem(this.branch, name, category, Integer.parseInt(quantity), Double.parseDouble(price));
-        //System.out.println(this.branch + ", " +  item.getProductID() + ", " +  name + ", " +  category + ", " +  Integer.parseInt(quantity) + ", " +  Double.parseDouble(price));
-        inventoryDAO.createNewItem(temp);
         
-        ClearTablesCells();
+        command = EncodeCommandInventory.createNewItem(temp);
+        response = Utilities.SendReceive(command);
+        Utilities.MessageBox(Format.getFirstParam(response)); 
+        
         LoadInventory();
-
-        Utilities.MessageBox("המוצר נוסף בהצלחה!");
     }  
     
-    private void LoadInventory() {
-        InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: DAO Needs to be on the Server-Side! 
-        items = inventoryDAO.getInventoryItemsByBranch(this.branch);
-        itemsMap = new HashMap<String, InventoryItem>();
-
-        for(int i=0; i < items.size(); i++) {
-            InventoryItem temp = items.get(i);
-            addRowWithButtonsToCustomersTable(temp.getName(), temp.getCategory(), temp.getPrice(), temp.getQuantity(), temp.getProductID());
-
-            itemsMap.put(temp.getName(), temp);
+    public void LoadInventory() {
+        ClearTablesCells();
+        command = EncodeCommandInventory.getInventoryItemsByBranch(branch);
+        response = Utilities.SendReceive(command);
+        switch (Format.getType(response)) {
+            case EXCEPTION:
+                Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            default:
+                items = Format.decodeInventoryItems(response);
+                itemsMap = new HashMap<String, InventoryItem>();
+        
+                for(int i=0; i < items.size(); i++) {
+                    InventoryItem temp = items.get(i);
+                    addRowWithButtonsToCustomersTable(temp.getName(), temp.getCategory(), temp.getPrice(), temp.getQuantity(), temp.getProductID());
+                    itemsMap.put(temp.getName(), temp);
+                }
+                CenterTablesCells();
+                break;
         }
-
-        CenterTablesCells();
     }
 
     private void ClearTablesCells() {
@@ -413,11 +419,11 @@ public class InventoryManagement extends JPanel{
                     DefaultTableModel dmInventoryTable = (DefaultTableModel)InventoryTable.getModel();
                     int row = InventoryTable.getSelectedRow();
                     int id = itemsMap.get(dmInventoryTable.getValueAt(row, 5)).getProductID();
-
-                    InventoryDAO inventoryDAO = new InventoryDAO(); //TODO: Add Server-Side Action to get Customer Info here
-                    inventoryDAO.deleteItem(id);
-
-                    dmInventoryTable.removeRow(row);
+                    command = EncodeCommandInventory.deleteItem(id);
+                    response = Utilities.SendReceive(command);
+                    if(Format.getType(response) == ClassType.SUCCESS) 
+                            dmInventoryTable.removeRow(row);
+                    Utilities.MessageBox(Format.getFirstParam(response));
                 }    
             }
             

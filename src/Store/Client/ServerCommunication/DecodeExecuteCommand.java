@@ -23,10 +23,10 @@ public class DecodeExecuteCommand {
                     response = DecodeExecuteCommandEmployee.execute(command);
                     break;
                 case INVENTORY:
+                    response = DecodeExecuteCommandInventory.execute(command);
                     break;
                 case PURCHASE_HISTORY:
-                    break;
-                default:
+                    response = DecodeExecuteCommandPurchaseHistory.execute(command);
                     break;
             }
         } catch (SQLException e)
@@ -34,6 +34,7 @@ public class DecodeExecuteCommand {
             response = Format.encodeException("קיימת שגיאה מול מסד הנתונים, אנא נסה שוב מאוחר יותר");
             System.out.println(response+ "\n"+ e);
         }
+        System.out.println("Server response: "+response);
         return response;
      }
 }

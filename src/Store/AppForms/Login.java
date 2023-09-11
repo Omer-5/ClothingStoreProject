@@ -2,11 +2,9 @@ package Store.AppForms;
 
 import javax.swing.*;
 
-import Store.Database.EmployeeDAO;
 import Store.Database.SocketData;
 import Store.Employees.Employee;
 import Store.Utilities;
-import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Client.ServerCommunication.EncodeCommandEmployee;
 import Store.Client.ServerCommunication.Format;
 import Store.Database.Admin;
@@ -17,15 +15,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.Socket;
-import java.sql.SQLException;
 
 public class Login extends JFrame {
     private JTextField employeeIdField;
     private JPasswordField passwordField;
+    private String command, response;
 
     public Login() {
         initClient();
@@ -121,15 +117,14 @@ public class Login extends JFrame {
                 if( !Utilities.isNumeric(id) ) {
                     Utilities.MessageBox("תעודת הזהות חייבת להכיל רק ספרות");
                 } else {
-                    String command = EncodeCommandEmployee.Login(id, password);
-                    String response = Utilities.SendReceive(command);
+                    command = EncodeCommandEmployee.Login(id, password);
+                    response = Utilities.SendReceive(command);
                     System.out.println("login response: "+ response);
                     switch(Format.getType(response)) {
                         case EXCEPTION:
                             Utilities.MessageBox(Format.getFirstParam(response));
                             break;
                         default: // Successful login, getting back the user
-                            Utilities.MessageBox("התחברת בהצלחה!");
                             setVisible(false);
                             StoreApp mainAppForm = new StoreApp(Employee.deserializeFromString(response));
                             mainAppForm.setVisible(true); 

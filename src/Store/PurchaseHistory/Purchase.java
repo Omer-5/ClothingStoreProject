@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.Format;
 import Store.Inventories.InventoryItem;
 
@@ -22,7 +23,7 @@ public class Purchase {
 
     private List<InventoryItem> purchasedItems;
 
-    static DateTimeFormatter formatter_get = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+   
 
     /**
      * Creates a new purchase instance with the given customer ID, date, branch, and purchased items.
@@ -123,15 +124,14 @@ public class Purchase {
 
     // Type 1: createNewPurchase, Type 2: Import Purchases List<> for Reports
     public String toString(int type) {
-        String response = customerID + Format.fieldSeparator + date + Format.fieldSeparator + branch;
+        String response = customerID + Format.fieldSeparator + Format.dateToString(date) + Format.fieldSeparator + branch;
 
         switch(type) {
             case 1:
-                return response + Format.fieldSeparator + Format.encodeInventoryItems(purchasedItems);
+                return response + Format.paramsSeparator + Format.encodeInventoryItems(purchasedItems) + Format.paramsSeparator;
             case 2:
-                return purchaseID + Format.fieldSeparator + response;
+                return purchaseID + Format.paramsSeparator + response + Format.paramsSeparator;
         }
-
         return null;
     }
 
@@ -151,29 +151,27 @@ public class Purchase {
         * @return The deserialized PurchasedItem object.
         */
     public static Purchase deserializeFromString(String serializedString, int type) {
-        String[] fields = serializedString.split(Format.fieldSeparator);
-        
+        String[] fields;
         int customerID;
         LocalDateTime date;
         String branch;
 
         switch(type) { 
             case 1:
+                fields = Format.getFirstParam(serializedString).split(Format.fieldSeparator);
                 customerID = Integer.parseInt(fields[0]);
-                date = LocalDateTime.parse(fields[1], formatter_get);
+                date = Format.stringToDate(fields[1]);
                 branch = fields[2];
-                List<InventoryItem> purchasedItems = Format.decodeInventoryItems(fields[3]);
-
+                List<InventoryItem> purchasedItems = Format.decodeInventoryItems(Format.getSecondParam(serializedString));
                 return new Purchase(customerID, date, branch, purchasedItems);
             case 2: 
-                int purchaseID = Integer.parseInt(fields[0]);
-                customerID = Integer.parseInt(fields[1]);
-                date = LocalDateTime.parse(fields[2], formatter_get);
-                branch = fields[3];
-
+                fields = Format.getSecondParam(serializedString).split(Format.fieldSeparator);
+                int purchaseID = Integer.parseInt(Format.getFirstParam(serializedString));
+                customerID = Integer.parseInt(fields[0]);
+                date = Format.stringToDate(fields[1]);
+                branch = fields[2];
                 return new Purchase(purchaseID, customerID, date, branch);
         }
-
         return null;
     }
 }

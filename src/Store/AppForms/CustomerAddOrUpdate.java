@@ -2,22 +2,16 @@ package Store.AppForms;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 import Store.Utilities;
+import Store.Client.ServerCommunication.EncodeCommandCustomer;
+import Store.Client.ServerCommunication.Format;
 import Store.Customers.*;
-import Store.Database.CustomerDAO;
 
 public class CustomerAddOrUpdate extends JPanel {
     // Variables declaration - do not modify                     
     private javax.swing.JPanel mainPanel;
     private javax.swing.JLabel mainPanel_CustomerTypeLabel;
-    private javax.swing.JTextField mainPanel_CustomerTypeTextField;
     private javax.swing.JLabel mainPanel_FullnameLabel;
     private javax.swing.JTextField mainPanel_FullnameTextField;
     private javax.swing.JComboBox<String> mainPanel_CustomerTypeComboBox;
@@ -30,8 +24,9 @@ public class CustomerAddOrUpdate extends JPanel {
     private JDialog dialog;
     private String actionType;
     private boolean exitSuccessfully = false;
+    private String command, response;
 
-    // Constractor for New Customer Form
+    // Contractor for New Customer Form
     public CustomerAddOrUpdate(int id) {
         initComponents();
 
@@ -39,7 +34,7 @@ public class CustomerAddOrUpdate extends JPanel {
         actionType = "add";
     }
 
-    // Constractor for Edit Customer Form
+    // Contractor for Edit Customer Form
     public CustomerAddOrUpdate(Customer customer) {
         initComponents();
 
@@ -179,7 +174,6 @@ public class CustomerAddOrUpdate extends JPanel {
     }// </editor-fold>                        
  
     private void mainPanel_SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {  
-        CustomerDAO customerDAO = new CustomerDAO();   
         String fullname = mainPanel_FullnameTextField.getText();
         String phoneNumber = mainPanel_PhoneTextField.getText();
         int id = Integer.parseInt(mainPanel_IDDataLabel.getText());
@@ -202,14 +196,23 @@ public class CustomerAddOrUpdate extends JPanel {
         else if(customerType.equals("VIP"))  customer = new CustomerVIP(fullname, phoneNumber, id);
 
         if(actionType.equals("add")) {
-            customerDAO.createNewCustomer(customer, customerType);
-            Utilities.MessageBox("הלקוח נוסף בהצלחה!");
+            command = EncodeCommandCustomer.createNewCustomer(customer, customerType);
+            response = Utilities.SendReceive(command);
+            switch (Format.getType(response)) {
+                case EXCEPTION:
+                    Utilities.MessageBox(Format.getFirstParam(response));
+                    break;
+                case SUCCESS:
+                    Utilities.MessageBox(Format.getFirstParam(response));
+                default:
+                    break;
+            }
         }
         else if (actionType.equals("edit")) {
-            customerDAO.updateCustomer(customer, customerType);
-            Utilities.MessageBox("השינויים נשמרו בהצלחה!");
+            command = EncodeCommandCustomer.updateCustomer(customer, customerType);
+            response = Utilities.SendReceive(command);
+            Utilities.MessageBox(Format.getFirstParam(response));
         }
-
         exitSuccessfully = true;
         dialog.dispose();
     }                                                      

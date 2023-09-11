@@ -1,5 +1,7 @@
 package Store.Client.ServerCommunication;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +11,7 @@ import Store.Customers.Customer;
 import Store.Database.ChatSession;
 import Store.Employees.Employee;
 import Store.Inventories.InventoryItem;
+import Store.PurchaseHistory.PurchasedItem;
 
 // [TYPE] | [METHOD_NAME] | [PARAMETERS]
 public class Format {
@@ -18,6 +21,9 @@ public class Format {
     public static String paramsSeparator = "&&&";
     public static String objectSeparator = "~~~";
     public static String fieldSeparator = "!!!";
+
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private static DateTimeFormatter formatter_get = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static String encode(ClassType type, String methodName){
         return type + typeSeparator + methodName + methodSeparator;
@@ -54,8 +60,12 @@ public class Format {
             case "PURCHASE_HISTORY":
                 result = ClassType.PURCHASE_HISTORY;
                 break;
+            case "SUCCESS":
+                result = ClassType.SUCCESS;
+                break;
             default:
                 result = ClassType.OBJECT;
+                break;
         }
         return result;
     }
@@ -97,6 +107,22 @@ public class Format {
         }
         return arr;
     } 
+
+    public static LocalDateTime stringToDate(String str)
+    {
+        return LocalDateTime.parse(str, formatter);
+    }
+
+    public static String dateToString(LocalDateTime date)
+    {
+        return formatter.format(date);
+
+    }
+
+    public static LocalDateTime stringToDateDB(String str)
+    {
+        return LocalDateTime.parse(str, formatter_get);
+    }
 
     public static String encodeCustomers(List<Customer> arr)
     {
@@ -150,6 +176,29 @@ public class Format {
         System.out.println(arr);
         for(InventoryItem InventoryItem: arr){
             result.append(InventoryItem.serializeToString());
+            result.append(objectSeparator);
+        }
+        System.out.println(result);
+        return result.toString();
+    } 
+
+    public static List<PurchasedItem> decodePurchasedItems(String str)
+    {
+       String[] objects = str.split(objectSeparator);
+       List<PurchasedItem> arr = new ArrayList<>();
+    
+       for(String objectString: objects){
+           arr.add(PurchasedItem.deserializeFromString(objectString));
+       }
+       return arr;
+    } 
+
+   public static String encodePurchasedItems(List<PurchasedItem> arr)
+    {
+        StringBuilder result = new StringBuilder();
+        System.out.println(arr);
+        for(PurchasedItem PurchasedItem: arr){
+            result.append(PurchasedItem.serializeToString());
             result.append(objectSeparator);
         }
         System.out.println(result);

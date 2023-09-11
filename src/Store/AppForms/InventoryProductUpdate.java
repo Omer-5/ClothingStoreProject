@@ -1,19 +1,11 @@
 package Store.AppForms;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-
 import Store.Utilities;
+import Store.Client.ServerCommunication.ClassType;
+import Store.Client.ServerCommunication.EncodeCommandInventory;
+import Store.Client.ServerCommunication.Format;
 import Store.Inventories.InventoryItem;
-import Store.Database.InventoryDAO;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 
 public class InventoryProductUpdate extends JPanel{
     private javax.swing.JPanel mainPanel;
@@ -31,7 +23,7 @@ public class InventoryProductUpdate extends JPanel{
 
     private JDialog dialog;
     private InventoryItem item;
-    private String branch;
+    private String branch, command, response;
     private boolean exitSuccessfully = false;
 
     public InventoryProductUpdate(InventoryItem item, String branch) {
@@ -200,7 +192,6 @@ public class InventoryProductUpdate extends JPanel{
     }                  
     
     private void mainPanel_SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {  
-        InventoryDAO inventoryDAO = new InventoryDAO();   
         String name = mainPanel_nameTextField.getText();
         String price = mainPanel_priceTextField.getText();
         String quantity = mainPanel_quantityTextField.getText();
@@ -222,12 +213,13 @@ public class InventoryProductUpdate extends JPanel{
 
         InventoryItem temp = new InventoryItem(this.branch, item.getProductID(), name, category, Integer.parseInt(quantity), Double.parseDouble(price));
         //System.out.println(this.branch + ", " +  item.getProductID() + ", " +  name + ", " +  category + ", " +  Integer.parseInt(quantity) + ", " +  Double.parseDouble(price));
-        inventoryDAO.updateItem(temp);
-
-        Utilities.MessageBox("המוצר עודכן בהצלחה!");
-
-        exitSuccessfully = true;
-        dialog.dispose();
+        command = EncodeCommandInventory.updateItem(temp);
+        response = Utilities.SendReceive(command);
+        Utilities.MessageBox(Format.getFirstParam(response));
+        if(Format.getType(response) == ClassType.SUCCESS) {
+            exitSuccessfully = true;
+            dialog.dispose();        
+        }
     }                                                      
 
     public boolean IsExitedSuccessfully() {
