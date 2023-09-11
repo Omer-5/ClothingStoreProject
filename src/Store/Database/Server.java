@@ -5,6 +5,7 @@ import java.net.*;
 import java.util.*;
 
 import Store.Client.ServerCommunication.Format;
+import Store.Utilities;
 import Store.Client.ServerCommunication.DecodeExecuteCommand;
 import Store.Employees.Employee;
 import Store.Server.Logger.Logger;
@@ -71,24 +72,23 @@ public class Server {
                     if(notLoggedIn)
                     {
                         String loginResponse = DecodeExecuteCommand.decode_and_execute(inputString);
-
-                        if(Format.getMethod(inputString) == "Login") {
-                                switch (Format.getType(loginResponse)) {
+                        if(Format.getMethod(inputString).equals("Login")) {
+                            switch (Format.getType(loginResponse)) {
+                                case EXCEPTION:
+                                    socketData.getOutputStream().println(loginResponse);
+                                    break;
                                 case EMPTY:
                                     break;
-                            
                                 default:
                                     notLoggedIn = false;
                                     Employee emp = Employee.deserializeFromString(loginResponse);
                                     synchronized(connections) {           
                                         connections.put(emp, socketData);
                                     }
-                                    System.out.println(new Date() + "--> connected to server at " + socketData.getSocket().getLocalAddress() + ":" + socketData.getSocket().getLocalPort());
+                                    socketData.getOutputStream().println(loginResponse);
                                     break;
                             }
                         }
-                    
-                        socketData.getOutputStream().println(loginResponse);
                     }
                     else {
                         System.out.println("input string: " + inputString);
