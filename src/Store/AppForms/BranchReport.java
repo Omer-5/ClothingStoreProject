@@ -470,6 +470,7 @@ public class BranchReport extends JPanel {
         String reportName = String.format("branch-%s-report", branch, getRange());
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(basicPath + reportName), "UTF-8"))) {
             writer.write(report.toString());
+            Utilities.MessageBox("הדוח יוצא בהצלחה!");
         } catch (IOException e) {
             e.printStackTrace();
             Utilities.MessageBox("הייתה בעיה בייצוא דוח");
