@@ -19,6 +19,10 @@ public class EncodeCommandEmployee {
     {
         return Format.encode(ClassType.EMPLOYEE, "getEmployeeByID", Integer.toString(id));
     }
+    public static String getEmployees()
+    {
+        return Format.encode(ClassType.EMPLOYEE, "getEmployees");
+    }
     public static String getEmployeesByBranch(String branch)
     {
         return Format.encode(ClassType.EMPLOYEE, "getEmployeesByBranch", branch);

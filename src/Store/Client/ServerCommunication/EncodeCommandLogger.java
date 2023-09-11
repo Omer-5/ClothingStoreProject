@@ -1,6 +1,6 @@
 package Store.Client.ServerCommunication;
 
-public class EncodeExecuteCommandLogger {
+public class EncodeCommandLogger {
     public static String turnOffSavingChat() {
         return Format.encode(ClassType.LOGGER, "turnOffSavingChat");
     }

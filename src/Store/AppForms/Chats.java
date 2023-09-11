@@ -64,6 +64,8 @@ public class Chats extends JPanel {
     private int currSessionID = -1;
     private listenToServer currServerListenThread;
 
+    private String response, command;
+
     public Chats(Employee emp) {
         initComponents();
         initComponentsSettings();
@@ -425,22 +427,23 @@ public class Chats extends JPanel {
         String command = EncodeCommandChat.getAvailableBranches(emp.getBranch());
         Set<String> branches;
 
-        Utilities.getClientSocketData().getOutputStream().println(command);
-        try {
-            String res = Utilities.getClientSocketData().getInputStream().readLine();
-            if( res.length() != 0 ) {
-                branches = Format.decodeAvailableBranches(res);
+        response = Utilities.SendReceive(command);
+        switch (Format.getType(response)) {
+            case EXCEPTION:
+                Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            case EMPTY:
+                branches = new HashSet<>();
+                break;       
+
+            default:
+                branches = Format.decodeAvailableBranches(response);
             
                 for(String branch : branches)
                     addRowWithButtonsToAvailableBranchesTable(branch);
-            }   
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
 
-            branches = new HashSet<>();
+                break;
         }
-
         currServerListenThread.resumeThread();
 
         CenterAvailableBranchesTableCells();
@@ -448,32 +451,30 @@ public class Chats extends JPanel {
     
     public void LoadAvailableChats() {
         ClearAvailableChatsTableCells();
-
         currServerListenThread.pauseThread();
         
-        String command = EncodeCommandChat.getAvailableChats(emp.getBranch());
+        command = EncodeCommandChat.getAvailableChats(emp.getBranch());
         java.util.List<Object[]> tableLines;
 
-        Utilities.getClientSocketData().getOutputStream().println(command);
-        try {
-            String res = Utilities.getClientSocketData().getInputStream().readLine();
-            System.out.println("Response: [" + res + "]");
-            if( res.length() != 0 && !res.equals("ריק")) {
-                tableLines = Format.decodeAvailableChats(res);
-            
+        response = Utilities.SendReceive(command);
+        switch (Format.getType(response)) {
+            case EXCEPTION:
+                Utilities.MessageBox(Format.getFirstParam(response));
+                break;
+            case EMPTY:
+                tableLines = new ArrayList<>();
+                break;       
+
+            default:
+                tableLines = Format.decodeAvailableChats(Format.getFirstParam(response));
                 for(Object[] object : tableLines) {
                     ((DefaultTableModel)manageChatsPanel_AvailableChatsTable.getModel()).addRow(object);
                 }
-            }   
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
 
-            tableLines = new ArrayList<>();
+                break;
         }
 
         currServerListenThread.resumeThread();
-
         CenterAvailableChatsTableCells();
     }
     
@@ -785,6 +786,11 @@ public class Chats extends JPanel {
                                                 appendMessage("---- הודעת מערכת", "הצ'אט הסתיים ----", false);
                                                 setLiveChat(false);
                                                 LoadAvailableBranches();
+                                                break;
+                                            case "waitingList":
+                                                Utilities.MessageBox("כרגע אין עובדים זמינים לצ'אט בסניף " + Format.getFirstParam(message) + ", נוספת לרשימת המתנה.");
+                                                chatsPanel.setEnabled(false);
+                                                manageChatsPanel.setEnabled(false);
                                                 break;
                                         }
                                         break;

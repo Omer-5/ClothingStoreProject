@@ -3,6 +3,7 @@ package Store.Client.ServerCommunication;
 import java.net.Socket;
 import java.text.Normalizer.Form;
 import java.util.Map;
+import java.util.Set;
 
 import Store.Utilities;
 import Store.Database.ChatSession;
@@ -39,27 +40,47 @@ public class DecodeExecuteCommandChat {
                 break;
             case "getAvailableBranches":
                 branch = Format.getFirstParam(command);
-                response = Format.encodeAvailableBranches(Server.ChatHandler.getAvailableBranches(branch));
+                Set<String> branches = Server.ChatHandler.getAvailableBranches(branch);
+
+                if( branches.size() == 0 )
+                    response = Format.encodeEmpty("");
+                else
+                    response = Format.encodeAvailableBranches(branches);    
+                
                 break;
             case "getAvailableChats":
                 branch = Format.getFirstParam(command);
-                response = Format.encodeAvailableChats(Server.ChatHandler.getAvailableChats(branch));
+                Set<ChatSession> availableChats = Server.ChatHandler.getAvailableChats(branch);
+
+                if( availableChats.size() == 0 )
+                    response = Format.encodeEmpty("");
+                else
+                    response = Format.encodeAvailableChats(availableChats);           
                 break;
             case "requestChatWithBranch":                   // Employee #1 and #2 starting a new chat between them
                 emp = Employee.deserializeFromString(Format.getFirstParam(command));
                 branch = Format.getSecondParam(command);
-                SocketData otherEmpSocketData = Server.ChatHandler.getFirstAvailableEmployeByBranch(branch);
 
-                if(otherEmpSocketData != null) {
-                    chat = new ChatSession(emp, Server.getEmployeeBySocketData(otherEmpSocketData));
-                    chat.addListener(otherEmpSocketData, Server.getEmployeeBySocketData(otherEmpSocketData));
-                    chat.addListener(Server.getSocketDataByEmployee(emp), emp);
+                if(Server.ChatHandler.isAvailablesEmployeesForChat(branch)) {      
+                    SocketData otherEmpSocketData = Server.ChatHandler.getFirstAvailableEmployeByBranch(branch);
 
-                    Server.ChatHandler.getChattingEmployees().put(otherEmpSocketData, chat);
-                    Server.ChatHandler.getChattingEmployees().put(Server.getSocketDataByEmployee(emp), chat);
+                    if(otherEmpSocketData != null) {
+                        chat = new ChatSession(emp, Server.getEmployeeBySocketData(otherEmpSocketData));
+                        chat.addListener(otherEmpSocketData, Server.getEmployeeBySocketData(otherEmpSocketData));
+                        chat.addListener(Server.getSocketDataByEmployee(emp), emp);
 
-                    otherEmpSocketData.getOutputStream().println("CHAT@@@setCurrentChat###" + chat.getSessionID());
-                    response = "CHAT@@@setCurrentChat###" + chat.getSessionID();
+                        Server.ChatHandler.getChattingEmployees().put(otherEmpSocketData, chat);
+                        Server.ChatHandler.getChattingEmployees().put(Server.getSocketDataByEmployee(emp), chat);
+
+                        Server.ChatHandler.getAvailableEmployees().remove(otherEmpSocketData);
+                        Server.ChatHandler.getAvailableEmployees().remove(Server.getSocketDataByEmployee(emp));
+
+                        otherEmpSocketData.getOutputStream().println("CHAT@@@setCurrentChat###" + chat.getSessionID());
+                        response = "CHAT@@@setCurrentChat###" + chat.getSessionID();
+                    }
+                } else {
+                    Server.ChatHandler.addEmployeToWaitingList(emp, branch);
+                    response = "CHAT@@@waitingList###" + branch;
                 }
                 break;
             case "leaveChat":

@@ -40,6 +40,15 @@ public class DecodeExecuteCommandEmployee {
                 else
                     response = emp.serializeToString();
                 break;
+            case "getEmployees":
+                //public List<Employee> getEmployees() {
+                List<Employee> employees = DAO.getEmployees();
+                System.out.println(employees);
+                if( employees.size() == 0)
+                    response = Format.encodeEmpty("");
+                else
+                    response = Format.encodeEmployees(employees);
+                break;
             //public static String getEmployeesByBranch(String branch)
             case "getEmployeesByBranch":
                 String branch = Format.getFirstParam(command);

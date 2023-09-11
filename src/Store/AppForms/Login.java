@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import Store.Database.SocketData;
 import Store.Employees.Employee;
+import Store.Employees.EmployeeTitle;
 import Store.Utilities;
 import Store.Client.ServerCommunication.EncodeCommandEmployee;
 import Store.Client.ServerCommunication.Format;
@@ -25,7 +26,7 @@ public class Login extends JFrame {
 
     public Login() {
         initClient();
-        initComponents(); 
+        initComponents();
     }
 
     public void initComponents() {
@@ -126,7 +127,8 @@ public class Login extends JFrame {
                             break;
                         default: // Successful login, getting back the user
                             setVisible(false);
-                            StoreApp mainAppForm = new StoreApp(Employee.deserializeFromString(response));
+                            Employee emp = Employee.deserializeFromString(response);
+                            StoreApp mainAppForm = new StoreApp(emp);
                             mainAppForm.setVisible(true); 
                     }
                 }
@@ -162,19 +164,25 @@ public class Login extends JFrame {
                     Admin admin = new Admin();
 
                     if(admin.checkCred(password))
-                        msg = EmployeeException.MsgId.ADMIN;
-                    else
-                        msg = EmployeeException.MsgId.WRONG_PASSWORD;
+                    {
+                        JFrame frame = new JFrame("ניהול חנות בגדים - ממשק אדמין"); // Create a JFrame
+                        EmployeesManagement employeesManagement = new EmployeesManagement();
 
-
-                    //TODO: Redirecting To Admin Form if Password Currect 
-                    JLabel label = new JLabel(EmployeeException.Msg[msg.ordinal()], JLabel.CENTER);
-                    label.setFont(font);
-                    JOptionPane.showMessageDialog(Login.this,
-                            label,
-                            "הודעה חדשה",
-                            JOptionPane.INFORMATION_MESSAGE);
+                        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        frame.getContentPane().add(employeesManagement); // Add your CashRegister panel to the frame's content pane
+                        frame.pack(); // Pack the frame to fit its contents
+                        frame.setVisible(true); // Make the frame visible
+                        frame.setResizable(false);
+                        frame.setLocationRelativeTo(null);
+                        setVisible(false);
+                        
+                        employeesManagement.setVisible(true); 
                     }
+                    else {
+                        msg = EmployeeException.MsgId.WRONG_PASSWORD;
+                        Utilities.MessageBox("הסיסמה שהכנסה שגויה");
+                    }
+                }
             }
         });
 

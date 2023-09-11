@@ -3,6 +3,7 @@ package Store.Database;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 import Store.Client.ServerCommunication.Format;
 import Store.AppForms.Chats;
@@ -73,26 +74,35 @@ public class Server {
                 boolean notLoggedIn = true;
 
                 // Handle login
-                while (notLoggedIn && (inputString = socketData.getInputStream().readLine()) != null) {
-                    String loginResponse = DecodeExecuteCommand.decode_and_execute(inputString);
-                    if(Format.getType(loginResponse) == ClassType.EMPLOYEE) {
-                        notLoggedIn = false;
-                        Employee emp = Employee.deserializeFromString(loginResponse);
-                        synchronized(connections) {
-                            connections.put(emp, socketData);
+                while ((inputString = socketData.getInputStream().readLine()) != null) {
+                    if(notLoggedIn)
+                    {
+                        String loginResponse = DecodeExecuteCommand.decode_and_execute(inputString);
+
+                        switch (Format.getType(loginResponse)) {
+                            case EMPTY:
+                                break;
+                        
+                            default:
+                                notLoggedIn = false;
+                                Employee emp = Employee.deserializeFromString(loginResponse);
+                                synchronized(connections) {           
+                                    connections.put(emp, socketData);
+                                }
+                                break;
                         }
+                    
+                        socketData.getOutputStream().println(loginResponse);
                     }
-                    socketData.getOutputStream().println(loginResponse);
+                    else {
+                        System.out.println("input string: " + inputString);
+                        String res = DecodeExecuteCommand.decode_and_execute(inputString);
+                        System.out.println("output string: " + res);
+                        // System.out.println("SERVER: SocketData Response: " + socketData.getClientAddress());
+                        socketData.getOutputStream().println(res);
+                    } 
                 }
 
-                // Main loop
-                while ((inputString = socketData.getInputStream().readLine()) != null) {
-                    System.out.println("input string: " + inputString);
-                    String res = DecodeExecuteCommand.decode_and_execute(inputString);
-                    System.out.println("output string: " + res);
-                    // System.out.println("SERVER: SocketData Response: " + socketData.getClientAddress());
-                    socketData.getOutputStream().println(res);
-                }
             } catch (IOException e) {
                 //e.printStackTrace();
                 System.out.println(getEmployeeBySocketData(socketData).getFullName() + " התנתק מהמערכת.");
@@ -124,6 +134,7 @@ public class Server {
     public static class ChatHandler {
         private static Map<SocketData, ChatSession> chattingEmployees = new HashMap<SocketData, ChatSession>();
         private static Map<SocketData, Employee> availableEmployees = new HashMap<SocketData, Employee>();
+        private static Map<String, List<Employee>> waitingEmployees = new HashMap<String, List<Employee>>();
 
         public static Map<SocketData, ChatSession> getChattingEmployees() {
             return chattingEmployees;
@@ -166,8 +177,8 @@ public class Server {
 
         public static Set<String> getAvailableBranches(String branch) {
             Set<String> branches = new HashSet<>();
-            for (Map.Entry<SocketData, Employee> entry : availableEmployees.entrySet()) {
-                Employee emp = entry.getValue();
+            for (Map.Entry<Employee, SocketData> entry : connections.entrySet()) {
+                Employee emp = entry.getKey();
 
                 if(!emp.getBranch().equals(branch))
                     branches.add(emp.getBranch());
@@ -218,6 +229,48 @@ public class Server {
         public static ChatSession getChatSessionBySocketData(SocketData socketData) {
             System.out.println(chattingEmployees);
             return chattingEmployees.get(socketData);
+        }
+
+        /*public static void matchUnansweredEmployee() {
+            for (Map.Entry<String, List<Employee>> entry : waitingEmployees.entrySet()) {
+                String branch = entry.getKey();
+                List<Employee> waitingForChat = entry.getValue();
+
+                for( Employee emp : waitingForChat) {
+                    requestChatWithBranch(emp);
+                }
+            }
+        }*/
+
+        public static boolean isAvailablesEmployeesForChat(String branch) {
+            for (Map.Entry<SocketData, Employee> entry : availableEmployees.entrySet()) 
+            {
+                Employee emp = entry.getValue();
+                if(emp.getBranch().equals(branch))
+                    return true;   
+            }
+
+            return false;
+        }
+
+        public static void addEmployeToWaitingList(Employee emp, String branch) {
+            boolean foundBranch = false;
+            for (Map.Entry<String, List<Employee>> entry : waitingEmployees.entrySet()) {
+                List<Employee> waitingForChat = entry.getValue();
+
+                if(entry.getKey().equals(branch)) {
+                    List<Employee> employees = entry.getValue();
+                    employees.add(emp);
+                    waitingEmployees.put(branch,employees);
+                    foundBranch = true;
+                }
+            }
+
+            if(!foundBranch) {
+                List<Employee> employees = new ArrayList<Employee>();
+                employees.add(emp);
+                waitingEmployees.put(branch,employees);  
+            }
         }
     }
 }

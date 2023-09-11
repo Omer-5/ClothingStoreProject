@@ -237,6 +237,7 @@ public class Format {
     }
 
     public static List<Object[]> decodeAvailableChats(String str) {
+        System.out.println("decode: " + str);
         String[] objects = str.split(objectSeparator);
         List<Object[]> tableLines = new ArrayList<>();
         

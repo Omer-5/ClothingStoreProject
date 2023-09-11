@@ -42,6 +42,11 @@ public class EmployeeDAO extends GeneralDAO{
         return collection.get(0);
     }
 
+    public List<Employee> getEmployees() throws SQLException{
+        ResultSet res = getObject("Employees", "*", "");
+        return resToCollection(res);
+    }
+    
     public List<Employee> getEmployeesByBranch(String branch) throws SQLException
     {
         ResultSet  res = getObject("Employees", "*", "branch = N'"+ branch+"'");
