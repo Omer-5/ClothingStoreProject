@@ -578,7 +578,7 @@ public class CashRegister extends JPanel {
                             Utilities.MessageBox(Format.getFirstParam(response));
                             break;
                         case EMPTY:
-                            Utilities.MessageBox(Format.getFirstParam(response));
+                            // Utilities.MessageBox(Format.getFirstParam(response));
                             break;
                         default:
                             inventory = Format.decodeInventoryItems(response);

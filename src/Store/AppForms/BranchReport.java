@@ -5,7 +5,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import java.util.List;
-import java.sql.SQLException;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,11 +20,12 @@ import Store.Utilities;
 import Store.Client.ServerCommunication.EncodeCommandInventory;
 import Store.Client.ServerCommunication.EncodeCommandPurchaseHistory;
 import Store.Client.ServerCommunication.Format;
-import Store.Database.PurchaseHistoryDAO;
 import Store.Inventories.*;
 import Store.PurchaseHistory.*;
 
 public class BranchReport extends JPanel {
+    private final String basicPath = "src/Store/Client/Reports/";
+    private StringBuilder report;
     
     private javax.swing.JPanel filterPanel;
     private javax.swing.JButton filterPanel_ExportToFileButton;
@@ -408,46 +415,28 @@ public class BranchReport extends JPanel {
         }  
     }
 
-    private void filterPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private int getRange()
+    {
         int days = 0;
-        List<PurchasedItem> purchasedItems;
-
         for (Enumeration<AbstractButton> buttons = timeSelectionGroup.getElements(); buttons.hasMoreElements();) {
             AbstractButton button = buttons.nextElement();
-
+    
             if (button.isSelected()) {
                 if(button.getText().equals("היום"))         days = 0;
                 else if(button.getText().equals("שבוע"))    days = 7;
                 else if(button.getText().equals("חודש"))    days = 30;
-
+    
                 break;
             }
         }
-        
-        // PurchaseHistoryDAO dao = new PurchaseHistoryDAO();
-        // try {
-        //     purchasedItems = dao.getItemsFromOrdersByBranchAndDays(branch, days);
-        //     // Set quantity for all items to 0
-        //     for (Map.Entry<Integer, InventoryItem> entry : itemsMap.entrySet()) {
-        //         Integer key = entry.getKey();
-        //         InventoryItem value = entry.getValue();
-        //         value.setQuantity(0);
-                
-        //         itemsMap.put(key, value);
-        //     }
-            
-        //     for(PurchasedItem item: purchasedItems) {
-        //         int quantity = itemsMap.get(item.getProductID()).getQuantity() + 1;
-        //         InventoryItem temp = itemsMap.get(item.getProductID());
-        //         temp.setQuantity(quantity);
-        
-        //     } 
+        return days;
+    }
 
-        //     LoadReport();
-        // } catch (SQLException e)  
-        // { 
-        //     System.out.println(e);
-        // }
+    private void filterPanel_StartButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        int days = getRange();
+        List<PurchasedItem> purchasedItems;
+
+        
         command = EncodeCommandPurchaseHistory.getItemsFromOrdersByBranchAndDays(branch, days);
         response = Utilities.SendReceive(command);
         switch (Format.getType(response)) {
@@ -481,6 +470,14 @@ public class BranchReport extends JPanel {
 
     private void filterPanel_ExportToFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        String reportName = String.format("branch-%s-report", branch, getRange());
+        System.out.println(reportName);
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(basicPath + reportName), "UTF-8"))) {
+            writer.write(report.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Utilities.MessageBox("הייתה בעיה בייצוא דוח");
+        }
     }
 
     private void LoadProducts() {
@@ -506,10 +503,13 @@ public class BranchReport extends JPanel {
 
     public void LoadReport() {
         ClearTablesCells();
-
         int revenue = 0;
         int products = 0;
         revenuePanel_revenueDataLabel.setText("0");
+        
+        report = new StringBuilder();
+        String format = "%-20s %-20s %-10s %-10s%n";
+        report.append(String.format(format, "Product", "Category", "Price", "Quantity"));
 
         String selectedCategory = filterPanel_categoryComboBox.getSelectedItem().toString();
         String selectedProduct = filterPanel_productComboBox.getSelectedItem().toString();
@@ -521,6 +521,8 @@ public class BranchReport extends JPanel {
                     || (!selectedProduct.equals("הכל") && temp.getName().equals(selectedProduct))
                     || (selectedProduct.equals("הכל") && selectedCategory.equals("הכל"))) {
                         addRowToProductTable(temp.getName(), temp.getCategory(), temp.getPrice(), temp.getQuantity());
+                        report.append(String.format(format, temp.getName(), temp.getCategory(), temp.getPrice(), temp.getQuantity()));
+
                         
                         revenue += temp.getPrice() * temp.getQuantity();
                         products += temp.getQuantity();
@@ -528,6 +530,7 @@ public class BranchReport extends JPanel {
                     
             }    
         }
+        report.append(String.format(format, "", "", "Total Revenue:", revenue));
 
         revenuePanel_revenueDataLabel.setText(Integer.toString(revenue));
         revenuePanel_productAmountDataLabel.setText(Integer.toString(products));
