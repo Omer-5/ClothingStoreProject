@@ -25,6 +25,9 @@ public class DecodeExecuteCommand {
                 case INVENTORY:
                     response = DecodeExecuteCommandInventory.execute(command);
                     break;
+                case LOGGER:
+                    response = DecodeExecuteCommandLogger.execute(command);
+                    break;
                 case PURCHASE_HISTORY:
                     response = DecodeExecuteCommandPurchaseHistory.execute(command);
                     break;
@@ -37,7 +40,7 @@ public class DecodeExecuteCommand {
         System.out.println("Server response: "+response);
 
         if(response == null || response.length() == 0 || response == "")
-            response = Format.encodeException("ריק");
+            response = Format.encodeEmpty("");
         return response;
      }
 }

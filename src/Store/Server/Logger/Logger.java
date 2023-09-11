@@ -75,7 +75,7 @@ public class Logger {
     /**
      * Logs the initiation of a chat.
      */
-    public static void logChatStarted() {
+    public static void logChatStarted(Employee sender, Employee receiver, String message) {
         log("Chat started ");
     }
 
