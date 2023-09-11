@@ -84,15 +84,15 @@ public class Logger {
      */
     public static void turnOffSavingChat() {
         saveChatConversation = "No";
-        propertiesHandler.setProperty(saveChatConversation, "No");
+        propertiesHandler.setProperty("SAVE_CHAT_CONVERSATIONS", "No");
     }
 
     /**
      * Turns on the saving of chat conversations.
      */
     public static void turnOnSavingChat() {
-        saveChatConversation = "No";
-        propertiesHandler.setProperty(saveChatConversation, "No");
+        saveChatConversation = "Yes";
+        propertiesHandler.setProperty("SAVE_CHAT_CONVERSATIONS", "Yes");
     }
 
     /**
