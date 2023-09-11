@@ -7,11 +7,8 @@ import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -471,7 +468,6 @@ public class BranchReport extends JPanel {
     private void filterPanel_ExportToFileButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         String reportName = String.format("branch-%s-report", branch, getRange());
-        System.out.println(reportName);
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(basicPath + reportName), "UTF-8"))) {
             writer.write(report.toString());
         } catch (IOException e) {
