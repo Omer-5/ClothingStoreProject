@@ -760,20 +760,19 @@ public class Chats extends JPanel {
                 while (true) {
                     Thread.sleep(100);
                     if(isRunning) {
-                        //System.out.println("BR Mark..");
                         br.mark(8192);
                         
                         while (br.ready()) {  
-                            System.out.println("BR Ready..");
+                            // System.out.println("BR Ready..");
                             message = br.readLine();
-                            System.out.println("BR ReadLine..");
+                            // System.out.println("BR ReadLine..");
                             if (message != null && message.contains("CHAT@@@")) {
-                                System.out.println("Confirmed CHATLIVE Command.. " + message);
+                                // System.out.println("Confirmed CHATLIVE Command.. " + message);
                                 switch (Format.getType(message)) {
                                     case CHAT:
                                         switch (Format.getMethod(message)) {
                                             case "setCurrentChat":
-                                                System.out.println("In Chat Number: " + Format.getFirstParam(message));
+                                                // System.out.println("In Chat Number: " + Format.getFirstParam(message));
                                                 setLiveChat(true);
                                                 break;
                                             case "receiveMessage":

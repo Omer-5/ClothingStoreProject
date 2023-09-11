@@ -91,9 +91,6 @@ public abstract class Customer extends Person {
     public static Customer deserializeFromString(String objString) {
         String[] parts = objString.split(Format.fieldSeparator);
         String className = parts[0];
-        String data = parts[1];
-        String[] dataParts = data.split(Format.fieldSeparator);
-        System.out.println(dataParts);
 
         switch (className) {
             case "CustomerNew":

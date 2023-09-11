@@ -16,7 +16,6 @@ public class DecodeExecuteCommandPurchaseHistory {
 
         switch(Format.getMethod(command)) {
             case "createNewPurchase":
-                System.out.println(command);
                 purchase = Purchase.deserializeFromString(command, 1);
                 DAO.createNewPurchase(purchase);
                 break;

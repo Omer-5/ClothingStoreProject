@@ -274,10 +274,8 @@ public class InventoryManagement extends JPanel{
             case EMPTY:
                 break;
             default:
-                System.out.println("Response: " + response);
                 items = Format.decodeInventoryItems(response);
                 itemsMap = new HashMap<String, InventoryItem>();
-        
                 for(int i=0; i < items.size(); i++) {
                     InventoryItem temp = items.get(i);
                     addRowWithButtonsToCustomersTable(temp.getName(), temp.getCategory(), temp.getPrice(), temp.getQuantity(), temp.getProductID());

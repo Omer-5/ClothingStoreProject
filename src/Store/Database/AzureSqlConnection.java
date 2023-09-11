@@ -24,7 +24,6 @@ public class AzureSqlConnection {
                 connection = DriverManager.getConnection(CONNECTION_URL, USERNAME, PASSWORD);
                 System.out.println("Connected to Azure SQL Database successfully!");
             }
-            System.out.println(connection);
         }
         catch (SQLException e)
         {
@@ -43,17 +42,4 @@ public class AzureSqlConnection {
             e.printStackTrace();
         }
     }
-
-
-
-    // public static void main(String[] args) {
-    //     try (Connection connection = DriverManager.getConnection(CONNECTION_URL, USERNAME, PASSWORD)) {
-    //         System.out.println("Connected to Azure SQL Database successfully!");
-
-    //         // Perform database operations here if needed
-
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
 }

@@ -28,12 +28,4 @@ public class CustomerVIP extends Customer {
     public double applyDiscount(double originalPrice) {
         return originalPrice * 0.85;
     }
-
-    // public static void main(String[] args) {
-    //     int idtest = 6;
-    //     Customer customer = new CustomerVIP("Alice Cooper", "101112", idtest);
-    //     customer.serializeToFile("customerVIP.obj");
-    //     Customer deserializedCustomer = Customer.deserializeFromFile("customerVIP.obj");
-    //     System.out.println(deserializedCustomer);
-    // }
 }

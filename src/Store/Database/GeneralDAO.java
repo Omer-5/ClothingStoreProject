@@ -48,7 +48,7 @@ public class GeneralDAO {
     protected void insertObject(String tableName, String queryParams)
     {
         String query = String.format("INSERT INTO %s %s", tableName, queryParams);
-        System.out.println(query);
+        // System.out.println(query);
         executeUpdate(query);
     }
 

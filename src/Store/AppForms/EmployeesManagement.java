@@ -298,11 +298,8 @@ public class EmployeesManagement extends JPanel {
             case EXCEPTION:
                 Utilities.MessageBox(Format.getFirstParam(response));
                 break;
-        
             default:
                 String status = Format.getFirstParam(response);
-                System.out.println(status);
-                
                 switch(status) {
                     case "Yes":
                         mainPanel_savingButton.setSelected(true);

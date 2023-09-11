@@ -58,13 +58,11 @@ public class PurchaseHistoryDAO extends GeneralDAO {
             res = getObject("PurchaseHistory", "*", "Branch = N'" + branch + "' AND ( cast(date as DATE) >= DATEADD(day, -" + days + ", GETDATE()) AND ( cast(date as DATE) <= GETDATE()))");
         
         orders = resToCollection(res);
-        System.out.println("Orders: " + orders);
         for(int i=0; i < orders.size(); i++) {
             List<PurchasedItem> temp = getItemsByPurchaseID(orders.get(i).getPurchaseID());
             for(int j=0; j < temp.size(); j++) 
                 purchasedItems.add(temp.get(j));
         }
-        System.out.println("Purchased Items: " + purchasedItems);
         return purchasedItems;
     }
 

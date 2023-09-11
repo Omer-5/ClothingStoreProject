@@ -220,27 +220,7 @@ public class InventoryItem {
         double price = Double.parseDouble(fields[5]);
         return new InventoryItem(branch, productID, name, category, quantity, price);
     }
-
-    // there is a main from GPT that checks the functions
-    public static void main(String[] args) {
-        // Create a new InventoryItem instance
-        InventoryItem item = new InventoryItem("Store1", 101, "Laptop", "Electronics", 5, 999.99);
-
-        // Serialize the item to string
-        String serializedString = item.serializeToString();
-        System.out.println("Serialized InventoryItem: " + serializedString);
-
-        // Deserialize the string back to an InventoryItem
-        InventoryItem deserializedItem = InventoryItem.deserializeFromString(serializedString);
-        System.out.println("Deserialized InventoryItem: " + deserializedItem.toString());
-
-        // Check if the original and deserialized items are equal
-        System.out.println("Are the original and deserialized items equal? " + item.toString().equals(deserializedItem.toString()));
-    }
 }
-
-
-
 /*
 CREATE TABLE Inventory (
     branch nvarchar(255) NOT NULL,

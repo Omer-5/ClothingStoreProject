@@ -90,6 +90,7 @@ public class Server {
                                     synchronized(connections) {           
                                         connections.put(emp, socketData);
                                     }
+                                    System.out.println(new Date() + "--> connected to server at " + socketData.getSocket().getLocalAddress() + ":" + socketData.getSocket().getLocalPort());
                                     break;
                             }
                         }
@@ -106,8 +107,7 @@ public class Server {
                 }
 
             } catch (IOException e) {
-                //e.printStackTrace();
-                System.out.println(getEmployeeBySocketData(socketData).getFullName() + " התנתק מהמערכת.");
+                e.printStackTrace();
             } finally {
                 try {
                     socketData.getOutputStream().close();
@@ -229,7 +229,6 @@ public class Server {
         }
 
         public static ChatSession getChatSessionBySocketData(SocketData socketData) {
-            System.out.println(chattingEmployees);
             return chattingEmployees.get(socketData);
         }
 

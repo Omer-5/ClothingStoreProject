@@ -253,7 +253,6 @@ public class CustomersManagement extends JPanel {
                         case EMPTY:
                             break;
                         default:
-                            System.out.println(response);
                             Customer customer = Customer.deserializeFromString(response);
                             CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(customer);
                             

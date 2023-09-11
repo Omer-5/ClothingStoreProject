@@ -138,12 +138,10 @@ public class Format {
     public static String encodeCustomers(List<Customer> arr)
     {
         StringBuilder result = new StringBuilder();
-        System.out.println(arr);
         for(Customer customer: arr){
             result.append(customer.serializeToString());
             result.append(objectSeparator);
         }
-        System.out.println(result);
         return result.toString();
     } 
 
@@ -182,12 +180,10 @@ public class Format {
    public static String encodeInventoryItems(List<InventoryItem> arr)
     {
         StringBuilder result = new StringBuilder();
-        System.out.println(arr);
         for(InventoryItem InventoryItem: arr){
             result.append(InventoryItem.serializeToString());
             result.append(objectSeparator);
         }
-        System.out.println(result);
         return result.toString();
     } 
 
@@ -205,12 +201,10 @@ public class Format {
    public static String encodePurchasedItems(List<PurchasedItem> arr)
     {
         StringBuilder result = new StringBuilder();
-        System.out.println(arr);
         for(PurchasedItem PurchasedItem: arr){
             result.append(PurchasedItem.serializeToString());
             result.append(objectSeparator);
         }
-        System.out.println(result);
         return result.toString();
     } 
 
@@ -235,7 +229,6 @@ public class Format {
     }
 
     public static List<Object[]> decodeAvailableChats(String str) {
-        System.out.println("decode: " + str);
         String[] objects = str.split(objectSeparator);
         List<Object[]> tableLines = new ArrayList<>();
         

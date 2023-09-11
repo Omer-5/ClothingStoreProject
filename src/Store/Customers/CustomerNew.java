@@ -28,12 +28,4 @@ public class CustomerNew extends Customer {
     public double applyDiscount(double originalPrice) {
         return originalPrice * 0.95;
     }
-
-    // public static void main(String[] args) {
-    //     int idtest = 4;
-    //     // Customer customer = new CustomerNew("John Doe", "12345", idtest);
-    //     // customer.serializeToFile("customerNew.obj");
-    //     // Customer deserializedCustomer = Customer.deserializeFromFile("customerNew.obj");
-    //     // System.out.println(deserializedCustomer);
-    // }
 }

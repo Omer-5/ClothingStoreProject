@@ -37,7 +37,6 @@ public class DecodeExecuteCommand {
             response = Format.encodeException("קיימת שגיאה מול מסד הנתונים, אנא נסה שוב מאוחר יותר");
             System.out.println(response+ "\n"+ e);
         }
-        System.out.println("Server response: "+response);
 
         if(response == null || response.length() == 0 || response == "")
             response = Format.encodeEmpty("");
