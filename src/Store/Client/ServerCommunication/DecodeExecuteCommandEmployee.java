@@ -1,13 +1,10 @@
 package Store.Client.ServerCommunication;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import Store.Database.EmployeeDAO;
-import Store.Database.Server;
 import Store.Employees.Employee;
-import Store.Exceptions.EmployeeException;
 
 public class DecodeExecuteCommandEmployee {
     public static String execute(String command) throws SQLException {

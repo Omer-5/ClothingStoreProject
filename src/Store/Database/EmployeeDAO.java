@@ -6,9 +6,7 @@ import java.util.List;
 
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
-import Store.Exceptions.EmployeeException;
 import Store.Server.Logger.Logger;
-import Store.Utilities;
 import Store.Client.ServerCommunication.Format;
 
 import java.sql.SQLException;

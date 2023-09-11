@@ -1,11 +1,7 @@
 package Store.Client.ServerCommunication;
 
-import java.net.Socket;
-import java.text.Normalizer.Form;
-import java.util.Map;
 import java.util.Set;
 
-import Store.Utilities;
 import Store.Database.ChatSession;
 import Store.Database.Server;
 import Store.Database.SocketData;

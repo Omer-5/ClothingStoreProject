@@ -2,7 +2,6 @@ package Store;
 
 import javax.swing.*;
 
-import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.EncodeCommandChat;
 import Store.Client.ServerCommunication.Format;
 import Store.Database.SocketData;
@@ -10,7 +9,6 @@ import Store.Employees.Employee;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * A utility class that provides various helper methods for the application.

@@ -19,7 +19,6 @@ import Store.Client.ServerCommunication.EncodeCommandLogger;
 import Store.Client.ServerCommunication.Format;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
-import Store.Server.Logger.Logger;
 
 public class EmployeesManagement extends JPanel {
     // Variables declaration - do not modify   

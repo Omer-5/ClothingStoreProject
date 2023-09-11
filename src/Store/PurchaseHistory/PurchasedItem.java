@@ -1,11 +1,6 @@
 package Store.PurchaseHistory;
 
-import java.time.LocalDateTime;
-
 import Store.Client.ServerCommunication.Format;
-import Store.Employees.Employee;
-import Store.Employees.EmployeeTitle;
-import Store.Inventories.InventoryItem;
 
 /**
  * Represents an item that has been purchased, detailing the purchase ID and the product ID.

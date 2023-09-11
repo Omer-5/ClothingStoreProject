@@ -1,5 +1,4 @@
 package Store.Employees;
-import java.io.*;
 
 import Store.Client.ServerCommunication.Format;
 import Store.Person;

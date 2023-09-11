@@ -1,10 +1,7 @@
 package Store.Database;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-// import Secrets;
-import java.sql.Statement;
 
 public class AzureSqlConnection {
     // Azure SQL Database connection details

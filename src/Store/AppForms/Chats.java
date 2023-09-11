@@ -5,10 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,11 +21,8 @@ import javax.swing.text.Style;
 import Store.Utilities;
 import Store.Client.ServerCommunication.EncodeCommandChat;
 import Store.Client.ServerCommunication.Format;
-import Store.Database.InventoryDAO;
-import Store.Database.SocketData;
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
-import Store.Inventories.InventoryItem;
 
 public class Chats extends JPanel {
     

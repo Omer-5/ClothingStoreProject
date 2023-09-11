@@ -2,13 +2,11 @@ package Store.Database;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.*;
 
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
 import Store.Server.Logger.Logger;
-import Store.Database.SocketData;
 
 public class ChatSession {
     private static int sessionCounter = 0;

@@ -1,11 +1,6 @@
 package Store.Client.ServerCommunication;
 
-import Store.Client.ServerCommunication.Format;
-import Store.Server.Logger.Logger;
-
 import java.sql.SQLException;
-
-import Store.Client.ServerCommunication.DecodeExecuteCommandCustomer;
 
 public class DecodeExecuteCommand {
     public static String decode_and_execute(String command)

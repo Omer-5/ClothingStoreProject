@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import Store.Database.SocketData;
 import Store.Employees.Employee;
-import Store.Employees.EmployeeTitle;
 import Store.Utilities;
 import Store.Client.ServerCommunication.EncodeCommandEmployee;
 import Store.Client.ServerCommunication.Format;

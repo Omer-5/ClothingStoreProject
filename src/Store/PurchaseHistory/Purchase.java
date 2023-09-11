@@ -1,12 +1,9 @@
 package Store.PurchaseHistory;
 
-import java.text.Normalizer.Form;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import Store.Client.ServerCommunication.ClassType;
 import Store.Client.ServerCommunication.Format;
 import Store.Inventories.InventoryItem;
 

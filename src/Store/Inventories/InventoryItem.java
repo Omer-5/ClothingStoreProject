@@ -1,8 +1,6 @@
 package Store.Inventories;
 
 import Store.Client.ServerCommunication.Format;
-import Store.Employees.Employee;
-import Store.Employees.EmployeeTitle;
 
 /**
  * Represents an item in the inventory with attributes like branch, product ID, name, category, quantity, and price.
