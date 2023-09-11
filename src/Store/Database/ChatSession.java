@@ -7,6 +7,7 @@ import java.util.*;
 
 import Store.Employees.Employee;
 import Store.Employees.EmployeeTitle;
+import Store.Server.Logger.Logger;
 import Store.Database.SocketData;
 
 public class ChatSession {
@@ -21,6 +22,7 @@ public class ChatSession {
         this.creator = creator;
         this.receiver = receiver;
         sessionID = sessionCounter++;
+        Logger.logChatStarted(creator, receiver);
     }
 
     public int getSessionID() {
