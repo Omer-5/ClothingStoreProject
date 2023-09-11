@@ -147,6 +147,8 @@ public class StoreApp extends JFrame {
 
             if (panelName.equals("קופה")) {
                 cashRegister.setPreferredSize(contentPanel.getSize());
+                cashRegister.ClearCustomerInfo();
+                cashRegister.ClearTablesCells();
                 contentPanel.add(cashRegister); // Add the CashRegister panel to the content panel's center
             } else if (panelName.equals("ניהול לקוחות")) { 
                 customersManagement.setPreferredSize(contentPanel.getSize());

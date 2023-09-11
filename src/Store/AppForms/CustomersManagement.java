@@ -116,6 +116,7 @@ public class CustomersManagement extends JPanel {
 
 
     public void LoadCustomers() {
+        ClearTablesCells();
         String command = EncodeCommandCustomer.getCustomers();
         String response = Utilities.SendReceive(command);
         switch (Format.getType(response)) {

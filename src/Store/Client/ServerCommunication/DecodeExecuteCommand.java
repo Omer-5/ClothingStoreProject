@@ -35,6 +35,9 @@ public class DecodeExecuteCommand {
             System.out.println(response+ "\n"+ e);
         }
         System.out.println("Server response: "+response);
+
+        if(response == null || response.length() == 0 || response == "")
+            response = Format.encodeException("ריק");
         return response;
      }
 }

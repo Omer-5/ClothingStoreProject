@@ -41,6 +41,14 @@ public class Utilities {
         }
     }
 
+    public static boolean isPositiveInt(String str) {
+        return (Integer.parseInt(str) >= 0);
+    }
+
+    public static boolean isPositiveDouble(String str) {
+        return (Double.parseDouble(str) >= 0.0);
+    }
+
     /**
      * Checks if the given string is a valid double value.
      *
@@ -128,7 +136,7 @@ public class Utilities {
         Utilities.getClientSocketData().getOutputStream().println(command);
         try {
             response = Utilities.getClientSocketData().getInputStream().readLine();
-            System.out.println(response);
+            //System.out.println(response);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

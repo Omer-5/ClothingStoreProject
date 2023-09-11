@@ -539,44 +539,13 @@ public class CashRegister extends JPanel {
             int customerId = Integer.parseInt(searchPanel_IdTextField.getText());
             
             command = EncodeCommandCustomer.getCustomerByID(customerId);
-            
             response = Utilities.SendReceive(command);
+
             switch(Format.getType(response)) {
                 case EXCEPTION:
-                    Utilities.MessageBox(Format.getFirstParam(response));
-                    break;
-                default: 
-                    customer = Customer.deserializeFromString(response);
-                    if( customer != null ) {
-                        command = EncodeCommandInventory.getInventoryItemsByBranch(emp.getBranch());
-                        response = Utilities.SendReceive(command);
+                    if(Format.getFirstParam(response).equals("לא נמצא לקוח עם התעודת זהות הזאת במערכת")) {
+                        ClearCustomerInfo();
 
-                        switch (Format.getType(response)) {
-                            case EXCEPTION:
-                                break;
-                            default:
-                                inventory = Format.decodeInventoryItems(response);
-                                for(int i=0; i < inventory.size(); i++) {
-                                    InventoryItem temp = inventory.get(i);
-                                    if(temp.getQuantity() > 0) {
-                                        addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
-                                        inventoryMap.put(temp.getProductID(), temp);
-                                        inventoryMapByName.put(temp.getName(), temp);
-                                    }   
-                                }
-                                orderPanel_FullNameDataLabel.setText(customer.getFullName());
-                                orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
-                                orderPanel_CustomerTypeDataLabel.setText(customer.getType());
-                                orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
-                                pricePanel_PriceNumber.setText("0.00");
-                                finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
-                
-                                CenterTablesCells();
-                                break;
-                        }
-        
-                    }
-                    else { 
                         int id = Integer.parseInt(searchPanel_IdTextField.getText());
                         CustomerAddOrUpdate customerAddOrUpdate = new CustomerAddOrUpdate(id);
                             
@@ -595,7 +564,38 @@ public class CashRegister extends JPanel {
                         dialog.pack();
                         dialog.setLocationRelativeTo(null);
                         dialog.setVisible(true);
-                    } 
+                    } else
+                        Utilities.MessageBox(Format.getFirstParam(response));
+                    break;
+                default: 
+                    customer = Customer.deserializeFromString(response);
+
+                    command = EncodeCommandInventory.getInventoryItemsByBranch(emp.getBranch());
+                    response = Utilities.SendReceive(command);
+
+                    switch (Format.getType(response)) {
+                        case EXCEPTION:
+                            break;
+                        default:
+                            inventory = Format.decodeInventoryItems(response);
+                            for(int i=0; i < inventory.size(); i++) {
+                                InventoryItem temp = inventory.get(i);
+                                if(temp.getQuantity() > 0) {
+                                    addRowWithButtonToSupplyTable(temp.getProductID(), temp.getName(), temp.getPrice(), temp.getQuantity());
+                                    inventoryMap.put(temp.getProductID(), temp);
+                                    inventoryMapByName.put(temp.getName(), temp);
+                                }   
+                            }
+                            orderPanel_FullNameDataLabel.setText(customer.getFullName());
+                            orderPanel_PhoneDataLabel.setText(customer.getPhoneNumber());
+                            orderPanel_CustomerTypeDataLabel.setText(customer.getType());
+                            orderPanel_DiscountPercentageDataLabel.setText(customer.getDiscountPercentage() + "%");
+                            pricePanel_PriceNumber.setText("0.00");
+                            finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
+            
+                            CenterTablesCells();
+                            break;
+                    }
                     break;
                 }                                               
             }
@@ -652,13 +652,7 @@ public class CashRegister extends JPanel {
                     response = Utilities.SendReceive(command);
                 }
                 ClearTablesCells();
-                orderPanel_FullNameDataLabel.setText("----------------------");
-                orderPanel_CustomerTypeDataLabel.setText("----------------------");
-                orderPanel_PhoneDataLabel.setText("----------------------");
-                orderPanel_CustomerTypeDataLabel.setText("----------------------");
-                orderPanel_DiscountPercentageDataLabel.setText("-------------------");
-                pricePanel_PriceNumber.setText("0.00");
-                finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
+                ClearCustomerInfo();
                 Utilities.MessageBox("ההזמנה הוזמנה בהצלחה!");
                 break;
         }
@@ -666,13 +660,23 @@ public class CashRegister extends JPanel {
     }  
 
     // mainPanel_SupplyTable & mainPanel_CartTable Methods
-    private void ClearTablesCells() {
+    public void ClearTablesCells() {
         DefaultTableModel dmSupplyTable = (DefaultTableModel)mainPanel_SupplyTable.getModel();
         DefaultTableModel dmCartTable = (DefaultTableModel)mainPanel_CartTable.getModel();
         dmSupplyTable.getDataVector().removeAllElements();
         dmCartTable.getDataVector().removeAllElements();
         dmSupplyTable.fireTableDataChanged();
         dmCartTable.fireTableDataChanged(); 
+    }
+    public void ClearCustomerInfo() {
+        totalPrice = 0;
+        orderPanel_FullNameDataLabel.setText("----------------------");
+        orderPanel_CustomerTypeDataLabel.setText("----------------------");
+        orderPanel_PhoneDataLabel.setText("----------------------");
+        orderPanel_CustomerTypeDataLabel.setText("----------------------");
+        orderPanel_DiscountPercentageDataLabel.setText("-------------------");
+        pricePanel_PriceNumber.setText("0.00");
+        finalPricePanel_PriceAfterDiscountDataLabel.setText("0.00");
     }
     private void CenterTablesCells() {
         
