@@ -100,7 +100,7 @@ public class Logger {
      *
      * @return The status of saving chat conversations.
      */
-    public static String getSavingChat() {
+    public static String getSavingChatStatus() {
         return saveChatConversation;
     }
 
