@@ -17,7 +17,7 @@ public class DecodeExecuteCommandLogger {
             // public static void turnOnSavingChat() {
                 Logger.turnOnSavingChat();
                 break;
-            case "getSavingChat":
+            case "getSavingChatStatus":
             // public static String getSavingChatStatus() {
                 response = Format.encode(ClassType.LOGGER, "", Logger.getSavingChatStatus()); 
         }
