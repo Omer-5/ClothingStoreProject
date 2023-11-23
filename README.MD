@@ -1,24 +1,44 @@
-Todo list:
-- [ ] Translation layer - Omer
-- [ ] Serialization - Oram
-- [ ] Chat - Daniel
-- [ ] Logger
-    - [ ] Logic - Omer
+# Store Chain Management System
 
-Tasks:
-- [ ] Logger
-    - [ ] UI
-- [ ] Admin panels
-- [ ] Restructure files to client-server folders
-- [ ] Clean the code base + add comments
-- [ ] Write a readme file to explain the project and how to use it
-- [ ] Chat queue when no one is available
-- [ ] Complicated password
+Welcome to the Store Chain Management System project repository for Internet Programming course at HIT - Holon Institute of Technology, Summer Semester 2023, under the guidance of Mr. Roi Zimon.
 
-Done:
-- [x] Exceptions
-- [x] Export report to text file
-- [x] Handle empty object
-- [x] Prevent logging to the same user from 2 different stations
-- [x] Permissions in UI 
-- [x] Reports - Daniel
+## Introduction
+This project is a Client-Server application written in Java and using Azure SQL database.
+
+In order to facilitate the Client-Server communication we developed a system to encode and decode actions and objects so we can send the data through a socket and take the appropriate action on the other side.
+
+## Main Features
+
+1. **Real-Time Chat System:**
+   - One-on-one chat system with employees in other branches.
+
+1. **Product Inventory Management:**
+   - Interface to manage product inventory for each branch, facilitating buying and selling.
+
+1. **Customer Management:**
+   - Interfaces for managing customers across branches, an update is reflected in every branch.
+
+1. **Sales Statistics Report:**
+    - Produce a report of sales for a specific product or a category of products to help gain insight about the branch sales.
+    - Download as a text file
+
+1. **Admin Functionality:**
+   - Admin screen for setting up employee accounts, including details and password policy.
+
+1. **System Logs Management:**
+    - Recording logs of actions such as employee and customer registration, sales, record chat history (if Admin enabled)
+
+- [ ] Todo: add pictures
+
+## Development Team
+
+This project was developed by: @Omer-5, @smooth3x, @Muzikant-Oram-Rahamim
+
+## Getting Started
+
+To run the system locally, follow these steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository_url>
