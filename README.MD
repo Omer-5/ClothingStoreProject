@@ -7,10 +7,13 @@ This project is a Client-Server application written in Java and using Azure SQL 
 
 In order to facilitate the Client-Server communication we developed a system to encode and decode actions and objects so we can send the data through a socket and take the appropriate action on the other side.
 
+![](src\Store\Images\shop-preview.png)
+
 ## Main Features
 
 1. **Real-Time Chat System:**
    - One-on-one chat system with employees in other branches.
+   ![](https://www.youtube.com/watch?v=9lE3vSYuEBA)
 
 1. **Product Inventory Management:**
    - Interface to manage product inventory for each branch, facilitating buying and selling.
@@ -27,8 +30,6 @@ In order to facilitate the Client-Server communication we developed a system to 
 
 1. **System Logs Management:**
     - Recording logs of actions such as employee and customer registration, sales, record chat history (if Admin enabled)
-
-- [ ] Todo: add pictures
 
 ## Development Team
 
