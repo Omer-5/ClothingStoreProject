@@ -12,8 +12,8 @@ In order to facilitate the Client-Server communication we developed a system to 
 ## Main Features
 
 1. **Real-Time Chat System:**
-   - One-on-one chat system with employees in other branches.
-   ![](https://www.youtube.com/watch?v=9lE3vSYuEBA)
+   - One-on-one chat system with employees in other branches. </br></br>
+[![Chat Demonstration](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D9lE3vSYuEBA)](https://www.youtube.com/watch?v=9lE3vSYuEBA)
 
 1. **Product Inventory Management:**
    - Interface to manage product inventory for each branch, facilitating buying and selling.
