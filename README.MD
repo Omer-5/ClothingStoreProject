@@ -7,7 +7,7 @@ This project is a Client-Server application written in Java and using Azure SQL 
 
 In order to facilitate the Client-Server communication we developed a system to encode and decode actions and objects so we can send the data through a socket and take the appropriate action on the other side.
 
-![Shop Preview](Images/shop-preview.png)
+![Shop Preview](src\Store\Images\shop-preview.png)
 
 ## Main Features
 
