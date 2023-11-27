@@ -45,7 +45,7 @@ To run the system locally, follow these steps:
    ```bash
    git clone https://github.com/Omer-5/ClothingStoreProject.git
 
-1. Update `Database/Secrets.properties` with Azure DB credentials
+1. Update `Database/Secrets.properties` with [Azure DB credentials](https://learn.microsoft.com/en-us/azure/azure-sql/database/connect-query-content-reference-guide?view=azuresql)
 
 1. Create the tables:
 ```SQL
