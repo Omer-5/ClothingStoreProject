@@ -29,7 +29,7 @@ In order to facilitate the Client-Server communication we developed a system to 
 1. **Admin Functionality:**
    - Admin screen for setting up employee accounts, including details and password policy.
 
-1. **System Logs Management:**
+1. **System Logs:**
     - Recording logs of actions such as employee and customer registration, sales, record chat history (if Admin enabled)
 
 ## Development Team
@@ -43,4 +43,52 @@ To run the system locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/Omer-5/ClothingStoreProject.git
+
+1. Update `Database/Secrets.properties` with Azure DB credentials
+
+1. Create the tables:
+```SQL
+
+ CREATE TABLE Customers (
+    FullName nvarchar(255) NOT NULL,
+	PhoneNumber nvarchar(255) NOT NULL,
+    ID int NOT NULL,
+    Type nvarchar(255) NOT NULL,
+    PRIMARY KEY (ID)
+);
+
+
+ CREATE TABLE Employees (
+    FullName nvarchar(255) NOT NULL,
+	PhoneNumber nvarchar(255) NOT NULL,
+    ID int NOT NULL,
+    BankAccount int NOT NULL,
+	Branch int NOT NULL,
+	EmployeeNumber int IDENTITY(1,1) NOT NULL,
+	Password nvarchar(255) NOT NULL,
+	EmployeeTitle int NOT NULL,
+    PRIMARY KEY (ID)
+);
+
+CREATE TABLE Inventory (
+    branch nvarchar(255) NOT NULL,
+    productID int IDENTITY(1,1) NOT NULL,
+	name nvarchar(255) NOT NULL,
+    category nvarchar(255) NOT NULL,
+    quantity int NOT NULL,
+    price float NOT NULL,
+    PRIMARY KEY (productID)
+);
+
+CREATE TABLE PurchaseHistory(
+    purchaseID int IDENTITY(1,1) NOT NULL,
+    productID int NOT NULL,
+    PRIMARY KEY (purchaseID)
+);
+
+```
+
+4. Run `src\Store\Database\Server.java`
+
+1. Run `src\Store\AppForms\Login.java`
