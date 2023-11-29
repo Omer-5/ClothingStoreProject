@@ -173,3 +173,12 @@ public class Purchase {
     }
 }
 
+/*
+CREATE TABLE PurchaseHistory (
+	purchaseID int IDENTITY(1,1) NOT NULL,
+	customerID int NOT NULL,
+	date datetime2(0) NOT NULL,
+	branch nvarchar(50) NOT NULL,
+    	PRIMARY KEY (purchaseID)
+);
+*/

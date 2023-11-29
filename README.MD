@@ -81,12 +81,18 @@ CREATE TABLE Inventory (
     PRIMARY KEY (productID)
 );
 
-CREATE TABLE PurchaseHistory(
-    purchaseID int IDENTITY(1,1) NOT NULL,
-    productID int NOT NULL,
-    PRIMARY KEY (purchaseID)
+CREATE TABLE PurchaseHistory (
+	purchaseID int IDENTITY(1,1) NOT NULL,
+	customerID int NOT NULL,
+	date datetime2(0) NOT NULL,
+	branch nvarchar(50) NOT NULL,
+    	PRIMARY KEY (purchaseID)
 );
 
+CREATE TABLE PurchaseHistoryItems (
+	purchaseID int NOT NULL,
+	productID int NOT NULL
+);
 ```
 
 4. Run `src\Store\Database\Server.java`

@@ -95,9 +95,8 @@ public class PurchasedItem {
 
 
 /*
-CREATE TABLE PurchaseHistory(
-    purchaseID int IDENTITY(1,1) NOT NULL,
-    productID int NOT NULL,
-    PRIMARY KEY (purchaseID)
+CREATE TABLE PurchaseHistoryItems (
+	purchaseID int NOT NULL,
+	productID int NOT NULL
 );
  */
